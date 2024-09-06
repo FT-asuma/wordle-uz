@@ -1,0 +1,30 @@
+.header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+}
+
+.wrapperTabs {
+    min-width: 7rem;
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+    align-items: center;
+}
+
+.tabs {
+    display: flex;
+    align-items: center;
+    background: #415a77;
+    gap: 4px;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    padding: 4px 8px;
+    border-radius: 0.5rem;
+    height: 34px;
+    justify-content: space-between;
+}
+
