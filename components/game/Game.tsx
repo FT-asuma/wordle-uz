@@ -3,13 +3,15 @@ import React, { useEffect, useRef, useState } from "react";
 import styles from "./games.module.css";
 import Keyboard from "./Keyboard";
 import { motion } from "framer-motion";
-import { ALPHABET } from "@/constants";
+import { ALPHABET, LIBRARY } from "@/constants";
+import Alert from "../popups/Alert";
 
 interface IPrevList {
   prev: [
     {
       perLetter: string;
       isCorrect: boolean;
+      isOccured: string;
     }
   ];
 }
@@ -24,9 +26,12 @@ const Game = () => {
   const [animate, setAnimate] = useState(0);
   const [win, setWin] = useState(false);
   const [check, setCheck] = useState(false);
+  const [hiddenWord, setHiddenWord] = useState<string>();
+  const [key, setKey] = useState<KeyboardEvent>();
+  const [error, setError] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement | any>(null);
-  const hiddenWord = "nigger";
   useEffect(() => {
+    setHiddenWord(randomWord(LIBRARY, 1, LIBRARY.length));
     const focusTextarea = () => {
       if (textareaRef.current) {
         // @ts-ignore
@@ -43,63 +48,91 @@ const Game = () => {
 
   useEffect(() => {
     document.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") {
-        setCheck(!check);
-      }
+      setKey(e);
     });
   }, [textareaRef]);
-
-  // useEffect(() => {
-  //   if (length) {
-  //     if (length.length === 6) {
-  //       console.log("bnnin", length.length)
-  //       if (check === true) {
-  //         console.log(check);
-  //         console.log("attempt to check");
-  //         checkEachLetter(length);
-  //       }
-  //     } else {
-  //       if (length.length < 6) {
-  //         setCheck(false)
-  //         if (check === true) {
-  //           console.log("word is short");
-  //         }
-  //       }
-  //     }
-  //   } else {
-  //     setLength("");
-  //   }
-  // }, [length]);
-
-  useEffect(() => {}, [prevList]);
-
-  const checkEachLetter = (word: string) => {
-    // if (word.length === 6 && check === true) {
-    //   console.log("attempt to check");
-    // } else {
-    //   alert("word is short");
-    // }
-    const list = word.split("");
-    // console.log(list);
-    const res:string[] = []
-    list.map((i) => {
-      const a = ALPHABET.find((c) => c === i.toLocaleUpperCase());
-      if (a !== undefined) {
-        res.push(a)
-        list.push(a)
+  useEffect(() => {
+    if (length?.length) {
+      setCheck(false);
+    }
+  }, [length]);
+  useEffect(() => {
+    if (key) {
+      if (key.key === "Enter") {
+        setCheck(!check);
+        checkEachLetter(length!);
       }
-    });
-    // res.map((l, iterator:number) => {
-    //   console.log(l)
-    // })
-    // console.log(res)
-    // console.log(res)
-    // const right = ALPHABET.find((c) => c === word[-1].toLocaleUpperCase());
-    // console.log(right);
-    // console.log(word === hiddenWord)
-    // console.log(hiddenWord)
-  };
+    }
+  }, [key]);
 
+  const randomWord = (list: string[], min: number, max: number) => {
+    const random = Math.floor(Math.random() * (max - min)) + min;
+    return list[random];
+  };
+  const checkEachLetter = (word: string) => {
+    console.log(hiddenWord);
+    if (word?.length === 6) {
+      const pend = LIBRARY.find(
+        (c) => c.toLocaleLowerCase() === word.toLocaleLowerCase()
+      );
+      console.log(pend);
+      if (pend !== undefined) {
+        if (pend === hiddenWord) {
+          const list = pend.split("");
+          const previous: any = {
+            prev: [],
+          };
+          list.map((letter, i) => {
+            if (length && hiddenWord) {
+              previous.prev.push({
+                isCorrect: letter === hiddenWord[i],
+                perLetter: letter,
+                isOccured: hiddenWord
+                  .split("")
+                  .find((e) => e.toLocaleLowerCase() === letter),
+              });
+            }
+          });
+          setPrevList((prev) => [...prev, previous]);
+          setClose(close + 1);
+          setAnimate(animate + 1);
+          setLength("");
+        } else {
+          if (pend) {
+            const list = pend.split("");
+            const previous: any = {
+              prev: [],
+            };
+            list.map((letter, i) => {
+              if (length && hiddenWord) {
+                previous.prev.push({
+                  isCorrect: letter === hiddenWord[i],
+                  perLetter: letter,
+                  isOccured: hiddenWord
+                    .split("")
+                    .find((e) => e.toLocaleLowerCase() === letter),
+                });
+              }
+            });
+            setPrevList((prev) => [...prev, previous]);
+            setClose(close + 1);
+            setAnimate(animate + 1);
+            setLength("");
+          }
+        }
+      } else {
+        setError("Word not found");
+        setTimeout(() => {
+          setError("");
+        }, 700);
+      }
+    } else {
+      if (word?.length < 6) {
+        console.log("word is short");
+      }
+    }
+  };
+  console.log(prevList);
   return (
     <section className={styles.game}>
       <textarea
@@ -111,21 +144,21 @@ const Game = () => {
         maxLength={list.length}
         value={length}
         onChange={(e) => {
-          const listOfLetters = e.currentTarget.value.split("")
-          // console.log(listOfLetters)
-          const res:string[] = []
-          listOfLetters.map((l)=> {
-            const a = ALPHABET.find(c => c.toLocaleLowerCase() === l.toLocaleLowerCase())
+          const listOfLetters = e.currentTarget.value.split("");
+          const res: string[] = [];
+          listOfLetters.map((l) => {
+            const a = ALPHABET.find(
+              (c) => c.toLocaleLowerCase() === l.toLocaleLowerCase()
+            );
             if (a !== undefined) {
-              res.push(a)
+              res.push(a);
             }
-          })
-          // console.log(res)
-          setLength(res.join("").trim())
-          checkEachLetter(e.currentTarget.value);
+          });
+          setLength(res.join("").trim());
         }}
         id=""
       ></textarea>
+      <Alert value={error} type="alert" />
       <div className={styles.attempts}>
         <div className={styles.attempt}>
           {close < 1
@@ -173,6 +206,8 @@ const Game = () => {
                     className={`${styles.letterCont} ${
                       i.isCorrect === true
                         ? styles.correctLetter
+                        : i.isOccured === i.perLetter
+                        ? styles.occuredLetter
                         : styles.incorrectLetter
                     }`}
                   >
@@ -183,7 +218,7 @@ const Game = () => {
                 );
               })}
         </div>
-        {/* <div className={styles.attempt}>
+        <div className={styles.attempt}>
           {!prevList[1]
             ? list.map((i, a) => {
                 return (
@@ -229,6 +264,8 @@ const Game = () => {
                     className={`${styles.letterCont} ${
                       i.isCorrect === true
                         ? styles.correctLetter
+                        : i.isOccured === i.perLetter
+                        ? styles.occuredLetter
                         : styles.incorrectLetter
                     }`}
                   >
@@ -285,6 +322,8 @@ const Game = () => {
                     className={`${styles.letterCont} ${
                       i.isCorrect === true
                         ? styles.correctLetter
+                        : i.isOccured === i.perLetter
+                        ? styles.occuredLetter
                         : styles.incorrectLetter
                     }`}
                   >
@@ -341,6 +380,8 @@ const Game = () => {
                     className={`${styles.letterCont} ${
                       i.isCorrect === true
                         ? styles.correctLetter
+                        : i.isOccured === i.perLetter
+                        ? styles.occuredLetter
                         : styles.incorrectLetter
                     }`}
                   >
@@ -397,6 +438,8 @@ const Game = () => {
                     className={`${styles.letterCont} ${
                       i.isCorrect === true
                         ? styles.correctLetter
+                        : i.isOccured === i.perLetter
+                        ? styles.occuredLetter
                         : styles.incorrectLetter
                     }`}
                   >
@@ -453,6 +496,8 @@ const Game = () => {
                     className={`${styles.letterCont} ${
                       i.isCorrect === true
                         ? styles.correctLetter
+                        : i.isOccured === i.perLetter
+                        ? styles.occuredLetter
                         : styles.incorrectLetter
                     }`}
                   >
@@ -462,7 +507,7 @@ const Game = () => {
                   </motion.div>
                 );
               })}
-        </div> */}
+        </div>
       </div>
       <Keyboard textareaRef={textareaRef} setList={setList} list={list} />
     </section>

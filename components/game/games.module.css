@@ -4,6 +4,7 @@
   justify-content: center;
   align-items: center;
   gap: 28px;
+  position: relative;
   flex-direction: column;
 }
 
@@ -108,8 +109,13 @@
 }
 
 .correctLetter {
-  background: #018813;
-  border: 2px solid #018813;
+  background: #45b113;
+  border: 2px solid #45b113;
+}
+
+.occuredLetter {
+  background: #ffb700;
+  border: 2px solid #ffb700;
 }
 
 .incorrectLetter {
