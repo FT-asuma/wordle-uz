@@ -1,7 +1,10 @@
-import React from "react";
+"use client"
+import React, { Dispatch, SetStateAction } from "react";
 import styles from "./blocks.module.css";
-import Image from "next/image";
-const Header = () => {
+const Header = ({setWordLength,wordLength}: {
+  setWordLength: Dispatch<SetStateAction<number>>
+  wordLength: number
+}) => {
   return (
     <header className={styles.header}>
       <div className={styles.wrapperTabs}>
@@ -90,7 +93,9 @@ const Header = () => {
             </g>
           </svg>
         </button>
-        <button className={styles.tabs}>
+        <button onClick={()=> {
+          
+        }} className={styles.tabs}>
           <svg
             width="24"
             height="24"

@@ -1,10 +1,17 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import styles from "./games.module.css";
 import Keyboard from "./Keyboard";
 import { motion } from "framer-motion";
-import { ALPHABET, LIBRARY } from "@/constants";
+import { ALPHABET, LIBRARY_2 } from "@/constants";
 import Alert from "../popups/Alert";
+import ReactConfetti from "react-confetti";
 
 interface IPrevList {
   prev: [
@@ -16,11 +23,34 @@ interface IPrevList {
   ];
 }
 
-const emojis = ["🎉", "🎊", "🥳"];
+const SHAPES = ["square", "triangle"];
+const COLOR_DIGIT = "ABCDEF1234567890";
 
-const Game = () => {
+const Game = ({
+  setWordLength,
+  wordLength,
+}: {
+  setWordLength: Dispatch<SetStateAction<number>>;
+  wordLength: number;
+}) => {
   const [length, setLength] = useState<string>();
-  const [list, setList] = useState<Array<string>>(["", "", "", "", "", ""]);
+  const [list, setList] = useState<Array<string>>(
+    wordLength === 4
+      ? ["", "", "", ""]
+      : wordLength === 5
+      ? ["", "", "", "", ""]
+      : wordLength === 6
+      ? ["", "", "", "", "", ""]
+      : wordLength === 7
+      ? ["", "", "", "", "", "", ""]
+      : wordLength === 8
+      ? ["", "", "", "", "", "", "", ""]
+      : wordLength === 9
+      ? ["", "", "", "", "", "", "", "", ""]
+      : wordLength === 10
+      ? ["", "", "", "", "", "", "", "", "", ""]
+      : []
+  );
   const [prevList, setPrevList] = useState<IPrevList[]>([]);
   const [close, setClose] = useState(0);
   const [animate, setAnimate] = useState(0);
@@ -30,8 +60,25 @@ const Game = () => {
   const [key, setKey] = useState<KeyboardEvent>();
   const [error, setError] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement | any>(null);
+  const [whichLib, setWhichLib] = useState<string[]>(
+    wordLength === 4
+      ? LIBRARY_2.FOUR_LETTER
+      : wordLength === 5
+      ? LIBRARY_2.FIVE_LETTER
+      : wordLength === 6
+      ? LIBRARY_2.SIX_LETTER
+      : wordLength === 7
+      ? LIBRARY_2.SEVEN_LETTER
+      : wordLength === 8
+      ? LIBRARY_2.EIGHT_LETTER
+      : wordLength === 9
+      ? LIBRARY_2.NINE_LETTER
+      : wordLength === 10
+      ? LIBRARY_2.TEN_LETTER
+      : []
+  );
   useEffect(() => {
-    setHiddenWord(randomWord(LIBRARY, 1, LIBRARY.length));
+    setHiddenWord(randomWord(whichLib, 1, whichLib.length));
     const focusTextarea = () => {
       if (textareaRef.current) {
         // @ts-ignore
@@ -71,11 +118,10 @@ const Game = () => {
   };
   const checkEachLetter = (word: string) => {
     console.log(hiddenWord);
-    if (word?.length === 6) {
-      const pend = LIBRARY.find(
+    if (word?.length === wordLength) {
+      const pend = whichLib.find(
         (c) => c.toLocaleLowerCase() === word.toLocaleLowerCase()
       );
-      console.log(pend);
       if (pend !== undefined) {
         if (pend === hiddenWord) {
           const list = pend.split("");
@@ -94,9 +140,14 @@ const Game = () => {
             }
           });
           setPrevList((prev) => [...prev, previous]);
+          textareaRef.current.disabled = true;
           setClose(close + 1);
           setAnimate(animate + 1);
           setLength("");
+          setBtn(true);
+          setTimeout(() => {
+            setBtn(false);
+          }, 1500);
         } else {
           if (pend) {
             const list = pend.split("");
@@ -127,12 +178,29 @@ const Game = () => {
         }, 700);
       }
     } else {
-      if (word?.length < 6) {
-        console.log("word is short");
+      if (word?.length < wordLength) {
+        setError("Word is short");
+        setTimeout(() => {
+          setError("");
+        }, 700);
       }
     }
   };
-  console.log(prevList);
+
+  const [windowDimension, setDimension] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+  const [btn, setBtn] = useState(false);
+
+  const detectSize = () => {
+    setDimension({ width: window.innerWidth, height: window.innerHeight });
+  };
+  useEffect(() => {
+    window.addEventListener("resize", detectSize);
+    return window.removeEventListener("resize", detectSize);
+  }, [windowDimension]);
+
   return (
     <section className={styles.game}>
       <textarea
@@ -158,10 +226,24 @@ const Game = () => {
         }}
         id=""
       ></textarea>
+      <div
+        style={
+          btn === true
+            ? { transition: "0.3s", opacity: 1 }
+            : { transition: "0.2s", opacity: 0 }
+        }
+        className={styles.congrats}
+      >
+        <ReactConfetti
+          width={windowDimension.width}
+          height={(windowDimension.height * 3) / 3.5}
+          tweenDuration={100}
+        />
+      </div>
       <Alert value={error} type="alert" />
       <div className={styles.attempts}>
         <div className={styles.attempt}>
-          {close < 1
+          {!prevList[0]
             ? list.map((i, a) => {
                 return (
                   <div

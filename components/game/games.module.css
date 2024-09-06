@@ -109,16 +109,27 @@
 }
 
 .correctLetter {
-  background: #45b113;
-  border: 2px solid #45b113;
+  background: #007f5f;
+  border: 2px solid #007f5f;
 }
 
 .occuredLetter {
-  background: #ffb700;
-  border: 2px solid #ffb700;
+  background: #2c7da0;
+  border: 2px solid #2c7da0;
 }
 
 .incorrectLetter {
-  background: #979797;
-  border: 2px solid #979797;
+  background: #7f7f7f;
+  border: 2px solid #7f7f7f;
+}
+
+
+.congrats {
+  position: fixed;
+  top: 0;
+  width: 100vw;
+  height: 75%;
+  left: 0;
+  display: flex;
+  pointer-events: none;
 }
