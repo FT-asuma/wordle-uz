@@ -188,8 +188,8 @@ const Game = ({
   };
 
   const [windowDimension, setDimension] = useState({
-    width: window.innerWidth,
-    height: window.innerHeight,
+    width: 1000,
+    height: 1000,
   });
   const [btn, setBtn] = useState(false);
 
@@ -197,10 +197,8 @@ const Game = ({
     setDimension({ width: window.innerWidth, height: window.innerHeight });
   };
   useEffect(() => {
-    if (window) {
-      window.addEventListener("resize", detectSize);
-      return window.removeEventListener("resize", detectSize);
-    }
+    document.addEventListener("resize", detectSize);
+    return document.removeEventListener("resize", detectSize);
   }, [windowDimension]);
 
   return (
