@@ -197,8 +197,10 @@ const Game = ({
     setDimension({ width: window.innerWidth, height: window.innerHeight });
   };
   useEffect(() => {
-    window.addEventListener("resize", detectSize);
-    return window.removeEventListener("resize", detectSize);
+    if (window) {
+      window.addEventListener("resize", detectSize);
+      return window.removeEventListener("resize", detectSize);
+    }
   }, [windowDimension]);
 
   return (
