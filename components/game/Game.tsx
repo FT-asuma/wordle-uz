@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import styles from "./games.module.css";
 import Keyboard from "./Keyboard";
 import { motion } from "framer-motion";
+import { ALPHABET } from "@/constants";
 
 interface IPrevList {
   prev: [
@@ -70,7 +71,6 @@ const Game = () => {
   //   }
   // }, [length]);
 
-
   useEffect(() => {}, [prevList]);
 
   const checkEachLetter = (word: string) => {
@@ -79,7 +79,24 @@ const Game = () => {
     // } else {
     //   alert("word is short");
     // }
-    console.log(word)
+    const list = word.split("");
+    // console.log(list);
+    const res:string[] = []
+    list.map((i) => {
+      const a = ALPHABET.find((c) => c === i.toLocaleUpperCase());
+      if (a !== undefined) {
+        res.push(a)
+        list.push(a)
+      }
+    });
+    // res.map((l, iterator:number) => {
+    //   console.log(l)
+    // })
+    // console.log(res)
+    // console.log(res)
+    // const right = ALPHABET.find((c) => c === word[-1].toLocaleUpperCase());
+    // console.log(right);
+    // console.log(word === hiddenWord)
     // console.log(hiddenWord)
   };
 
@@ -94,8 +111,18 @@ const Game = () => {
         maxLength={list.length}
         value={length}
         onChange={(e) => {
-          setLength(e.currentTarget.value); 
-          checkEachLetter(e.currentTarget.value)
+          const listOfLetters = e.currentTarget.value.split("")
+          // console.log(listOfLetters)
+          const res:string[] = []
+          listOfLetters.map((l)=> {
+            const a = ALPHABET.find(c => c.toLocaleLowerCase() === l.toLocaleLowerCase())
+            if (a !== undefined) {
+              res.push(a)
+            }
+          })
+          // console.log(res)
+          setLength(res.join("").trim())
+          checkEachLetter(e.currentTarget.value);
         }}
         id=""
       ></textarea>
@@ -156,7 +183,7 @@ const Game = () => {
                 );
               })}
         </div>
-        <div className={styles.attempt}>
+        {/* <div className={styles.attempt}>
           {!prevList[1]
             ? list.map((i, a) => {
                 return (
@@ -435,7 +462,7 @@ const Game = () => {
                   </motion.div>
                 );
               })}
-        </div>
+        </div> */}
       </div>
       <Keyboard textareaRef={textareaRef} setList={setList} list={list} />
     </section>
