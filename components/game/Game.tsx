@@ -66,8 +66,8 @@ const Game = ({
   useEffect(() => {
     if (hiddenWord) {
       setWhichLib(listOfWords);
-      setPrevList([])
-      setClose(0)
+      setPrevList([]);
+      setClose(0);
     }
   }, [hiddenWord]);
   useEffect(() => {
@@ -210,8 +210,8 @@ const Game = ({
         className={styles.congrats}
       >
         <ReactConfetti
-          width={window.innerWidth}
-          height={window.innerHeight}
+          width={hiddenWord ? window.innerHeight : 1000}
+          height={hiddenWord ? window.innerHeight : 10000}
           tweenDuration={100}
         />
       </div>

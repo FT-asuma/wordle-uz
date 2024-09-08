@@ -23,6 +23,7 @@ button {
   background: none;
   border: none;
   cursor: pointer;
+  overflow-x: hidden;
 }
 
 body {
