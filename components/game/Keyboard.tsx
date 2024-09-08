@@ -6,12 +6,8 @@ import { redirect, useRouter } from "next/navigation";
 import styles from "./games.module.css";
 const Keyboard = ({
   textareaRef,
-  setList,
-  list,
 }: {
   textareaRef: HTMLTextAreaElement | any;
-  setList: React.Dispatch<React.SetStateAction<string[]>>;
-  list: string[];
 }) => {
   const [letter, setLetter] = useState<KeyboardEvent>();
   const [isClick, setIsClick] = useState<string>("");

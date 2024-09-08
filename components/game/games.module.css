@@ -37,7 +37,6 @@
 .letter {
   font-size: 28px;
   font-weight: 700;
-  position: fixed;
 }
 
 .keyboard {
@@ -128,8 +127,10 @@
   position: fixed;
   top: 0;
   width: 100vw;
-  height: 75%;
+  height: 100%;
   left: 0;
   display: flex;
+  justify-content: center;
   pointer-events: none;
+  align-items: center;
 }

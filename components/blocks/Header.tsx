@@ -1,10 +1,23 @@
-"use client"
-import React, { Dispatch, SetStateAction } from "react";
+"use client";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import styles from "./blocks.module.css";
-const Header = ({setWordLength,wordLength}: {
-  setWordLength: Dispatch<SetStateAction<number>>
-  wordLength: number
+const Header = ({
+  setWordLength,
+  wordLength,
+  setList,
+}: {
+  setWordLength: Dispatch<SetStateAction<number>>;
+  wordLength: number;
+  setList: Dispatch<SetStateAction<string[]>>;
 }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  useEffect(() => {
+    if (isOpen === true) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+  }, [isOpen]);
   return (
     <header className={styles.header}>
       <div className={styles.wrapperTabs}>
@@ -93,9 +106,12 @@ const Header = ({setWordLength,wordLength}: {
             </g>
           </svg>
         </button>
-        <button onClick={()=> {
-          
-        }} className={styles.tabs}>
+        <button
+          onClick={() => {
+            setIsOpen(!isOpen);
+          }}
+          className={styles.tabs}
+        >
           <svg
             width="24"
             height="24"
@@ -126,6 +142,91 @@ const Header = ({setWordLength,wordLength}: {
             </g>
           </svg>
         </button>
+        <div
+          style={
+            isOpen === false
+              ? { height: 0, opacity: 0, zIndex: -10, transition: "1s" }
+              : {
+                  zIndex: 100,
+                  opacity: 1,
+                  height: window.innerHeight,
+                  transition: "0.5s",
+                }
+          }
+          className={styles.modal}
+        >
+          <div className={styles.container}>
+            <div className={styles.title}>
+              <h2>Choose the length of the word</h2>
+              <p>blah blah</p>
+            </div>
+            <div className={styles.buttonRaw}>
+              <button
+                onClick={() => {
+                  setWordLength(4);
+                  setList(["", "", "", ""]);
+                  setIsOpen(false);
+                }}
+              >
+                4
+              </button>
+              <button
+                onClick={() => {
+                  setWordLength(5);
+                  setList(["", "", "", "", ""]);
+                  setIsOpen(false);
+                }}
+              >
+                5
+              </button>
+              <button
+                onClick={() => {
+                  setWordLength(6);
+                  setList(["", "", "", "", "", ""]);
+                  setIsOpen(false);
+                }}
+              >
+                6
+              </button>
+              <button
+                onClick={() => {
+                  setWordLength(7);
+                  setList(["", "", "", "", "", "", ""]);
+                  setIsOpen(false);
+                }}
+              >
+                7
+              </button>
+              <button
+                onClick={() => {
+                  setWordLength(8);
+                  setList(["", "", "", "", "", "", "", ""]);
+                  setIsOpen(false);
+                }}
+              >
+                8
+              </button>
+              <button
+                onClick={() => {
+                  setWordLength(9);
+                  setList(["", "", "", "", "", "", "", "", ""]);
+                  setIsOpen(false);
+                }}
+              >
+                9
+              </button>
+              <button
+                onClick={() => {
+                  setWordLength(10);
+                  setList(["", "", "", "", "", "", "", "", "", ""]);
+                  setIsOpen(false);
+                }}
+              >
+                10
+              </button>
+            </div>
+          </div>
+        </div>
         <button className={styles.tabs}>
           <svg
             width="24"

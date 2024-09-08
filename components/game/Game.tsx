@@ -29,56 +29,27 @@ const COLOR_DIGIT = "ABCDEF1234567890";
 const Game = ({
   setWordLength,
   wordLength,
+  listOfWords,
+  lengthOfWord,
+  hiddenWord,
 }: {
   setWordLength: Dispatch<SetStateAction<number>>;
   wordLength: number;
+  listOfWords: string[];
+  lengthOfWord: string[];
+  hiddenWord: string;
 }) => {
   const [length, setLength] = useState<string>();
-  const [list, setList] = useState<Array<string>>(
-    wordLength === 4
-      ? ["", "", "", ""]
-      : wordLength === 5
-      ? ["", "", "", "", ""]
-      : wordLength === 6
-      ? ["", "", "", "", "", ""]
-      : wordLength === 7
-      ? ["", "", "", "", "", "", ""]
-      : wordLength === 8
-      ? ["", "", "", "", "", "", "", ""]
-      : wordLength === 9
-      ? ["", "", "", "", "", "", "", "", ""]
-      : wordLength === 10
-      ? ["", "", "", "", "", "", "", "", "", ""]
-      : []
-  );
   const [prevList, setPrevList] = useState<IPrevList[]>([]);
   const [close, setClose] = useState(0);
   const [animate, setAnimate] = useState(0);
-  const [win, setWin] = useState(false);
   const [check, setCheck] = useState(false);
-  const [hiddenWord, setHiddenWord] = useState<string>();
   const [key, setKey] = useState<KeyboardEvent>();
   const [error, setError] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement | any>(null);
-  const [whichLib, setWhichLib] = useState<string[]>(
-    wordLength === 4
-      ? LIBRARY_2.FOUR_LETTER
-      : wordLength === 5
-      ? LIBRARY_2.FIVE_LETTER
-      : wordLength === 6
-      ? LIBRARY_2.SIX_LETTER
-      : wordLength === 7
-      ? LIBRARY_2.SEVEN_LETTER
-      : wordLength === 8
-      ? LIBRARY_2.EIGHT_LETTER
-      : wordLength === 9
-      ? LIBRARY_2.NINE_LETTER
-      : wordLength === 10
-      ? LIBRARY_2.TEN_LETTER
-      : []
-  );
+  const [whichLib, setWhichLib] = useState<string[]>(listOfWords);
+  console.log(hiddenWord);
   useEffect(() => {
-    setHiddenWord(randomWord(whichLib, 1, whichLib.length));
     const focusTextarea = () => {
       if (textareaRef.current) {
         // @ts-ignore
@@ -92,7 +63,13 @@ const Game = ({
       document.removeEventListener("keydown", focusTextarea);
     };
   }, []);
-
+  useEffect(() => {
+    if (hiddenWord) {
+      setWhichLib(listOfWords);
+      setPrevList([])
+      setClose(0)
+    }
+  }, [hiddenWord]);
   useEffect(() => {
     document.addEventListener("keypress", (e) => {
       setKey(e);
@@ -112,18 +89,20 @@ const Game = ({
     }
   }, [key]);
 
-  const randomWord = (list: string[], min: number, max: number) => {
-    const random = Math.floor(Math.random() * (max - min)) + min;
-    return list[random];
-  };
+  const [btn, setBtn] = useState(false);
+
+  console.log(btn);
   const checkEachLetter = (word: string) => {
-    console.log(hiddenWord);
     if (word?.length === wordLength) {
       const pend = whichLib.find(
         (c) => c.toLocaleLowerCase() === word.toLocaleLowerCase()
       );
       if (pend !== undefined) {
         if (pend === hiddenWord) {
+          setBtn(true);
+          setTimeout(() => {
+            setBtn(false);
+          }, 1500);
           const list = pend.split("");
           const previous: any = {
             prev: [],
@@ -144,10 +123,6 @@ const Game = ({
           setClose(close + 1);
           setAnimate(animate + 1);
           setLength("");
-          setBtn(true);
-          setTimeout(() => {
-            setBtn(false);
-          }, 1500);
         } else {
           if (pend) {
             const list = pend.split("");
@@ -186,20 +161,20 @@ const Game = ({
       }
     }
   };
-
   const [windowDimension, setDimension] = useState({
     width: 1000,
     height: 1000,
   });
-  const [btn, setBtn] = useState(false);
-
   const detectSize = () => {
-    setDimension({ width: window.innerWidth, height: window.innerHeight });
+    setDimension({
+      width: document.body.offsetWidth,
+      height: document.body.offsetHeight,
+    });
   };
   useEffect(() => {
     window.addEventListener("resize", detectSize);
     return window.removeEventListener("resize", detectSize);
-  }, [windowDimension]);
+  }, []);
 
   return (
     <section className={styles.game}>
@@ -209,7 +184,7 @@ const Game = ({
         style={{ position: "fixed", zIndex: -1, opacity: 0 }}
         cols={0}
         rows={0}
-        maxLength={list.length}
+        maxLength={lengthOfWord.length}
         value={length}
         onChange={(e) => {
           const listOfLetters = e.currentTarget.value.split("");
@@ -229,14 +204,14 @@ const Game = ({
       <div
         style={
           btn === true
-            ? { transition: "0.3s", opacity: 1 }
-            : { transition: "0.2s", opacity: 0 }
+            ? { transition: "0.3s", opacity: 1, width: "100vw", zIndex: 100 }
+            : { transition: "0.2s", opacity: 0, width: "100vw", zIndex: -100 }
         }
         className={styles.congrats}
       >
         <ReactConfetti
-          width={windowDimension.width}
-          height={(windowDimension.height * 3) / 3.5}
+          width={window.innerWidth}
+          height={window.innerHeight}
           tweenDuration={100}
         />
       </div>
@@ -244,16 +219,16 @@ const Game = ({
       <div className={styles.attempts}>
         <div className={styles.attempt}>
           {!prevList[0]
-            ? list.map((i, a) => {
+            ? lengthOfWord.map((i, a) => {
                 return (
                   <div
                     key={Math.random() ** 2}
                     style={
-                      list.length < 10
+                      lengthOfWord.length < 10
                         ? { width: 56 }
-                        : list.length === 10
+                        : lengthOfWord.length === 10
                         ? { width: 54 }
-                        : list.length === 11
+                        : lengthOfWord.length === 11
                         ? { width: 48.5 }
                         : {}
                     }
@@ -277,11 +252,11 @@ const Game = ({
                     // transition={animate === 1 ? { duration: 0.5 } : {}}
                     key={Math.random() ** 2}
                     style={
-                      list.length < 10
+                      lengthOfWord.length < 10
                         ? { width: 56 }
-                        : list.length === 10
+                        : lengthOfWord.length === 10
                         ? { width: 54 }
-                        : list.length === 11
+                        : lengthOfWord.length === 11
                         ? { width: 48.5 }
                         : {}
                     }
@@ -302,16 +277,16 @@ const Game = ({
         </div>
         <div className={styles.attempt}>
           {!prevList[1]
-            ? list.map((i, a) => {
+            ? lengthOfWord.map((i, a) => {
                 return (
                   <div
                     key={Math.random() ** 2}
                     style={
-                      list.length < 10
+                      lengthOfWord.length < 10
                         ? { width: 56 }
-                        : list.length === 10
+                        : lengthOfWord.length === 10
                         ? { width: 54 }
-                        : list.length === 11
+                        : lengthOfWord.length === 11
                         ? { width: 48.5 }
                         : {}
                     }
@@ -335,11 +310,11 @@ const Game = ({
                     // transition={prevList[1] ? { duration: 0.5 } : {}}
                     key={Math.random() ** 2}
                     style={
-                      list.length < 10
+                      lengthOfWord.length < 10
                         ? { width: 56 }
-                        : list.length === 10
+                        : lengthOfWord.length === 10
                         ? { width: 54 }
-                        : list.length === 11
+                        : lengthOfWord.length === 11
                         ? { width: 48.5 }
                         : {}
                     }
@@ -360,16 +335,16 @@ const Game = ({
         </div>
         <div className={styles.attempt}>
           {!prevList[2]
-            ? list.map((i, a) => {
+            ? lengthOfWord.map((i, a) => {
                 return (
                   <div
                     key={Math.random() ** 2}
                     style={
-                      list.length < 10
+                      lengthOfWord.length < 10
                         ? { width: 56 }
-                        : list.length === 10
+                        : lengthOfWord.length === 10
                         ? { width: 54 }
-                        : list.length === 11
+                        : lengthOfWord.length === 11
                         ? { width: 48.5 }
                         : {}
                     }
@@ -393,11 +368,11 @@ const Game = ({
                     // transition={prevList[1] ? { duration: 0.5 } : {}}
                     key={Math.random() ** 2}
                     style={
-                      list.length < 10
+                      lengthOfWord.length < 10
                         ? { width: 56 }
-                        : list.length === 10
+                        : lengthOfWord.length === 10
                         ? { width: 54 }
-                        : list.length === 11
+                        : lengthOfWord.length === 11
                         ? { width: 48.5 }
                         : {}
                     }
@@ -418,16 +393,16 @@ const Game = ({
         </div>
         <div className={styles.attempt}>
           {!prevList[3]
-            ? list.map((i, a) => {
+            ? lengthOfWord.map((i, a) => {
                 return (
                   <div
                     key={Math.random() ** 2}
                     style={
-                      list.length < 10
+                      lengthOfWord.length < 10
                         ? { width: 56 }
-                        : list.length === 10
+                        : lengthOfWord.length === 10
                         ? { width: 54 }
-                        : list.length === 11
+                        : lengthOfWord.length === 11
                         ? { width: 48.5 }
                         : {}
                     }
@@ -451,11 +426,11 @@ const Game = ({
                     // transition={prevList[1] ? { duration: 0.5 } : {}}
                     key={Math.random() ** 2}
                     style={
-                      list.length < 10
+                      lengthOfWord.length < 10
                         ? { width: 56 }
-                        : list.length === 10
+                        : lengthOfWord.length === 10
                         ? { width: 54 }
-                        : list.length === 11
+                        : lengthOfWord.length === 11
                         ? { width: 48.5 }
                         : {}
                     }
@@ -476,16 +451,16 @@ const Game = ({
         </div>
         <div className={styles.attempt}>
           {!prevList[4]
-            ? list.map((i, a) => {
+            ? lengthOfWord.map((i, a) => {
                 return (
                   <div
                     key={Math.random() ** 2}
                     style={
-                      list.length < 10
+                      lengthOfWord.length < 10
                         ? { width: 56 }
-                        : list.length === 10
+                        : lengthOfWord.length === 10
                         ? { width: 54 }
-                        : list.length === 11
+                        : lengthOfWord.length === 11
                         ? { width: 48.5 }
                         : {}
                     }
@@ -509,11 +484,11 @@ const Game = ({
                     // transition={prevList[1] ? { duration: 0.5 } : {}}
                     key={Math.random() ** 2}
                     style={
-                      list.length < 10
+                      lengthOfWord.length < 10
                         ? { width: 56 }
-                        : list.length === 10
+                        : lengthOfWord.length === 10
                         ? { width: 54 }
-                        : list.length === 11
+                        : lengthOfWord.length === 11
                         ? { width: 48.5 }
                         : {}
                     }
@@ -534,16 +509,16 @@ const Game = ({
         </div>
         <div className={styles.attempt}>
           {!prevList[5]
-            ? list.map((i, a) => {
+            ? lengthOfWord.map((i, a) => {
                 return (
                   <div
                     key={Math.random() ** 2}
                     style={
-                      list.length < 10
+                      lengthOfWord.length < 10
                         ? { width: 56 }
-                        : list.length === 10
+                        : lengthOfWord.length === 10
                         ? { width: 54 }
-                        : list.length === 11
+                        : lengthOfWord.length === 11
                         ? { width: 48.5 }
                         : {}
                     }
@@ -567,11 +542,11 @@ const Game = ({
                     // transition={prevList[1] ? { duration: 0.5 } : {}}
                     key={Math.random() ** 2}
                     style={
-                      list.length < 10
+                      lengthOfWord.length < 10
                         ? { width: 56 }
-                        : list.length === 10
+                        : lengthOfWord.length === 10
                         ? { width: 54 }
-                        : list.length === 11
+                        : lengthOfWord.length === 11
                         ? { width: 48.5 }
                         : {}
                     }
@@ -591,7 +566,7 @@ const Game = ({
               })}
         </div>
       </div>
-      <Keyboard textareaRef={textareaRef} setList={setList} list={list} />
+      <Keyboard textareaRef={textareaRef} />
     </section>
   );
 };

@@ -31,7 +31,11 @@ export const LIBRARY_2 = {
   FOUR_LETTER: [
     "mate",
     "fade",
-    "make", "made", "male", "beat", "mood",
+    "make",
+    "made",
+    "male",
+    "beat",
+    "mood",
     "Four",
     "Five",
     "Nine",
