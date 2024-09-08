@@ -176,6 +176,9 @@ const Game = ({
     return window.removeEventListener("resize", detectSize);
   }, []);
 
+  if (!listOfWords) {
+    return <>Loading...</>
+  }
   return (
     <section className={styles.game}>
       <textarea
@@ -210,8 +213,8 @@ const Game = ({
         className={styles.congrats}
       >
         <ReactConfetti
-          width={hiddenWord ? window.innerHeight : 1000}
-          height={hiddenWord ? window.innerHeight : 10000}
+          width={window.innerHeight}
+          height={window.innerHeight}
           tweenDuration={100}
         />
       </div>
