@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import styles from "../games.module.css";
 
 interface KeyProperties {
@@ -7,15 +7,31 @@ interface KeyProperties {
   letter: KeyboardEvent;
   setIsClick: React.Dispatch<React.SetStateAction<string>>;
   isClick: string;
+  setLength: Dispatch<SetStateAction<string>>;
+  length: string;
+  text: string;
 }
 
-const Key = ({ per_key, letter, setIsClick, isClick }: KeyProperties) => {
+const Key = ({
+  per_key,
+  letter,
+  setIsClick,
+  isClick,
+  setLength,
+  length,
+  text,
+}: KeyProperties) => {
   const key = per_key;
   return (
     <button
       key={key}
       onClick={() => {
         setIsClick(key);
+        if (length.length < 4) {
+          if (text === "won! 🏆") {
+            return;
+          } else setLength(length + key);
+        }
       }}
       style={
         key === isClick

@@ -12,6 +12,7 @@ import { motion } from "framer-motion";
 import { ALPHABET, LIBRARY_2 } from "@/constants";
 import Alert from "../popups/Alert";
 import ReactConfetti from "react-confetti";
+import GameOver from "../popups/GameOver";
 
 interface IPrevList {
   prev: [
@@ -23,23 +24,22 @@ interface IPrevList {
   ];
 }
 
-const SHAPES = ["square", "triangle"];
-const COLOR_DIGIT = "ABCDEF1234567890";
-
 const Game = ({
   setWordLength,
   wordLength,
   listOfWords,
   lengthOfWord,
   hiddenWord,
+  setHiddenWord,
 }: {
   setWordLength: Dispatch<SetStateAction<number>>;
   wordLength: number;
   listOfWords: string[];
   lengthOfWord: string[];
   hiddenWord: string;
+  setHiddenWord: Dispatch<SetStateAction<string>>;
 }) => {
-  const [length, setLength] = useState<string>();
+  const [length, setLength] = useState<string>("");
   const [prevList, setPrevList] = useState<IPrevList[]>([]);
   const [close, setClose] = useState(0);
   const [animate, setAnimate] = useState(0);
@@ -48,7 +48,8 @@ const Game = ({
   const [error, setError] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement | any>(null);
   const [whichLib, setWhichLib] = useState<string[]>(listOfWords);
-  console.log(hiddenWord);
+  const [isEnterPressed, setIsEnterPressed] = useState<boolean>(false);
+
   useEffect(() => {
     const focusTextarea = () => {
       if (textareaRef.current) {
@@ -81,6 +82,7 @@ const Game = ({
       setCheck(false);
     }
   }, [length]);
+
   useEffect(() => {
     if (key) {
       if (key.key === "Enter") {
@@ -89,8 +91,23 @@ const Game = ({
       }
     }
   }, [key]);
-
+  useEffect(() => {
+    if (isEnterPressed === true) {
+      setCheck(!check);
+      checkEachLetter(length!);
+    }
+  }, [isEnterPressed]);
+  useEffect(() => {
+    if (prevList.length === 6) {
+      if (modalOpen === false) {
+        setModalOpen(true);
+        setText("lost!");
+      }
+    }
+  }, [prevList]);
   const [btn, setBtn] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [text, setText] = useState<string>("win");
 
   const checkEachLetter = (word: string) => {
     if (word?.length === wordLength) {
@@ -105,55 +122,51 @@ const Game = ({
           }, 1500);
           checkWord(hiddenWord, pend);
           textareaRef.current.disabled = true;
+          setModalOpen(true);
+          setText("won! 🏆");
         } else {
           if (pend) {
             checkWord(hiddenWord, pend);
           }
         }
       } else {
-        setError("Word not found");
-        setTimeout(() => {
-          setError("");
-        }, 700);
+        if (modalOpen !== true) {
+          setError("Word not found");
+          setTimeout(() => {
+            setError("");
+          }, 700);
+        }
       }
     } else {
-      if (word?.length < wordLength) {
+      if (word?.length < wordLength && modalOpen !== true && prevList.length !== 6) {
         setError("Word is short");
         setTimeout(() => {
           setError("");
         }, 700);
       }
     }
+    setIsEnterPressed(false);
   };
-
   const checkWord = (hiddenWord2: string, enteredWord: string) => {
     const entered = [];
     const previous: any = { prev: [] };
-    const letterCount: any = {}; // Object to track occurrences of letters in the hidden word
+    const letterCount: any = {};
 
-    // Count occurrences of each letter in the hidden word
     hiddenWord2.split("").forEach((letter) => {
       letterCount[letter.toLowerCase()] =
         (letterCount[letter.toLowerCase()] || 0) + 1;
     });
 
-    // Iterate through each letter in the entered word
     enteredWord.split("").forEach((letter, i) => {
       const lowerLetter = letter.toLowerCase();
-      const isOccured = letterCount[lowerLetter] > 0; // Check if the letter occurred
-
+      const isOccured = letterCount[lowerLetter] > 0;
       if (isOccured) {
-        // Decrease the count for the letter to avoid counting it again
         letterCount[lowerLetter]--;
         entered.push(letter);
       } else {
-        entered.push(null); // Push null if the letter did not occur
+        entered.push(null);
       }
-
-      // Check if the letter is in the correct position
       const isCorrect = hiddenWord2[i].toLocaleLowerCase() === lowerLetter;
-
-      // Store the results
       previous.prev.push({
         isCorrect: isCorrect,
         perLetter: letter,
@@ -164,7 +177,6 @@ const Game = ({
     setClose(close + 1);
     setAnimate(animate + 1);
     setLength("");
-    console.log(previous);
   };
   const [dimension, setDimension] = useState<{
     width: number;
@@ -217,19 +229,30 @@ const Game = ({
           height={1000}
           tweenDuration={100}
           style={{
-            width : "100vw",
-            height: "100vh"
+            width: "100vw",
+            height: "100vh",
           }}
         />
       </div>
       <Alert value={error} type="alert" />
+      <GameOver
+        setText={setText}
+        text={text}
+        hiddenWord={hiddenWord}
+        modalOpen={modalOpen}
+        setModalOpen={setModalOpen}
+        key={"asim is gay"}
+        whichLib={whichLib}
+        setHiddenWord={setHiddenWord}
+        keyPress={key!}
+      />
       <div className={styles.attempts}>
         <div className={styles.attempt}>
           {!prevList[0]
             ? lengthOfWord.map((i, a) => {
                 return (
-                  <div
-                    key={Math.random() ** 2}
+                  <motion.div
+                    key={a} // Using index `a` as key
                     style={
                       lengthOfWord.length < 10
                         ? { width: 56 }
@@ -240,25 +263,23 @@ const Game = ({
                         : {}
                     }
                     className={styles.letterCont}
+                    initial={{ scale: 1 }} // Normal size before typing
+                    // animate={length[a] ? { scale: [1, 1.1, 1] } : {}} // Animate only the typed letter
+                    transition={{
+                      duration: 0.3, // Quick pop animation
+                      ease: "easeInOut",
+                    }}
                   >
                     <motion.span className={styles.letter}>
-                      {close === 0
-                        ? length
-                          ? length[a]?.toLocaleUpperCase()
-                          : i
-                        : ""}
+                      {close === 0 ? length[a]?.toLocaleUpperCase() || "" : ""}
                     </motion.span>
-                  </div>
+                  </motion.div>
                 );
               })
             : prevList[0]?.prev.map((i, a) => {
-                console.log(i.isOccured);
                 return (
                   <motion.div
-                    // initial={animate === 1 ? { opacity: 0.75, scale: 0.8 } : {}}
-                    // animate={animate === 1 ? { opacity: 1, scale: 1 } : {}}
-                    // transition={animate === 1 ? { duration: 0.5 } : {}}
-                    key={Math.random() ** 2}
+                    key={a} // Using index `a` as key
                     style={
                       lengthOfWord.length < 10
                         ? { width: 56 }
@@ -275,6 +296,14 @@ const Game = ({
                         ? styles.occuredLetter
                         : styles.incorrectLetter
                     }`}
+                    initial={{ rotateX: 180 }} // Initial state for the flip
+                    animate={{ rotateX: 360 }} // Flip upside down (180 degrees along X-axis)
+                    transition={{
+                      duration: 0.6,
+                      delay: a * 0.1, // Staggered flip for each letter
+                      ease: "easeInOut", // Smooth transition
+                      repeat: 0, // No repetition, animates once
+                    }}
                   >
                     <span className={styles.letter}>
                       {i.perLetter.toLocaleUpperCase()}
@@ -287,8 +316,8 @@ const Game = ({
           {!prevList[1]
             ? lengthOfWord.map((i, a) => {
                 return (
-                  <div
-                    key={Math.random() ** 2}
+                  <motion.div
+                    key={a} // Use index for stable keys
                     style={
                       lengthOfWord.length < 10
                         ? { width: 56 }
@@ -299,6 +328,12 @@ const Game = ({
                         : {}
                     }
                     className={styles.letterCont}
+                    initial={{ scale: 1 }} // Initial scale
+                    // animate={length[a] ? { scale: [1, 1.1, 1] } : {}} // Scale animation for typed letter
+                    transition={{
+                      duration: 0.3, // Speed of the animation
+                      ease: "easeInOut",
+                    }}
                   >
                     <motion.span className={styles.letter}>
                       {close === 1
@@ -307,16 +342,13 @@ const Game = ({
                           : i
                         : ""}
                     </motion.span>
-                  </div>
+                  </motion.div>
                 );
               })
             : prevList[1].prev.map((i, a) => {
                 return (
                   <motion.div
-                    // initial={prevList[1] ? { opacity: 0.75, scale: 0.8 } : {}}
-                    // animate={prevList[1] ? { opacity: 1, scale: 1 } : {}}
-                    // transition={prevList[1] ? { duration: 0.5 } : {}}
-                    key={Math.random() ** 2}
+                    key={a} // Use index for stable keys
                     style={
                       lengthOfWord.length < 10
                         ? { width: 56 }
@@ -333,6 +365,14 @@ const Game = ({
                         ? styles.occuredLetter
                         : styles.incorrectLetter
                     }`}
+                    initial={{ rotateX: 180 }} // Initial rotation
+                    animate={{ rotateX: 360 }} // Flip upside down
+                    transition={{
+                      duration: 0.6,
+                      delay: a * 0.1, // Staggered flip effect
+                      ease: "easeInOut",
+                      repeat: 0, // Play once, no repeat
+                    }}
                   >
                     <span className={styles.letter}>
                       {i.perLetter.toLocaleUpperCase()}
@@ -341,12 +381,13 @@ const Game = ({
                 );
               })}
         </div>
+
         <div className={styles.attempt}>
           {!prevList[2]
             ? lengthOfWord.map((i, a) => {
                 return (
-                  <div
-                    key={Math.random() ** 2}
+                  <motion.div
+                    key={a}
                     style={
                       lengthOfWord.length < 10
                         ? { width: 56 }
@@ -357,6 +398,12 @@ const Game = ({
                         : {}
                     }
                     className={styles.letterCont}
+                    initial={{ scale: 1 }}
+                    // animate={length[a] ? { scale: [1, 1.1, 1] } : {}}
+                    transition={{
+                      duration: 0.3,
+                      ease: "easeInOut",
+                    }}
                   >
                     <motion.span className={styles.letter}>
                       {close === 2
@@ -365,16 +412,13 @@ const Game = ({
                           : i
                         : ""}
                     </motion.span>
-                  </div>
+                  </motion.div>
                 );
               })
             : prevList[2].prev.map((i, a) => {
                 return (
                   <motion.div
-                    // initial={prevList[1] ? { opacity: 0.75, scale: 0.8 } : {}}
-                    // animate={prevList[1] ? { opacity: 1, scale: 1 } : {}}
-                    // transition={prevList[1] ? { duration: 0.5 } : {}}
-                    key={Math.random() ** 2}
+                    key={a}
                     style={
                       lengthOfWord.length < 10
                         ? { width: 56 }
@@ -385,12 +429,20 @@ const Game = ({
                         : {}
                     }
                     className={`${styles.letterCont} ${
-                      i.isCorrect == true
+                      i.isCorrect === true
                         ? styles.correctLetter
                         : i.isOccured === true
                         ? styles.occuredLetter
                         : styles.incorrectLetter
                     }`}
+                    initial={{ rotateX: 180 }}
+                    animate={{ rotateX: 360 }}
+                    transition={{
+                      duration: 0.6,
+                      delay: a * 0.1,
+                      ease: "easeInOut",
+                      repeat: 0,
+                    }}
                   >
                     <span className={styles.letter}>
                       {i.perLetter.toLocaleUpperCase()}
@@ -399,12 +451,13 @@ const Game = ({
                 );
               })}
         </div>
+
         <div className={styles.attempt}>
           {!prevList[3]
             ? lengthOfWord.map((i, a) => {
                 return (
-                  <div
-                    key={Math.random() ** 2}
+                  <motion.div
+                    key={a}
                     style={
                       lengthOfWord.length < 10
                         ? { width: 56 }
@@ -415,6 +468,12 @@ const Game = ({
                         : {}
                     }
                     className={styles.letterCont}
+                    initial={{ scale: 1 }}
+                    // animate={length[a] ? { scale: [1, 1.1, 1] } : {}}
+                    transition={{
+                      duration: 0.3,
+                      ease: "easeInOut",
+                    }}
                   >
                     <motion.span className={styles.letter}>
                       {close === 3
@@ -423,16 +482,13 @@ const Game = ({
                           : i
                         : ""}
                     </motion.span>
-                  </div>
+                  </motion.div>
                 );
               })
             : prevList[3].prev.map((i, a) => {
                 return (
                   <motion.div
-                    // initial={prevList[1] ? { opacity: 0.75, scale: 0.8 } : {}}
-                    // animate={prevList[1] ? { opacity: 1, scale: 1 } : {}}
-                    // transition={prevList[1] ? { duration: 0.5 } : {}}
-                    key={Math.random() ** 2}
+                    key={a}
                     style={
                       lengthOfWord.length < 10
                         ? { width: 56 }
@@ -449,6 +505,14 @@ const Game = ({
                         ? styles.occuredLetter
                         : styles.incorrectLetter
                     }`}
+                    initial={{ rotateX: 180 }}
+                    animate={{ rotateX: 360 }}
+                    transition={{
+                      duration: 0.6,
+                      delay: a * 0.1,
+                      ease: "easeInOut",
+                      repeat: 0,
+                    }}
                   >
                     <span className={styles.letter}>
                       {i.perLetter.toLocaleUpperCase()}
@@ -457,12 +521,13 @@ const Game = ({
                 );
               })}
         </div>
+
         <div className={styles.attempt}>
           {!prevList[4]
             ? lengthOfWord.map((i, a) => {
                 return (
-                  <div
-                    key={Math.random() ** 2}
+                  <motion.div
+                    key={a}
                     style={
                       lengthOfWord.length < 10
                         ? { width: 56 }
@@ -473,6 +538,12 @@ const Game = ({
                         : {}
                     }
                     className={styles.letterCont}
+                    initial={{ scale: 1 }}
+                    // animate={length[a] ? { scale: [1, 1.1, 1] } : {}}
+                    transition={{
+                      duration: 0.3,
+                      ease: "easeInOut",
+                    }}
                   >
                     <motion.span className={styles.letter}>
                       {close === 4
@@ -481,16 +552,13 @@ const Game = ({
                           : i
                         : ""}
                     </motion.span>
-                  </div>
+                  </motion.div>
                 );
               })
             : prevList[4].prev.map((i, a) => {
                 return (
                   <motion.div
-                    // initial={prevList[1] ? { opacity: 0.75, scale: 0.8 } : {}}
-                    // animate={prevList[1] ? { opacity: 1, scale: 1 } : {}}
-                    // transition={prevList[1] ? { duration: 0.5 } : {}}
-                    key={Math.random() ** 2}
+                    key={a}
                     style={
                       lengthOfWord.length < 10
                         ? { width: 56 }
@@ -507,6 +575,14 @@ const Game = ({
                         ? styles.occuredLetter
                         : styles.incorrectLetter
                     }`}
+                    initial={{ rotateX: 180 }}
+                    animate={{ rotateX: 360 }}
+                    transition={{
+                      duration: 0.6,
+                      delay: a * 0.1,
+                      ease: "easeInOut",
+                      repeat: 0,
+                    }}
                   >
                     <span className={styles.letter}>
                       {i.perLetter.toLocaleUpperCase()}
@@ -515,12 +591,13 @@ const Game = ({
                 );
               })}
         </div>
+
         <div className={styles.attempt}>
           {!prevList[5]
             ? lengthOfWord.map((i, a) => {
                 return (
-                  <div
-                    key={Math.random() ** 2}
+                  <motion.div
+                    key={a}
                     style={
                       lengthOfWord.length < 10
                         ? { width: 56 }
@@ -531,6 +608,12 @@ const Game = ({
                         : {}
                     }
                     className={styles.letterCont}
+                    initial={{ scale: 1 }}
+                    // animate={length[a] ? { scale: [1, 1.1, 1] } : {}}
+                    transition={{
+                      duration: 0.3,
+                      ease: "easeInOut",
+                    }}
                   >
                     <motion.span className={styles.letter}>
                       {close === 5
@@ -539,16 +622,13 @@ const Game = ({
                           : i
                         : ""}
                     </motion.span>
-                  </div>
+                  </motion.div>
                 );
               })
             : prevList[5].prev.map((i, a) => {
                 return (
                   <motion.div
-                    // initial={prevList[1] ? { opacity: 0.75, scale: 0.8 } : {}}
-                    // animate={prevList[1] ? { opacity: 1, scale: 1 } : {}}
-                    // transition={prevList[1] ? { duration: 0.5 } : {}}
-                    key={Math.random() ** 2}
+                    key={a}
                     style={
                       lengthOfWord.length < 10
                         ? { width: 56 }
@@ -565,6 +645,14 @@ const Game = ({
                         ? styles.occuredLetter
                         : styles.incorrectLetter
                     }`}
+                    initial={{ rotateX: 180 }}
+                    animate={{ rotateX: 360 }}
+                    transition={{
+                      duration: 0.6,
+                      delay: a * 0.1,
+                      ease: "easeInOut",
+                      repeat: 0,
+                    }}
                   >
                     <span className={styles.letter}>
                       {i.perLetter.toLocaleUpperCase()}
@@ -574,7 +662,15 @@ const Game = ({
               })}
         </div>
       </div>
-      <Keyboard textareaRef={textareaRef} />
+      {text === "won! 🏆" && prevList?.length > 0 ?  <p className={styles.reward}>You Won! 🏆</p>: text === "lost" ? <p className={styles.reward}>You lost!</p> : <p style={{height: 28}}></p>}
+      <Keyboard
+        length={length}
+        setIsEnterPressed={setIsEnterPressed}
+        isEnterPressed={isEnterPressed}
+        setLength={setLength}
+        text={text}
+        textareaRef={textareaRef}
+      />
     </section>
   );
 };

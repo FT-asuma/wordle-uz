@@ -3,7 +3,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 28px;
+  gap: 0;
   position: relative;
   flex-direction: column;
 }
@@ -37,6 +37,23 @@
 .letter {
   font-size: 28px;
   font-weight: 700;
+}
+
+
+.reward {
+  margin-top: 0.2rem;
+  margin-bottom: 0.2rem;
+  height: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.8rem;
+  padding-left: 1rem;
+  padding-right: 0.7rem;
+  padding-top: 0.3rem;
+  padding-bottom: 0.5rem;
+  border-radius: 1rem;
+  background: #2c3446c0;
 }
 
 .keyboard {
@@ -133,4 +150,34 @@
   justify-content: center;
   pointer-events: none;
   align-items: center;
+}
+
+@media screen and (max-width: 601px) {
+  .letterCont {
+    height: 42px;
+    width: 44px !important;
+  }
+  .attempt {
+    height: 48px;
+  }
+  .letter {
+    font-size: 15px;
+  }
+  .key, .excludedKey {
+    font-size: 15px;
+  }
+  .excludedKey > svg {
+    width: 24px;
+  }
+}
+
+@media screen and (max-width: 400px) { 
+  .rawList {
+    height: 48px !important;
+  }
+  .key, .excludedKey {
+    height: 42px;
+    font-size: 13px;
+  }
+  
 }

@@ -46,17 +46,32 @@
     height: 100%;
     flex-direction: column;
     padding: 0.5rem;
-    gap: 1.5rem;
+    gap: 0.5rem;
 }
 
 .title {
+    background: #364455;
+    padding: 0.3rem;
+    border-radius: 0.5rem;
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
     gap: 0.3rem;
 }
 
+
+.container > p {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 700;
+    width: 100%;
+}
+
+
 .title > h2 {
-    font-size: 28px;
+    font-size: 20px;
+    text-align: center;
     font-weight: 700;
 }
 
@@ -65,21 +80,28 @@
     font-weight: 500;
 }
 
+.title > button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .buttonRaw {
     display: flex;
-    gap: 1rem;
+    gap: 0.5rem;
     align-items: center;
+    width: 100%;
     justify-content: center;
 }
 
 .buttonRaw > button {
-    font-size: 24px;
-    font-weight: 700;
-    width: 56px;
-    height: 56px;
+    font-size: 18px;
+    font-weight: 400;
+    width: 40px;
+    height: 46px;
     border-radius: 0.3rem;
     transition: all 0.2s;
-    background: #969696;
+    background: #364455;
 }
 
 .buttonRaw > button:hover {
@@ -88,4 +110,72 @@
 
 .buttonRaw > button:active {
     background: #888888d2
+}
+
+.furtherSettings {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-top: 1rem;
+}
+
+.furtherSettings > hr {
+    border: 1px solid #364455;
+}
+
+.additional {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 0;
+}
+
+.aside {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.aside > h3 {
+    font-size: 20px;
+}
+
+.aside > p {
+    font-size: 15px;
+    color: #b4b4b4;
+}
+
+@media screen and (max-width: 601px) {
+    .wrapperTabs > button > svg {
+        width: 18px;
+        height: 18px;
+    }
+    .wrapperTabs > button {
+        font-size: 14px;
+        height: 32px;
+    }
+    .title > h2 {
+        font-size: 18px;
+    }
+    .title > button > svg {
+        width: 18px;
+        height: 18px;
+    }
+    .container > p {
+        font-size: 15px;
+    }
+    .buttonRaw > button {
+        height: 40px;
+        width: 32px;
+        font-size: 15px;
+    }
+    .furtherSettings {
+        margin-top: 0.5rem;
+    }
+    .aside > h3 {
+        font-size: 16px;
+    }
+    .aside > p {
+        font-size: 13px;
+    }
 }

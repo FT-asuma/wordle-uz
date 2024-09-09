@@ -1,13 +1,23 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import Key from "./keys/Key";
 import { FOURTH_RAW, SECOND_RAW, THIRD_RAW } from "./list";
 import { redirect, useRouter } from "next/navigation";
 import styles from "./games.module.css";
 const Keyboard = ({
   textareaRef,
+  length,
+  setLength,
+  isEnterPressed,
+  setIsEnterPressed,
+  text,
 }: {
-  textareaRef: HTMLTextAreaElement | any;
+  textareaRef: any;
+  length: string;
+  setLength: Dispatch<SetStateAction<string>>;
+  isEnterPressed: boolean;
+  setIsEnterPressed: Dispatch<SetStateAction<boolean>>;
+  text: string;
 }) => {
   const [letter, setLetter] = useState<KeyboardEvent>();
   const [isClick, setIsClick] = useState<string>("");
@@ -28,9 +38,12 @@ const Keyboard = ({
           {SECOND_RAW.map((item) => {
             return (
               <Key
+                text={text}
                 key={item.key + Math.random() * 1000}
                 letter={letter as KeyboardEvent}
                 per_key={item.key}
+                setLength={setLength}
+                length={length}
                 setIsClick={setIsClick}
                 isClick={isClick}
               />
@@ -41,9 +54,12 @@ const Keyboard = ({
           {THIRD_RAW.map((item) => {
             return (
               <Key
+                text={text}
                 key={item.key + Math.random() * 1000}
                 letter={letter as KeyboardEvent}
                 per_key={item.key}
+                setLength={setLength}
+                length={length}
                 setIsClick={setIsClick}
                 isClick={isClick}
               />
@@ -58,16 +74,25 @@ const Keyboard = ({
                 : { transition: "0.5s" }
             }
             className={styles.excludedKey}
+            onClick={() => {
+              setIsEnterPressed(true);
+              setTimeout(() => {
+                setIsEnterPressed(false);
+              }, 100);
+            }}
           >
             Enter
           </button>
           {FOURTH_RAW.map((item) => {
             return (
               <Key
+                text={text}
                 key={item.key + Math.random() * 1000}
                 letter={letter as KeyboardEvent}
                 per_key={item.key}
                 setIsClick={setIsClick}
+                setLength={setLength}
+                length={length}
                 isClick={isClick}
               />
             );
@@ -84,6 +109,7 @@ const Keyboard = ({
             }
             onClick={() => {
               setIsClick("Backspace");
+              setLength(length.slice(0, -1));
             }}
             className={styles.excludedKey}
           >

@@ -6,6 +6,7 @@
   align-items: center;
   position: absolute;
   top: 0;
+  user-select: none;
   left: 0;
 }
 
@@ -24,4 +25,122 @@
 .container > h3 {
   font-size: 18px;
   font-weight: 700;
+}
+
+.gameover {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: #34373bb4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 0;
+  left: 0;
+}
+
+.bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+}
+
+.modalCont {
+  z-index: 10000;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 1rem;
+  background: #0d1b2a;
+  flex-direction: column;
+  width: 350px;
+  height: 370px;
+  border-radius: 0.5rem;
+  box-shadow: #ffffff33 0px 7px 29px 0px;
+}
+
+.title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0.3rem;
+  height: 2.5rem;
+  background: #18304b;
+  border-top-right-radius: 0.5rem;
+  border-top-left-radius: 0.5rem;
+}
+
+.title > span {
+  width: 20px;
+}
+
+.title > h3 {
+  font-size: 20px;
+}
+.title > button {
+  font-size: 16px;
+  font-weight: 700;
+  margin-right: 0.5rem;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 0.3rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.list > p {
+  font-weight: 300;
+  font-size: 15px;
+}
+.hiddenWord {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 0.3rem;
+  background: #a7a7a78a;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  height: 45px;
+  border-radius: 0.3rem;
+  border: 3px dashed #a7a7a78a;
+  justify-content: center;
+  align-items: center;
+}
+
+.hiddenWord > p {
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.link{
+  color: #0080ff;
+  text-decoration: none;
+  font-size: 12px;
+}
+.link:hover {
+  text-decoration: underline;
+}
+
+.list > button {
+  width: 150px;
+  height: 45px;
+  background: #007f5f;
+  margin-top: 0.2rem;
+  border-radius: 0.3rem;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.list > p:last-child {
+  font-size: 13px;
+  font-weight: 400;
+  color: #969696;
 }

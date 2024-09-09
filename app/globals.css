@@ -3,6 +3,7 @@
   margin: 0;
   padding: 0;
   font-family: var(--font-mont);
+  user-select: none;
 }
 
 p,
@@ -31,4 +32,16 @@ body {
   min-height: 100vh;
   min-width: 100vw;
   overflow-x: hidden;
+}
+
+code {
+  background: #54595e;
+  padding-left: 0.3rem;
+  padding-right: 0.25rem;
+  padding-top: 0.05rem;
+  padding-bottom: 0.15rem;
+  color: #d6d6d6;
+  line-height: 0.8;
+  font-family: monospace;
+  border-radius: 0.3rem;
 }
