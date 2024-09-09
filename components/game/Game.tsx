@@ -18,7 +18,7 @@ interface IPrevList {
     {
       perLetter: string;
       isCorrect: boolean;
-      isOccured: string;
+      isOccured: boolean;
     }
   ];
 }
@@ -68,6 +68,7 @@ const Game = ({
       setWhichLib(listOfWords);
       setPrevList([]);
       setClose(0);
+      textareaRef.current.disabled = false
     }
   }, [hiddenWord]);
   useEffect(() => {
@@ -91,7 +92,6 @@ const Game = ({
 
   const [btn, setBtn] = useState(false);
 
-  console.log(btn);
   const checkEachLetter = (word: string) => {
     if (word?.length === wordLength) {
       const pend = whichLib.find(
@@ -103,47 +103,11 @@ const Game = ({
           setTimeout(() => {
             setBtn(false);
           }, 1500);
-          const list = pend.split("");
-          const previous: any = {
-            prev: [],
-          };
-          list.map((letter, i) => {
-            if (length && hiddenWord) {
-              previous.prev.push({
-                isCorrect: letter === hiddenWord[i],
-                perLetter: letter,
-                isOccured: hiddenWord
-                  .split("")
-                  .find((e) => e.toLocaleLowerCase() === letter),
-              });
-            }
-          });
-          setPrevList((prev) => [...prev, previous]);
+          checkWord(hiddenWord, pend);
           textareaRef.current.disabled = true;
-          setClose(close + 1);
-          setAnimate(animate + 1);
-          setLength("");
         } else {
           if (pend) {
-            const list = pend.split("");
-            const previous: any = {
-              prev: [],
-            };
-            list.map((letter, i) => {
-              if (length && hiddenWord) {
-                previous.prev.push({
-                  isCorrect: letter === hiddenWord[i],
-                  perLetter: letter,
-                  isOccured: hiddenWord
-                    .split("")
-                    .find((e) => e.toLocaleLowerCase() === letter),
-                });
-              }
-            });
-            setPrevList((prev) => [...prev, previous]);
-            setClose(close + 1);
-            setAnimate(animate + 1);
-            setLength("");
+            checkWord(hiddenWord, pend);
           }
         }
       } else {
@@ -161,23 +125,50 @@ const Game = ({
       }
     }
   };
-  const [windowDimension, setDimension] = useState({
-    width: 1000,
-    height: 1000,
-  });
-  const detectSize = () => {
-    setDimension({
-      width: document.body.offsetWidth,
-      height: document.body.offsetHeight,
+
+  const checkWord = (hiddenWord2: string, enteredWord: string) => {
+    const entered = [];
+    const previous: any = { prev: [] };
+    const letterCount: any = {}; // Object to track occurrences of letters in the hidden word
+
+    // Count occurrences of each letter in the hidden word
+    hiddenWord2.split("").forEach((letter) => {
+      letterCount[letter.toLowerCase()] =
+        (letterCount[letter.toLowerCase()] || 0) + 1;
     });
+
+    // Iterate through each letter in the entered word
+    enteredWord.split("").forEach((letter, i) => {
+      const lowerLetter = letter.toLowerCase();
+      const isOccured = letterCount[lowerLetter] > 0; // Check if the letter occurred
+
+      if (isOccured) {
+        // Decrease the count for the letter to avoid counting it again
+        letterCount[lowerLetter]--;
+        entered.push(letter);
+      } else {
+        entered.push(null); // Push null if the letter did not occur
+      }
+
+      // Check if the letter is in the correct position
+      const isCorrect = hiddenWord2[i].toLocaleLowerCase() === lowerLetter;
+
+      // Store the results
+      previous.prev.push({
+        isCorrect: isCorrect,
+        perLetter: letter,
+        isOccured: isOccured,
+      });
+    });
+    setPrevList((prev) => [...prev, previous]);
+    setClose(close + 1);
+    setAnimate(animate + 1);
+    setLength("");
+    console.log(previous)
   };
-  useEffect(() => {
-    window.addEventListener("resize", detectSize);
-    return window.removeEventListener("resize", detectSize);
-  }, []);
 
   if (!listOfWords) {
-    return <>Loading...</>
+    return <>Loading...</>;
   }
   return (
     <section className={styles.game}>
@@ -213,7 +204,7 @@ const Game = ({
         className={styles.congrats}
       >
         <ReactConfetti
-          width={window.innerHeight}
+          width={window.innerWidth}
           height={window.innerHeight}
           tweenDuration={100}
         />
@@ -248,6 +239,7 @@ const Game = ({
                 );
               })
             : prevList[0]?.prev.map((i, a) => {
+                console.log(i.isOccured);
                 return (
                   <motion.div
                     // initial={animate === 1 ? { opacity: 0.75, scale: 0.8 } : {}}
@@ -266,7 +258,7 @@ const Game = ({
                     className={`${styles.letterCont} ${
                       i.isCorrect === true
                         ? styles.correctLetter
-                        : i.isOccured === i.perLetter
+                        : i.isOccured === true
                         ? styles.occuredLetter
                         : styles.incorrectLetter
                     }`}
@@ -324,7 +316,7 @@ const Game = ({
                     className={`${styles.letterCont} ${
                       i.isCorrect === true
                         ? styles.correctLetter
-                        : i.isOccured === i.perLetter
+                        : i.isOccured === true
                         ? styles.occuredLetter
                         : styles.incorrectLetter
                     }`}
@@ -380,9 +372,9 @@ const Game = ({
                         : {}
                     }
                     className={`${styles.letterCont} ${
-                      i.isCorrect === true
+                      i.isCorrect == true
                         ? styles.correctLetter
-                        : i.isOccured === i.perLetter
+                        : i.isOccured === true
                         ? styles.occuredLetter
                         : styles.incorrectLetter
                     }`}
@@ -440,7 +432,7 @@ const Game = ({
                     className={`${styles.letterCont} ${
                       i.isCorrect === true
                         ? styles.correctLetter
-                        : i.isOccured === i.perLetter
+                        : i.isOccured === true
                         ? styles.occuredLetter
                         : styles.incorrectLetter
                     }`}
@@ -498,7 +490,7 @@ const Game = ({
                     className={`${styles.letterCont} ${
                       i.isCorrect === true
                         ? styles.correctLetter
-                        : i.isOccured === i.perLetter
+                        : i.isOccured === true
                         ? styles.occuredLetter
                         : styles.incorrectLetter
                     }`}
@@ -556,7 +548,7 @@ const Game = ({
                     className={`${styles.letterCont} ${
                       i.isCorrect === true
                         ? styles.correctLetter
-                        : i.isOccured === i.perLetter
+                        : i.isOccured === true
                         ? styles.occuredLetter
                         : styles.incorrectLetter
                     }`}
