@@ -670,6 +670,7 @@ const Game = ({
         isEnterPressed={isEnterPressed}
         setLength={setLength}
         text={text}
+        wordLength={wordLength}
         textareaRef={textareaRef}
       />
     </section>

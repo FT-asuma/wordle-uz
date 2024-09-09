@@ -10,6 +10,7 @@ interface KeyProperties {
   setLength: Dispatch<SetStateAction<string>>;
   length: string;
   text: string;
+  wordLength: number
 }
 
 const Key = ({
@@ -20,6 +21,7 @@ const Key = ({
   setLength,
   length,
   text,
+  wordLength
 }: KeyProperties) => {
   const key = per_key;
   return (
@@ -27,7 +29,7 @@ const Key = ({
       key={key}
       onClick={() => {
         setIsClick(key);
-        if (length.length < 4) {
+        if (length.length < wordLength) {
           if (text === "won! 🏆") {
             return;
           } else setLength(length + key);

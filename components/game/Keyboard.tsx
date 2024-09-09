@@ -11,6 +11,7 @@ const Keyboard = ({
   isEnterPressed,
   setIsEnterPressed,
   text,
+  wordLength
 }: {
   textareaRef: any;
   length: string;
@@ -18,6 +19,7 @@ const Keyboard = ({
   isEnterPressed: boolean;
   setIsEnterPressed: Dispatch<SetStateAction<boolean>>;
   text: string;
+  wordLength:number
 }) => {
   const [letter, setLetter] = useState<KeyboardEvent>();
   const [isClick, setIsClick] = useState<string>("");
@@ -39,6 +41,7 @@ const Keyboard = ({
             return (
               <Key
                 text={text}
+                wordLength={wordLength}
                 key={item.key + Math.random() * 1000}
                 letter={letter as KeyboardEvent}
                 per_key={item.key}
@@ -55,6 +58,7 @@ const Keyboard = ({
             return (
               <Key
                 text={text}
+                wordLength={wordLength}
                 key={item.key + Math.random() * 1000}
                 letter={letter as KeyboardEvent}
                 per_key={item.key}
@@ -87,6 +91,7 @@ const Keyboard = ({
             return (
               <Key
                 text={text}
+                wordLength={wordLength}
                 key={item.key + Math.random() * 1000}
                 letter={letter as KeyboardEvent}
                 per_key={item.key}
