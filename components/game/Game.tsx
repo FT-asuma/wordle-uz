@@ -195,6 +195,7 @@ const Game = ({
     <section className={styles.game}>
       <textarea
         name=""
+        inputMode="none"
         ref={textareaRef}
         style={{ position: "fixed", zIndex: -1, opacity: 0 }}
         cols={0}
