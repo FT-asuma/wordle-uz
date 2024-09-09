@@ -6,18 +6,18 @@ import Game from "@/components/game/Game";
 import { useEffect, useState } from "react";
 import words from "an-array-of-english-words";
 
-import { db } from "./firebase/config";
-import { collection, getDocs } from "firebase/firestore";
+// import { db } from "./firebase/config";
+// import { collection, getDocs } from "firebase/firestore";
 
-async function fetchDataFire() {
-  const query = await getDocs(collection(db, "users"));
+// async function fetchDataFire() {
+//   const query = await getDocs(collection(db, "users"));
 
-  const data: any[] = [];
-  query.forEach((doc) => {
-    data.push({ id: doc.id, ...doc.data() });
-  });
-  return data;
-}
+//   const data: any[] = [];
+//   query.forEach((doc) => {
+//     data.push({ id: doc.id, ...doc.data() });
+//   });
+//   return data;
+// }
 
 export default function Home() {
   const [wordLength, setWordLength] = useState(4);
@@ -30,13 +30,13 @@ export default function Home() {
 
   const [userData, setUserData] = useState<any[]>([]);
 
-  useEffect(() => {
-    async function fetchData() {
-      const data = await fetchDataFire();
-      setUserData(data);
-    }
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     const data = await fetchDataFire();
+  //     setUserData(data);
+  //   }
+  //   fetchData();
+  // }, []);
   useEffect(() => {
     if (words) {
       const response = words.filter((word) => word.length === list.length);

@@ -54,7 +54,7 @@ const Header = ({
           en
         </button>
         <button onClick={()=> {
-          push("/register")
+          // push("/register")
         }} className={styles.tabs}>
           <svg
             width="24"
