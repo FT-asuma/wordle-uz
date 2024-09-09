@@ -68,7 +68,7 @@ const Game = ({
       setWhichLib(listOfWords);
       setPrevList([]);
       setClose(0);
-      textareaRef.current.disabled = false
+      textareaRef.current.disabled = false;
     }
   }, [hiddenWord]);
   useEffect(() => {
@@ -164,10 +164,19 @@ const Game = ({
     setClose(close + 1);
     setAnimate(animate + 1);
     setLength("");
-    console.log(previous)
+    console.log(previous);
   };
+  const [dimension, setDimension] = useState<{
+    width: number;
+    height: number;
+  }>();
+  useEffect(() => {
+    if (dimension) {
+      setDimension({ width: window.innerWidth, height: window.innerHeight });
+    }
+  }, []);
 
-  if (!listOfWords) {
+  if (!listOfWords && !dimension) {
     return <>Loading...</>;
   }
   return (
@@ -204,9 +213,13 @@ const Game = ({
         className={styles.congrats}
       >
         <ReactConfetti
-          width={window.innerWidth}
-          height={window.innerHeight}
+          width={1920}
+          height={1000}
           tweenDuration={100}
+          style={{
+            width : "100vw",
+            height: "100vh"
+          }}
         />
       </div>
       <Alert value={error} type="alert" />
