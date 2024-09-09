@@ -37,6 +37,7 @@ export default function Home() {
   //   }
   //   fetchData();
   // }, []);
+  console.log("okay")
   useEffect(() => {
     if (words) {
       const response = words.filter((word) => word.length === list.length);
