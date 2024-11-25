@@ -1,10 +1,21 @@
-.container {
+.container,
+.wrapper {
   width: 600px;
   display: flex;
   justify-content: center;
   gap: 1rem;
   align-items: center;
   flex-direction: column;
+}
+
+.wrapper {
+  width: 978px;
+}
+
+@media screen and (max-width: 980px) {
+  .wrapper {
+    width: 100%;
+  }
 }
 
 @media screen and (max-width: 601px) {

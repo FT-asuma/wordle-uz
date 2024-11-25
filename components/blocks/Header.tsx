@@ -25,6 +25,7 @@ const Header = ({
   mode: boolean;
 }) => {
   const [isSettingsOpen, setisSettingsOpen] = useState(false);
+  const [isInfoOpen, setisInfoOpen] = useState(false);
   const { push } = useRouter();
   return (
     <header className={styles.header}>
@@ -133,6 +134,7 @@ const Header = ({
         <button
           onClick={() => {
             setisSettingsOpen(!isSettingsOpen);
+            setisInfoOpen(false);
           }}
           style={
             isSettingsOpen === true
@@ -207,7 +209,11 @@ const Header = ({
           }
         >
           <div
-            style={isSettingsOpen === true ? { opacity: 1, transition: "0.3s" } : { opacity: 0, transition: "0.3s" }}
+            style={
+              isSettingsOpen === true
+                ? { opacity: 1, transition: "0.3s" }
+                : { opacity: 0, transition: "0.3s" }
+            }
             className={styles.container}
           >
             <div className={styles.title}>
@@ -251,13 +257,12 @@ const Header = ({
               <button
                 style={
                   wordLength === 4
-                    ? { background: "#007f5f", fontWeight: 700 }
+                    ? { background: "#007f5f", fontWeight: 700, color: "#fff" }
                     : {}
                 }
                 onClick={() => {
                   setWordLength(4);
                   setList(["", "", "", ""]);
-                  setisSettingsOpen(false);
                 }}
               >
                 4
@@ -265,13 +270,12 @@ const Header = ({
               <button
                 style={
                   wordLength === 5
-                    ? { background: "#007f5f", fontWeight: 700 }
+                    ? { background: "#007f5f", fontWeight: 700, color: "#fff" }
                     : {}
                 }
                 onClick={() => {
                   setWordLength(5);
                   setList(["", "", "", "", ""]);
-                  setisSettingsOpen(false);
                 }}
               >
                 5
@@ -279,13 +283,12 @@ const Header = ({
               <button
                 style={
                   wordLength === 6
-                    ? { background: "#007f5f", fontWeight: 700 }
+                    ? { background: "#007f5f", fontWeight: 700, color: "#fff" }
                     : {}
                 }
                 onClick={() => {
                   setWordLength(6);
                   setList(["", "", "", "", "", ""]);
-                  setisSettingsOpen(false);
                 }}
               >
                 6
@@ -293,13 +296,12 @@ const Header = ({
               <button
                 style={
                   wordLength === 7
-                    ? { background: "#007f5f", fontWeight: 700 }
+                    ? { background: "#007f5f", fontWeight: 700, color: "#fff" }
                     : {}
                 }
                 onClick={() => {
                   setWordLength(7);
                   setList(["", "", "", "", "", "", ""]);
-                  setisSettingsOpen(false);
                 }}
               >
                 7
@@ -307,13 +309,12 @@ const Header = ({
               <button
                 style={
                   wordLength === 8
-                    ? { background: "#007f5f", fontWeight: 700 }
+                    ? { background: "#007f5f", fontWeight: 700, color: "#fff" }
                     : {}
                 }
                 onClick={() => {
                   setWordLength(8);
                   setList(["", "", "", "", "", "", "", ""]);
-                  setisSettingsOpen(false);
                 }}
               >
                 8
@@ -321,13 +322,12 @@ const Header = ({
               <button
                 style={
                   wordLength === 9
-                    ? { background: "#007f5f", fontWeight: 700 }
+                    ? { background: "#007f5f", fontWeight: 700, color: "#fff" }
                     : {}
                 }
                 onClick={() => {
                   setWordLength(9);
                   setList(["", "", "", "", "", "", "", "", ""]);
-                  setisSettingsOpen(false);
                 }}
               >
                 9
@@ -335,13 +335,12 @@ const Header = ({
               <button
                 style={
                   wordLength === 10
-                    ? { background: "#007f5f", fontWeight: 700 }
+                    ? { background: "#007f5f", fontWeight: 700, color: "#fff" }
                     : {}
                 }
                 onClick={() => {
                   setWordLength(10);
                   setList(["", "", "", "", "", "", "", "", "", ""]);
-                  setisSettingsOpen(false);
                 }}
               >
                 10
@@ -384,6 +383,15 @@ const Header = ({
           </div>
         </div>
         <button
+          onClick={() => {
+            setisInfoOpen(!isInfoOpen);
+            setisSettingsOpen(false);
+          }}
+          style={
+            isInfoOpen === true
+              ? { background: "#007f5f90", transition: "0.3s" }
+              : { transition: "0.3s" }
+          }
           className={
             mode === false ? styles.tabs : `${styles.tabs} ${styles.lightTabs}`
           }
@@ -393,7 +401,15 @@ const Header = ({
             height="24"
             viewBox="0 0 48 48"
             xmlns="http://www.w3.org/2000/svg"
-            fill={mode === false ? "#e0e1dd" : "#414a5e"}
+            fill={
+              mode === false && isInfoOpen === false
+                ? "#e0e1dd"
+                : mode === true && isInfoOpen === false
+                ? "#414a5e"
+                : isInfoOpen === true
+                ? "#0af025"
+                : "#e0e1dd"
+            }
           >
             <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
             <g
@@ -421,6 +437,167 @@ const Header = ({
             </g>
           </svg>
         </button>
+        <div
+          style={
+            isInfoOpen === false
+              ? { height: 0, opacity: 1, zIndex: -10, transition: "0.2s" }
+              : {
+                  zIndex: 100,
+                  opacity: 1,
+                  height: 600,
+                  transition: "0.2s",
+                }
+          }
+          className={
+            mode === false
+              ? styles.modal
+              : `${styles.modal} ${styles.lightMode}`
+          }
+        >
+          <div
+            style={
+              isInfoOpen === true
+                ? { opacity: 1, transition: "0.3s" }
+                : { opacity: 0, transition: "0.3s" }
+            }
+            className={styles.container}
+          >
+            <div className={styles.title}>
+              <span></span>
+              <h2>How to get started</h2>
+              <button
+                onClick={() => {
+                  setisInfoOpen(false);
+                }}
+              >
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 1024 1024"
+                  fill={mode === false ? "#e0e1dd" : "#414a5e"}
+                  className="icon"
+                  version="1.1"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <g id="SVGRepo_bgCarrier" strokeWidth=""></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <path
+                      d="M176.662 817.173c-8.19 8.471-7.96 21.977 0.51 30.165 8.472 8.19 21.978 7.96 30.166-0.51l618.667-640c8.189-8.472 7.96-21.978-0.511-30.166-8.471-8.19-21.977-7.96-30.166 0.51l-618.666 640z"
+                      fill=""
+                    ></path>
+                    <path
+                      d="M795.328 846.827c8.19 8.471 21.695 8.7 30.166 0.511 8.471-8.188 8.7-21.694 0.511-30.165l-618.667-640c-8.188-8.471-21.694-8.7-30.165-0.511-8.471 8.188-8.7 21.694-0.511 30.165l618.666 640z"
+                      fill=""
+                    ></path>
+                  </g>
+                </svg>
+              </button>
+            </div>
+            <h3></h3>
+            <div className={styles.description}>
+              <p style={{ textAlign: "center", fontSize: 14 }}>
+                You need to guess the secret word in 6 attempts, with the letter
+                colors changing to indicate how close your guess is.
+              </p>
+              <p style={{ textAlign: "center", fontSize: 14 }}>
+                To begin the game, simply type any word, such as:
+              </p>
+            </div>
+            <div className={styles.sample}>
+              {["P", "L", "A", "N", "T"].map((i) => {
+                return (
+                  <div
+                    key={i}
+                    style={{ width: 54 }}
+                    className={styles.letterCont}
+                  >
+                    <span
+                      style={mode === true ? { color: "#2e3239 " } : {}}
+                      className={styles.letter}
+                    >
+                      {i}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+            <div className={styles.showcase}>
+              <div className={styles.case}>
+                <p>
+                  The letters <code>P</code> and <code>A</code> are not present
+                  in the target word.
+                </p>
+                <p>
+                  The letters <code>L</code> and <code>N</code> are in the word,
+                  but in the wrong positions.
+                </p>
+                <p>
+                  The letter <code>T</code> is in the word and is in the correct
+                  position.
+                </p>
+              </div>
+            </div>
+            <div className={styles.description}>
+              <p style={{ textAlign: "center", fontSize: 14 }}>
+                Another attempt to identify the correct letters in the target
+                word.
+              </p>
+            </div>
+            <div className={styles.sample2}>
+              {["G", "P", "A", "N", "D"].map((i) => {
+                return (
+                  <div
+                    key={i}
+                    style={{ width: 54 }}
+                    className={styles.letterCont}
+                  >
+                    <span
+                      style={mode === true ? { color: "#2e3239 " } : {}}
+                      className={styles.letter}
+                    >
+                      {i}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+            <div className={styles.description}>
+              <p style={{ textAlign: "center", fontSize: 14 }}>Almost there!</p>
+            </div>
+            <div className={styles.sample}>
+              {["G", "P", "A", "P", "E"].map((i) => {
+                return (
+                  <div
+                    key={i}
+                    style={{
+                      width: 54,
+                      background: "#4caf50",
+                      borderColor: "#4caf50",
+                    }}
+                    className={styles.letterCont}
+                  >
+                    <span
+                      style={mode === true ? { color: "#2e3239 " } : {}}
+                      className={styles.letter}
+                    >
+                      {i}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+            <div className={styles.description}>
+              <p style={{ textAlign: "center", fontSize: 14, fontWeight: 700 }}>
+                Great Job! 🏆
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </header>
   );

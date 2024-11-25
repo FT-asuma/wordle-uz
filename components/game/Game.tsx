@@ -20,6 +20,7 @@ interface IPrevList {
       perLetter: string;
       isCorrect: boolean;
       isOccured: boolean;
+      countInWord: number;
     }
   ];
 }
@@ -86,6 +87,7 @@ const Game = ({
       setClose(0);
       console.log("working");
       textareaRef.current.disabled = false;
+      setCheckedLetters([]);
     }
   }, [hiddenWord]);
   useEffect(() => {
@@ -194,41 +196,41 @@ const Game = ({
     const previous: any = { prev: [] };
     const letterCount: any = {};
 
-    // Step 1: Count letters in the hidden word
+    // Count letters in the hidden word
     hiddenWord2.split("").forEach((letter) => {
       letterCount[letter.toLowerCase()] =
         (letterCount[letter.toLowerCase()] || 0) + 1;
     });
 
-    // Step 2: First pass - Check for exact matches
+    // First pass - check for exact matches
     enteredWord.split("").forEach((letter, i) => {
       const lowerLetter = letter.toLowerCase();
       const isCorrect = hiddenWord2[i].toLocaleLowerCase() === lowerLetter;
 
       if (isCorrect) {
-        // Exact match
-        letterCount[lowerLetter]--; // Reduce the count for exact matches
-        entered.push(letter);
+        letterCount[lowerLetter]--;
+        entered.push(letter); // Adding letter without index
         previous.prev.push({
           isCorrect: true,
           perLetter: letter,
-          isOccured: false, // Exact match takes precedence
+          countInWord: letterCount[lowerLetter], // Add count of the letter
+          isOccured: false,
         });
       } else {
-        entered.push(null); // Placeholder for non-matches (handled in second pass)
+        entered.push(null);
         previous.prev.push({
           isCorrect: false,
           perLetter: letter,
-          isOccured: false, // Will update this in second pass
+          countInWord: letterCount[lowerLetter], // Add count of the letter
+          isOccured: false,
         });
       }
     });
 
-    // Step 3: Second pass - Check for occurrences
+    // Second pass - check for non-exact matches and update occurrence
     enteredWord.split("").forEach((letter, i) => {
       const lowerLetter = letter.toLowerCase();
       if (!previous.prev[i].isCorrect && letterCount[lowerLetter] > 0) {
-        // Mark as occurred if not already correct
         letterCount[lowerLetter]--;
         previous.prev[i].isOccured = true;
       }
@@ -239,6 +241,7 @@ const Game = ({
     setAnimate(animate + 1);
     setLength("");
   };
+
   // console.log(prevList)
   const [dimension, setDimension] = useState<{
     width: number;
@@ -344,7 +347,7 @@ const Game = ({
                     }}
                   >
                     <motion.span
-                      style={mode === true ? { color: "#2e3239 " } : {}}
+                      style={mode === true ? { color: "#2e3239" } : {}}
                       className={styles.letter}
                     >
                       {close === 0 ? length[a]?.toLocaleUpperCase() || "" : ""}
@@ -386,6 +389,11 @@ const Game = ({
                       className={styles.letter}
                     >
                       {i.perLetter.toLocaleUpperCase()}
+                      <sup>
+                        {i.countInWord && i.countInWord !== 1
+                          ? i.countInWord
+                          : ""}
+                      </sup>
                     </span>
                   </motion.div>
                 );
@@ -461,6 +469,11 @@ const Game = ({
                       className={styles.letter}
                     >
                       {i.perLetter.toLocaleUpperCase()}
+                      <sup>
+                        {i.countInWord && i.countInWord !== 1
+                          ? i.countInWord
+                          : ""}
+                      </sup>
                     </span>
                   </motion.div>
                 );
@@ -536,6 +549,11 @@ const Game = ({
                       className={styles.letter}
                     >
                       {i.perLetter.toLocaleUpperCase()}
+                      <sup>
+                        {i.countInWord && i.countInWord !== 1
+                          ? i.countInWord
+                          : ""}
+                      </sup>
                     </span>
                   </motion.div>
                 );
@@ -611,6 +629,11 @@ const Game = ({
                       className={styles.letter}
                     >
                       {i.perLetter.toLocaleUpperCase()}
+                      <sup>
+                        {i.countInWord && i.countInWord !== 1
+                          ? i.countInWord
+                          : ""}
+                      </sup>
                     </span>
                   </motion.div>
                 );
@@ -686,6 +709,11 @@ const Game = ({
                       className={styles.letter}
                     >
                       {i.perLetter.toLocaleUpperCase()}
+                      <sup>
+                        {i.countInWord && i.countInWord !== 1
+                          ? i.countInWord
+                          : ""}
+                      </sup>
                     </span>
                   </motion.div>
                 );
@@ -761,6 +789,11 @@ const Game = ({
                       className={styles.letter}
                     >
                       {i.perLetter.toLocaleUpperCase()}
+                      <sup>
+                        {i.countInWord && i.countInWord !== 1
+                          ? i.countInWord
+                          : ""}
+                      </sup>
                     </span>
                   </motion.div>
                 );

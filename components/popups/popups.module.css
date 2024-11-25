@@ -80,6 +80,7 @@
 
 .title > h3 {
   font-size: 20px;
+  color: #fff !important;
 }
 .title > button {
   display: flex;

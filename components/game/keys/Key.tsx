@@ -65,7 +65,6 @@ const Key = memo(({
             ? { color: "#fff", transition: "1s", lineHeight: 1.1 }
             : { transition: "1s", lineHeight: 1.1 }
         }
-        className="text-xl"
       >
         {per_key ? per_key : "~"}
       </span>

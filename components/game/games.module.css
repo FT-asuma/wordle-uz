@@ -53,6 +53,11 @@
   font-weight: 700;
 }
 
+.letter > sup {
+  font-size: 12px;
+  position: absolute;
+}
+
 /* Reward message styles */
 .reward {
   margin: 0.2rem 0;
@@ -158,6 +163,12 @@
 .incorrectLetter {
   background: #3b4f60 !important;
   border: 2px solid #3b4f60 !important;
+}
+
+.correctLetter > span,
+.occuredLetter > span,
+.incorrectLetter > span {
+  color: #fff !important;
 }
 
 /* Congrats screen */
