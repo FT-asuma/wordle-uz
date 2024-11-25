@@ -5,6 +5,14 @@
   width: 100%;
 }
 
+.main p {
+  color: #e0e1dd;
+}
+
+.lightMode h3,.lightMode h2,.lightMode h1,.lightMode h4,.lightMode h5,.lightMode h6 {
+  color: #2e3239 !important;
+}
+
 @media screen and (max-width: 601px) {
   .main {
     width: 100%;

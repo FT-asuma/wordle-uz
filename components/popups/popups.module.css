@@ -55,7 +55,9 @@
   background: #0d1b2a;
   flex-direction: column;
   width: 350px;
-  height: 370px;
+  height: fit-content;
+  padding-bottom: 1rem;
+  max-height: 370px;
   border-radius: 0.5rem;
   box-shadow: #ffffff33 0px 7px 29px 0px;
 }
@@ -80,8 +82,9 @@
   font-size: 20px;
 }
 .title > button {
-  font-size: 16px;
-  font-weight: 700;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin-right: 0.5rem;
 }
 
@@ -98,6 +101,12 @@
   font-weight: 300;
   font-size: 15px;
 }
+
+.list > span {
+  margin: 0.3rem 0;
+  font-size: 12px;
+}
+
 .hiddenWord {
   margin-top: 0.5rem;
   display: flex;
@@ -143,4 +152,8 @@
   font-size: 13px;
   font-weight: 400;
   color: #969696;
+}
+
+.share { 
+  width: 95% !important;
 }

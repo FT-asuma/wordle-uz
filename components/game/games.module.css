@@ -1,4 +1,6 @@
-.game {
+/* General Game Styles */
+.game,
+.lightMode {
   width: 100%;
   display: flex;
   justify-content: center;
@@ -6,6 +8,12 @@
   gap: 0;
   position: relative;
   flex-direction: column;
+}
+
+/* Light mode styles for letter containers */
+.lightMode .letterCont {
+  border: 2px solid #dee1e9;
+  background: #fbfcff;
 }
 
 .attempts {
@@ -23,6 +31,7 @@
   height: 62px;
 }
 
+/* Letter container styles */
 .letterCont {
   height: 56px;
   margin: 3px;
@@ -34,35 +43,31 @@
   border-radius: 0.3rem;
 }
 
+/* Text styles for letters */
+.lightMode .letter {
+  color: #393e4c;
+}
+
 .letter {
   font-size: 28px;
   font-weight: 700;
 }
 
-
+/* Reward message styles */
 .reward {
-  margin-top: 0.2rem;
-  margin-bottom: 0.2rem;
+  margin: 0.2rem 0;
   height: 28px;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 0.8rem;
-  padding-left: 1rem;
-  padding-right: 0.7rem;
-  padding-top: 0.3rem;
-  padding-bottom: 0.5rem;
+  padding: 0.3rem 1rem 0.5rem 1rem;
   border-radius: 1rem;
   background: #2c3446c0;
 }
 
-.keyboard {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
+/* Keyboard styles */
+.keyboard,
 .keyboardCont {
   width: 100%;
   display: flex;
@@ -79,14 +84,23 @@
   height: 52px;
 }
 
-.key {
+/* Key styles */
+.key,
+.excludedKey {
   height: 46px;
   margin: 3px;
-  background: #484d58;
+  background: #7a858d;
   border-radius: 0.3rem;
   font-weight: 700;
   font-size: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   transition: all 0.3s;
+}
+
+.key > span {
+  color: #fff;
 }
 
 .key:hover,
@@ -99,47 +113,54 @@
   background: #60636b;
 }
 
+/* Adjust key width for different rows */
 .rawList:first-child .key {
   width: 54px;
 }
-
 .rawList:nth-child(2) .key {
   width: 61px;
 }
-
 .rawList:last-child .key {
   width: 53px;
 }
 
+/* Excluded key styles */
 .excludedKey {
-  height: 46px;
-  margin: 3px;
-  background: #484d58;
-  border-radius: 0.3rem;
-  font-weight: 700;
-  font-size: 1rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  background: #7a858d;
   width: 6rem;
+  color: #fff;
 }
 
+.lightMode .key {
+  background: #d1d7de;
+}
+
+.lightMode .key > span {
+  color: #4a5463;
+}
+
+.lightMode .excludedKey {
+  color: #4a5463;
+  background: #d1d7de;
+}
+
+/* Letter color states */
 .correctLetter {
-  background: #007f5f;
-  border: 2px solid #007f5f;
+  background: #4caf50 !important;
+  border: 2px solid #4caf50 !important;
 }
 
 .occuredLetter {
-  background: #2c7da0;
-  border: 2px solid #2c7da0;
+  background: #56b8d6 !important;
+  border: 2px solid #56b8d6 !important;
 }
 
 .incorrectLetter {
-  background: #7f7f7f;
-  border: 2px solid #7f7f7f;
+  background: #3b4f60 !important;
+  border: 2px solid #3b4f60 !important;
 }
 
-
+/* Congrats screen */
 .congrats {
   position: fixed;
   top: 0;
@@ -152,32 +173,39 @@
   align-items: center;
 }
 
+/* Responsive Styles */
 @media screen and (max-width: 601px) {
   .letterCont {
     height: 42px;
     width: 44px !important;
   }
+
   .attempt {
     height: 48px;
   }
+
   .letter {
     font-size: 15px;
   }
-  .key, .excludedKey {
+
+  .key,
+  .excludedKey {
     font-size: 15px;
   }
+
   .excludedKey > svg {
     width: 24px;
   }
 }
 
-@media screen and (max-width: 400px) { 
+@media screen and (max-width: 400px) {
   .rawList {
     height: 48px !important;
   }
-  .key, .excludedKey {
+
+  .key,
+  .excludedKey {
     height: 42px;
     font-size: 13px;
   }
-  
 }

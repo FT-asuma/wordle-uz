@@ -27,17 +27,25 @@ interface IPrevList {
 const Game = ({
   setWordLength,
   wordLength,
+  mode,
+  setConfetti,
+  confetti,
   listOfWords,
   lengthOfWord,
   hiddenWord,
   setHiddenWord,
+  swap,
 }: {
   setWordLength: Dispatch<SetStateAction<number>>;
   wordLength: number;
   listOfWords: string[];
   lengthOfWord: string[];
   hiddenWord: string;
+  mode: boolean;
   setHiddenWord: Dispatch<SetStateAction<string>>;
+  setConfetti: Dispatch<SetStateAction<boolean>>;
+  confetti: boolean;
+  swap: boolean;
 }) => {
   const [length, setLength] = useState<string>("");
   const [prevList, setPrevList] = useState<IPrevList[]>([]);
@@ -49,7 +57,14 @@ const Game = ({
   const textareaRef = useRef<HTMLTextAreaElement | any>(null);
   const [whichLib, setWhichLib] = useState<string[]>(listOfWords);
   const [isEnterPressed, setIsEnterPressed] = useState<boolean>(false);
-
+  const [checkedLetters, setCheckedLetters] = useState<
+    {
+      perLetter: string;
+      isCorrect: boolean;
+      isOccured: boolean;
+    }[]
+  >([]);
+  // console.log(hiddenWord)
   useEffect(() => {
     const focusTextarea = () => {
       if (textareaRef.current) {
@@ -69,6 +84,7 @@ const Game = ({
       setWhichLib(listOfWords);
       setPrevList([]);
       setClose(0);
+      console.log("working");
       textareaRef.current.disabled = false;
     }
   }, [hiddenWord]);
@@ -103,8 +119,30 @@ const Game = ({
         setModalOpen(true);
         setText("lost!");
       }
+      console.log(prevList);
+    }
+    if (prevList && prevList.length > 0) {
+      const getUniqueLetters = (attempts: any) => {
+        const seen = new Set(); // To track already seen letters
+        const uniqueLetters: any = [];
+
+        attempts.forEach((attempt: any) => {
+          attempt.prev.forEach((letterObj: any) => {
+            if (!seen.has(letterObj.perLetter)) {
+              seen.add(letterObj.perLetter); // Add to the set if it's not seen yet
+              uniqueLetters.push(letterObj); // Add the letter object to the final array
+            }
+          });
+        });
+
+        return uniqueLetters;
+      };
+
+      const uniqueLetters = getUniqueLetters(prevList);
+      setCheckedLetters(uniqueLetters);
     }
   }, [prevList]);
+
   const [btn, setBtn] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [text, setText] = useState<string>("win");
@@ -138,7 +176,11 @@ const Game = ({
         }
       }
     } else {
-      if (word?.length < wordLength && modalOpen !== true && prevList.length !== 6) {
+      if (
+        word?.length < wordLength &&
+        modalOpen !== true &&
+        prevList.length !== 6
+      ) {
         setError("Word is short");
         setTimeout(() => {
           setError("");
@@ -152,32 +194,52 @@ const Game = ({
     const previous: any = { prev: [] };
     const letterCount: any = {};
 
+    // Step 1: Count letters in the hidden word
     hiddenWord2.split("").forEach((letter) => {
       letterCount[letter.toLowerCase()] =
         (letterCount[letter.toLowerCase()] || 0) + 1;
     });
 
+    // Step 2: First pass - Check for exact matches
     enteredWord.split("").forEach((letter, i) => {
       const lowerLetter = letter.toLowerCase();
-      const isOccured = letterCount[lowerLetter] > 0;
-      if (isOccured) {
-        letterCount[lowerLetter]--;
-        entered.push(letter);
-      } else {
-        entered.push(null);
-      }
       const isCorrect = hiddenWord2[i].toLocaleLowerCase() === lowerLetter;
-      previous.prev.push({
-        isCorrect: isCorrect,
-        perLetter: letter,
-        isOccured: isOccured,
-      });
+
+      if (isCorrect) {
+        // Exact match
+        letterCount[lowerLetter]--; // Reduce the count for exact matches
+        entered.push(letter);
+        previous.prev.push({
+          isCorrect: true,
+          perLetter: letter,
+          isOccured: false, // Exact match takes precedence
+        });
+      } else {
+        entered.push(null); // Placeholder for non-matches (handled in second pass)
+        previous.prev.push({
+          isCorrect: false,
+          perLetter: letter,
+          isOccured: false, // Will update this in second pass
+        });
+      }
     });
+
+    // Step 3: Second pass - Check for occurrences
+    enteredWord.split("").forEach((letter, i) => {
+      const lowerLetter = letter.toLowerCase();
+      if (!previous.prev[i].isCorrect && letterCount[lowerLetter] > 0) {
+        // Mark as occurred if not already correct
+        letterCount[lowerLetter]--;
+        previous.prev[i].isOccured = true;
+      }
+    });
+
     setPrevList((prev) => [...prev, previous]);
     setClose(close + 1);
     setAnimate(animate + 1);
     setLength("");
   };
+  // console.log(prevList)
   const [dimension, setDimension] = useState<{
     width: number;
     height: number;
@@ -192,7 +254,7 @@ const Game = ({
     return <>Loading...</>;
   }
   return (
-    <section className={styles.game}>
+    <section className={mode === false ? styles.game : styles.lightMode}>
       <textarea
         name=""
         inputMode="none"
@@ -225,15 +287,17 @@ const Game = ({
         }
         className={styles.congrats}
       >
-        <ReactConfetti
-          width={1920}
-          height={1000}
-          tweenDuration={100}
-          style={{
-            width: "100vw",
-            height: "100vh",
-          }}
-        />
+        {confetti === true && (
+          <ReactConfetti
+            width={1920}
+            height={1000}
+            tweenDuration={100}
+            style={{
+              width: "100vw",
+              height: "100vh",
+            }}
+          />
+        )}
       </div>
       <Alert value={error} type="alert" />
       <GameOver
@@ -242,13 +306,21 @@ const Game = ({
         hiddenWord={hiddenWord}
         modalOpen={modalOpen}
         setModalOpen={setModalOpen}
-        key={"asim is gay"}
+        key={"sheesh"}
         whichLib={whichLib}
         setHiddenWord={setHiddenWord}
         keyPress={key!}
       />
       <div className={styles.attempts}>
-        <div className={styles.attempt}>
+        <div
+          className={
+            mode === false && prevList[0]
+              ? styles.attempt
+              : mode === true || prevList[0]
+              ? `${styles.attempt} ${styles.attemptLight}`
+              : styles.attempt
+          }
+        >
           {!prevList[0]
             ? lengthOfWord.map((i, a) => {
                 return (
@@ -271,7 +343,10 @@ const Game = ({
                       ease: "easeInOut",
                     }}
                   >
-                    <motion.span className={styles.letter}>
+                    <motion.span
+                      style={mode === true ? { color: "#2e3239 " } : {}}
+                      className={styles.letter}
+                    >
                       {close === 0 ? length[a]?.toLocaleUpperCase() || "" : ""}
                     </motion.span>
                   </motion.div>
@@ -306,7 +381,10 @@ const Game = ({
                       repeat: 0, // No repetition, animates once
                     }}
                   >
-                    <span className={styles.letter}>
+                    <span
+                      style={{ color: "#e0e1dd" }}
+                      className={styles.letter}
+                    >
                       {i.perLetter.toLocaleUpperCase()}
                     </span>
                   </motion.div>
@@ -336,7 +414,10 @@ const Game = ({
                       ease: "easeInOut",
                     }}
                   >
-                    <motion.span className={styles.letter}>
+                    <motion.span
+                      style={mode === true ? { color: "#2e3239 " } : {}}
+                      className={styles.letter}
+                    >
                       {close === 1
                         ? length
                           ? length[a]?.toLocaleUpperCase()
@@ -375,14 +456,16 @@ const Game = ({
                       repeat: 0, // Play once, no repeat
                     }}
                   >
-                    <span className={styles.letter}>
+                    <span
+                      style={{ color: "#e0e1dd" }}
+                      className={styles.letter}
+                    >
                       {i.perLetter.toLocaleUpperCase()}
                     </span>
                   </motion.div>
                 );
               })}
         </div>
-
         <div className={styles.attempt}>
           {!prevList[2]
             ? lengthOfWord.map((i, a) => {
@@ -406,7 +489,10 @@ const Game = ({
                       ease: "easeInOut",
                     }}
                   >
-                    <motion.span className={styles.letter}>
+                    <motion.span
+                      style={mode === true ? { color: "#2e3239 " } : {}}
+                      className={styles.letter}
+                    >
                       {close === 2
                         ? length
                           ? length[a]?.toLocaleUpperCase()
@@ -445,14 +531,16 @@ const Game = ({
                       repeat: 0,
                     }}
                   >
-                    <span className={styles.letter}>
+                    <span
+                      style={{ color: "#e0e1dd" }}
+                      className={styles.letter}
+                    >
                       {i.perLetter.toLocaleUpperCase()}
                     </span>
                   </motion.div>
                 );
               })}
         </div>
-
         <div className={styles.attempt}>
           {!prevList[3]
             ? lengthOfWord.map((i, a) => {
@@ -476,7 +564,10 @@ const Game = ({
                       ease: "easeInOut",
                     }}
                   >
-                    <motion.span className={styles.letter}>
+                    <motion.span
+                      style={mode === true ? { color: "#2e3239 " } : {}}
+                      className={styles.letter}
+                    >
                       {close === 3
                         ? length
                           ? length[a]?.toLocaleUpperCase()
@@ -515,14 +606,16 @@ const Game = ({
                       repeat: 0,
                     }}
                   >
-                    <span className={styles.letter}>
+                    <span
+                      style={{ color: "#e0e1dd" }}
+                      className={styles.letter}
+                    >
                       {i.perLetter.toLocaleUpperCase()}
                     </span>
                   </motion.div>
                 );
               })}
         </div>
-
         <div className={styles.attempt}>
           {!prevList[4]
             ? lengthOfWord.map((i, a) => {
@@ -546,7 +639,10 @@ const Game = ({
                       ease: "easeInOut",
                     }}
                   >
-                    <motion.span className={styles.letter}>
+                    <motion.span
+                      style={mode === true ? { color: "#2e3239 " } : {}}
+                      className={styles.letter}
+                    >
                       {close === 4
                         ? length
                           ? length[a]?.toLocaleUpperCase()
@@ -585,14 +681,16 @@ const Game = ({
                       repeat: 0,
                     }}
                   >
-                    <span className={styles.letter}>
+                    <span
+                      style={{ color: "#e0e1dd" }}
+                      className={styles.letter}
+                    >
                       {i.perLetter.toLocaleUpperCase()}
                     </span>
                   </motion.div>
                 );
               })}
         </div>
-
         <div className={styles.attempt}>
           {!prevList[5]
             ? lengthOfWord.map((i, a) => {
@@ -616,7 +714,10 @@ const Game = ({
                       ease: "easeInOut",
                     }}
                   >
-                    <motion.span className={styles.letter}>
+                    <motion.span
+                      style={mode === true ? { color: "#2e3239 " } : {}}
+                      className={styles.letter}
+                    >
                       {close === 5
                         ? length
                           ? length[a]?.toLocaleUpperCase()
@@ -655,7 +756,10 @@ const Game = ({
                       repeat: 0,
                     }}
                   >
-                    <span className={styles.letter}>
+                    <span
+                      style={{ color: "#e0e1dd" }}
+                      className={styles.letter}
+                    >
                       {i.perLetter.toLocaleUpperCase()}
                     </span>
                   </motion.div>
@@ -663,7 +767,13 @@ const Game = ({
               })}
         </div>
       </div>
-      {text === "won! 🏆" && prevList?.length > 0 ?  <p className={styles.reward}>You Won! 🏆</p>: text === "lost" ? <p className={styles.reward}>You lost!</p> : <p style={{height: 28}}></p>}
+      {text === "won! 🏆" && prevList?.length > 0 ? (
+        <p className={styles.reward}>You Won! 🏆</p>
+      ) : text === "lost!" && prevList?.length > 0 ? (
+        <p className={styles.reward}>You lost!</p>
+      ) : (
+        <p style={{ height: 28 }}></p>
+      )}
       <Keyboard
         length={length}
         setIsEnterPressed={setIsEnterPressed}
@@ -672,6 +782,9 @@ const Game = ({
         text={text}
         wordLength={wordLength}
         textareaRef={textareaRef}
+        swap={swap}
+        checkedLetters={checkedLetters}
+        mode={mode}
       />
     </section>
   );

@@ -1,63 +1,76 @@
-"use client";
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import styles from "../games.module.css";
+
+interface CheckedLetter {
+  perLetter: string;
+  isCorrect: boolean;
+  isOccured: boolean;
+}
 
 interface KeyProperties {
   per_key: string;
-  letter: KeyboardEvent;
+  letter: KeyboardEvent | null;
   setIsClick: React.Dispatch<React.SetStateAction<string>>;
   isClick: string;
-  setLength: Dispatch<SetStateAction<string>>;
+  setLength: React.Dispatch<React.SetStateAction<string>>;
   length: string;
   text: string;
-  wordLength: number
+  wordLength: number;
+  checkedLetters: CheckedLetter[];
 }
 
-const Key = ({
+const Key = memo(({
   per_key,
-  letter,
   setIsClick,
   isClick,
   setLength,
   length,
   text,
-  wordLength
+  wordLength,
+  checkedLetters,
 }: KeyProperties) => {
-  const key = per_key;
+  const [result, setResult] = useState<CheckedLetter | undefined>(undefined);
+
+  useEffect(() => {
+    const searchForALetter = checkedLetters.find(
+      (i) => i.perLetter.toLowerCase() === per_key.toLowerCase()
+    );
+    setResult(searchForALetter || undefined);
+  }, [checkedLetters, per_key]);
+
+  const getClassName = (): string => {
+    if (!result) return styles.key;
+    if (result.isCorrect) return `${styles.key} ${styles.correctLetter}`;
+    if (result.isOccured) return `${styles.key} ${styles.occuredLetter}`;
+    return `${styles.key} ${styles.incorrectLetter}`;
+  };
   return (
     <button
-      key={key}
       onClick={() => {
-        setIsClick(key);
-        if (length.length < wordLength) {
-          if (text === "won! 🏆") {
-            return;
-          } else setLength(length + key);
+        setIsClick(per_key);
+        if (length.length < wordLength && text !== "won! 🏆") {
+          setLength(length + per_key);
         }
       }}
       style={
-        key === isClick
-          ? { background: "#656a77", color: "#fff", transition: "0.3s" }
+        per_key === isClick
+          ? { background: "#78838b", color: "#fff", transition: "0.3s" }
           : { transition: "0.3s" }
       }
-      className={styles.key}
+      className={getClassName()}
     >
       <span
         style={
-          key === isClick
-            ? {
-                color: "#fff",
-                transition: "1s",
-                lineHeight: 1.1,
-              }
+          per_key === isClick
+            ? { color: "#fff", transition: "1s", lineHeight: 1.1 }
             : { transition: "1s", lineHeight: 1.1 }
         }
         className="text-xl"
       >
-        {per_key ? key : "~"}
+        {per_key ? per_key : "~"}
       </span>
     </button>
   );
-};
+});
 
 export default Key;

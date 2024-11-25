@@ -6,18 +6,8 @@ import Game from "@/components/game/Game";
 import { useEffect, useState } from "react";
 import words from "an-array-of-english-words";
 
-// import { db } from "./firebase/config";
 import { collection, getDocs } from "firebase/firestore";
 
-// async function fetchDataFire() {
-//   const query = await getDocs(collection(db, "users"));
-
-//   const data: any[] = [];
-//   query.forEach((doc) => {
-//     data.push({ id: doc.id, ...doc.data() });
-//   });
-//   return data;
-// }
 
 export default function Home() {
   const [wordLength, setWordLength] = useState(4);
@@ -25,19 +15,10 @@ export default function Home() {
   const [listOfWords, setListOfWords] = useState<string[]>([]);
   const [hiddenWord, setHiddenWord] = useState<string>("");
   const [list, setList] = useState<Array<string>>(["", "", "", ""]);
-  const [confetti, setConfetti] = useState(true);
-  const [swap, setSwap] = useState(false);
-
+  const [confetti, setConfetti] = useState<boolean>(true);
+  const [swap, setSwap] = useState<boolean>(false);
   const [userData, setUserData] = useState<any[]>([]);
-
-  // useEffect(() => {
-  //   async function fetchData() {
-  //     const data = await fetchDataFire();
-  //     setUserData(data);
-  //   }
-  //   fetchData();
-  // }, []);
-  console.log("okay")
+  const [mode, setMode] = useState<boolean>(false);
   useEffect(() => {
     if (words) {
       const response = words.filter((word) => word.length === list.length);
@@ -45,6 +26,27 @@ export default function Home() {
       setListOfWords(response);
       setLoading(false);
     }
+  }, []);
+  useEffect(() => {
+    if (mode === false) {
+      const body = document.querySelector("body");
+      if (body) {
+        body.style.background = "";
+      }
+    } else {
+      const body = document.querySelector("body");
+      if (body) {
+        body.style.transition = "0.2s";
+        body.style.background = "#f8f7f5";
+      }
+    }
+  }, [mode]);
+
+  const [deviceType, setDeviceType] = useState("Desktop");
+
+  useEffect(() => {
+    const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+    setDeviceType(isMobile ? "Mobile" : "Desktop");
   }, []);
 
   const randomWord = (list: string[], min: number, max: number) => {
@@ -58,45 +60,16 @@ export default function Home() {
       setListOfWords(response);
     }
   }, [wordLength]);
-  useEffect(() => {
-    const swapL = localStorage.getItem("swap");
-    // console.log(swapL)
-    if (swapL) {
-      if (swapL === "true") {
-        setSwap(true);
-        console.log("wefwef", swap);
-      } else {
-        console.log("wefwef", swap);
-        setSwap(false);
-      }
-    }
-    const confettiL = localStorage.getItem("confetti");
-    if (confettiL) {
-      if (confettiL === "true") {
-        setConfetti(true);
-      } else {
-        setConfetti(false);
-      }
-    }
-  }, []);
-  useEffect(() => {
-    if (swap === true) {
-      localStorage.setItem("swap", `${swap}`);
-    } else {
-      localStorage.setItem("swap", `${swap}`);
-    }
-    if (confetti === true) {
-      localStorage.setItem("confetti", `${confetti}`);
-    } else {
-      localStorage.setItem("confetti", `${confetti}`);
-    }
-  }, [swap, confetti]);
 
   if (loading === true && hiddenWord && document && document.body) {
     return <div>Loading...</div>;
   } else {
     return (
-      <main className={styles.main}>
+      <main
+        className={
+          mode === false ? styles.main : `${styles.main} ${styles.lightMode}`
+        }
+      >
         <GameContainer>
           <Header
             setConfetti={setConfetti}
@@ -106,15 +79,22 @@ export default function Home() {
             setList={setList}
             setWordLength={setWordLength}
             wordLength={wordLength}
+            setMode={setMode}
+            mode={mode}
           />
           <Game
             setWordLength={setWordLength}
             wordLength={wordLength}
+            setConfetti={setConfetti}
+            confetti={confetti}
+            mode={mode}
             listOfWords={listOfWords}
             hiddenWord={hiddenWord!}
             lengthOfWord={list}
             setHiddenWord={setHiddenWord}
+            swap={swap}
           />
+          <p style={{ color: "white" }}>{deviceType}</p>
         </GameContainer>
       </main>
     );
