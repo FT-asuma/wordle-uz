@@ -8,7 +8,6 @@ import words from "an-array-of-english-words";
 
 import { collection, getDocs } from "firebase/firestore";
 
-
 export default function Home() {
   const [wordLength, setWordLength] = useState(4);
   const [loading, setLoading] = useState(true);
@@ -94,7 +93,17 @@ export default function Home() {
             setHiddenWord={setHiddenWord}
             swap={swap}
           />
-          <p style={{ color: "white" }}>{deviceType}</p>
+          <p style={{ color: "white" }}>You are a {deviceType} user</p>
+          <p style={{fontSize: 14}}>
+            I am currently working on the <code>Puzzle-Game</code> project, a web-based game
+            designed to provide an interactive and enjoyable puzzle-solving
+            experience. In this project, I’m using <code>Next.js</code> to create a dynamic
+            and responsive interface. The game features customizable settings
+            such as adjustable word lengths, animated feedback, and options for
+            <code><i>light</i></code> and <code><i>dark</i></code> modes. I’m focusing on creating an intuitive and
+            engaging user experience, ensuring the game is both fun and easy to
+            play <b><i>across devices</i></b>.
+          </p>
         </GameContainer>
       </main>
     );

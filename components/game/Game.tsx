@@ -121,7 +121,6 @@ const Game = ({
         setModalOpen(true);
         setText("lost!");
       }
-      console.log(prevList);
     }
     if (prevList && prevList.length > 0) {
       const getUniqueLetters = (attempts: any) => {
@@ -390,7 +389,7 @@ const Game = ({
                     >
                       {i.perLetter.toLocaleUpperCase()}
                       <sup>
-                        {i.countInWord && i.countInWord !== 1
+                        {i.countInWord && i.countInWord !== 0
                           ? i.countInWord
                           : ""}
                       </sup>
@@ -470,7 +469,7 @@ const Game = ({
                     >
                       {i.perLetter.toLocaleUpperCase()}
                       <sup>
-                        {i.countInWord && i.countInWord !== 1
+                        {i.countInWord && i.countInWord !== 0
                           ? i.countInWord
                           : ""}
                       </sup>
@@ -550,7 +549,7 @@ const Game = ({
                     >
                       {i.perLetter.toLocaleUpperCase()}
                       <sup>
-                        {i.countInWord && i.countInWord !== 1
+                        {i.countInWord && i.countInWord !== 0
                           ? i.countInWord
                           : ""}
                       </sup>
@@ -630,7 +629,7 @@ const Game = ({
                     >
                       {i.perLetter.toLocaleUpperCase()}
                       <sup>
-                        {i.countInWord && i.countInWord !== 1
+                        {i.countInWord && i.countInWord !== 0
                           ? i.countInWord
                           : ""}
                       </sup>
@@ -710,7 +709,7 @@ const Game = ({
                     >
                       {i.perLetter.toLocaleUpperCase()}
                       <sup>
-                        {i.countInWord && i.countInWord !== 1
+                        {i.countInWord && i.countInWord !== 0
                           ? i.countInWord
                           : ""}
                       </sup>
@@ -790,7 +789,7 @@ const Game = ({
                     >
                       {i.perLetter.toLocaleUpperCase()}
                       <sup>
-                        {i.countInWord && i.countInWord !== 1
+                        {i.countInWord && i.countInWord !== 0
                           ? i.countInWord
                           : ""}
                       </sup>
