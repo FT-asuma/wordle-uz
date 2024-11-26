@@ -92,7 +92,7 @@ const GameOver = ({
               );
             })}
           </div>
-          <Link className={styles.link} href={`/meaning/${hiddenWord}`}>
+          <Link className={styles.link} target="_blank" href={`/meaning/${hiddenWord}`}>
             what does this word mean?
           </Link>
           <button

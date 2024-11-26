@@ -31,10 +31,8 @@ const Header = ({
     <header className={styles.header}>
       <div className={styles.wrapperTabs}>
         <button
-          style={mode === false ? { color: "#e0e1dd" } : { color: "#414a5e" }}
-          className={
-            mode === false ? styles.tabs : `${styles.tabs} ${styles.lightTabs}`
-          }
+          style={{ color: mode ? "#414a5e" : "#e0e1dd" }}
+          className={`${styles.tabs} ${mode ? styles.lightTabs : ""}`}
         >
           <svg
             width="24"
@@ -192,193 +190,96 @@ const Header = ({
           </svg>
         </button>
         <div
-          style={
-            isSettingsOpen === false
-              ? { height: 0, opacity: 1, zIndex: -10, transition: "0.2s" }
-              : {
-                  zIndex: 100,
-                  opacity: 1,
-                  height: 600,
-                  transition: "0.2s",
-                }
-          }
-          className={
-            mode === false
-              ? styles.modal
-              : `${styles.modal} ${styles.lightMode}`
-          }
+          style={{
+            height: isSettingsOpen ? 600 : 0,
+            opacity: 1,
+            zIndex: isSettingsOpen ? 100 : -10,
+            transition: "0.2s",
+          }}
+          className={`${styles.modal} ${mode && styles.lightMode}`}
         >
           <div
-            style={
-              isSettingsOpen === true
-                ? { opacity: 1, transition: "0.3s" }
-                : { opacity: 0, transition: "0.3s" }
-            }
+            style={{
+              opacity: isSettingsOpen ? 1 : 0,
+              transition: "0.3s",
+            }}
             className={styles.container}
           >
             <div className={styles.title}>
               <span></span>
               <h2>Settings</h2>
-              <button
-                onClick={() => {
-                  setisSettingsOpen(false);
-                }}
-              >
+              <button onClick={() => setisSettingsOpen(false)}>
                 <svg
                   width="24"
                   height="24"
                   viewBox="0 0 1024 1024"
-                  fill={mode === false ? "#e0e1dd" : "#414a5e"}
+                  fill={mode ? "#414a5e" : "#e0e1dd"}
                   className="icon"
-                  version="1.1"
-                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  <g id="SVGRepo_bgCarrier" strokeWidth=""></g>
-                  <g
-                    id="SVGRepo_tracerCarrier"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  ></g>
-                  <g id="SVGRepo_iconCarrier">
-                    <path
-                      d="M176.662 817.173c-8.19 8.471-7.96 21.977 0.51 30.165 8.472 8.19 21.978 7.96 30.166-0.51l618.667-640c8.189-8.472 7.96-21.978-0.511-30.166-8.471-8.19-21.977-7.96-30.166 0.51l-618.666 640z"
-                      fill=""
-                    ></path>
-                    <path
-                      d="M795.328 846.827c8.19 8.471 21.695 8.7 30.166 0.511 8.471-8.188 8.7-21.694 0.511-30.165l-618.667-640c-8.188-8.471-21.694-8.7-30.165-0.511-8.471 8.188-8.7 21.694-0.511 30.165l618.666 640z"
-                      fill=""
-                    ></path>
-                  </g>
+                  <path d="M176.662 817.173c-8.19 8.471-7.96 21.977 0.51 30.165 8.472 8.19 21.978 7.96 30.166-0.51l618.667-640c8.189-8.472 7.96-21.978-0.511-30.166-8.471-8.19-21.977-7.96-30.166 0.51l-618.666 640z" />
+                  <path d="M795.328 846.827c8.19 8.471 21.695 8.7 30.166 0.511 8.471-8.188 8.7-21.694 0.511-30.165l-618.667-640c-8.188-8.471-21.694-8.7-30.165-0.511-8.471 8.188-8.7 21.694-0.511 30.165l618.666 640z" />
                 </svg>
               </button>
             </div>
             <h3>Number of Letters</h3>
             <div className={styles.buttonRaw}>
-              <button
-                style={
-                  wordLength === 4
-                    ? { background: "#007f5f", fontWeight: 700, color: "#fff" }
-                    : {}
-                }
-                onClick={() => {
-                  setWordLength(4);
-                  setList(["", "", "", ""]);
-                }}
-              >
-                4
-              </button>
-              <button
-                style={
-                  wordLength === 5
-                    ? { background: "#007f5f", fontWeight: 700, color: "#fff" }
-                    : {}
-                }
-                onClick={() => {
-                  setWordLength(5);
-                  setList(["", "", "", "", ""]);
-                }}
-              >
-                5
-              </button>
-              <button
-                style={
-                  wordLength === 6
-                    ? { background: "#007f5f", fontWeight: 700, color: "#fff" }
-                    : {}
-                }
-                onClick={() => {
-                  setWordLength(6);
-                  setList(["", "", "", "", "", ""]);
-                }}
-              >
-                6
-              </button>
-              <button
-                style={
-                  wordLength === 7
-                    ? { background: "#007f5f", fontWeight: 700, color: "#fff" }
-                    : {}
-                }
-                onClick={() => {
-                  setWordLength(7);
-                  setList(["", "", "", "", "", "", ""]);
-                }}
-              >
-                7
-              </button>
-              <button
-                style={
-                  wordLength === 8
-                    ? { background: "#007f5f", fontWeight: 700, color: "#fff" }
-                    : {}
-                }
-                onClick={() => {
-                  setWordLength(8);
-                  setList(["", "", "", "", "", "", "", ""]);
-                }}
-              >
-                8
-              </button>
-              <button
-                style={
-                  wordLength === 9
-                    ? { background: "#007f5f", fontWeight: 700, color: "#fff" }
-                    : {}
-                }
-                onClick={() => {
-                  setWordLength(9);
-                  setList(["", "", "", "", "", "", "", "", ""]);
-                }}
-              >
-                9
-              </button>
-              <button
-                style={
-                  wordLength === 10
-                    ? { background: "#007f5f", fontWeight: 700, color: "#fff" }
-                    : {}
-                }
-                onClick={() => {
-                  setWordLength(10);
-                  setList(["", "", "", "", "", "", "", "", "", ""]);
-                }}
-              >
-                10
-              </button>
+              {[4, 5, 6, 7, 8, 9, 10].map((length) => (
+                <button
+                  key={length}
+                  style={
+                    wordLength === length
+                      ? {
+                          background: "#007f5f",
+                          fontWeight: 700,
+                          color: "#fff",
+                        }
+                      : {}
+                  }
+                  onClick={() => {
+                    setWordLength(length);
+                    setList(Array(length).fill(""));
+                  }}
+                >
+                  {length}
+                </button>
+              ))}
             </div>
             <div className={styles.furtherSettings}>
-              <hr style={{ width: "100%" }} />
-              <div className={styles.additional}>
-                <div className={styles.aside}>
-                  <h3>Confetti Animation</h3>
-                  <p>Confetti animation when you find the hidden word</p>
-                </div>
-                <div className={styles.besides}>
-                  <Switcher setter={setConfetti} value={confetti} />
-                </div>
-              </div>
-              <hr style={{ width: "100%" }} />
-              <div className={styles.additional}>
-                <div className={styles.aside}>
-                  <h3>Swap Buttons</h3>
-                  <p>
-                    Swap <code>Enter</code> and <code>Backspace</code> buttons
-                  </p>
-                </div>
-                <div className={styles.besides}>
-                  <Switcher setter={setSwap} value={swap} />
-                </div>
-              </div>
-              <hr style={{ width: "100%" }} />
-              <div className={styles.additional}>
-                <div className={styles.aside}>
-                  <h3>Screen mode</h3>
-                  <p>Change the color of mode to dark/light</p>
-                </div>
-                <div className={styles.besides}>
-                  <Switcher setter={setMode} value={mode} />
-                </div>
-              </div>
+              <hr />
+              {[
+                {
+                  title: "Confetti Animation",
+                  description:
+                    "Confetti animation when you find the hidden word",
+                  setter: setConfetti,
+                  value: confetti,
+                },
+                {
+                  title: "Swap Buttons",
+                  description: "Swap Enter and Backspace buttons",
+                  setter: setSwap,
+                  value: swap,
+                },
+                {
+                  title: "Screen mode",
+                  description: "Change the color of mode to dark/light",
+                  setter: setMode,
+                  value: mode,
+                },
+              ].map(({ title, description, setter, value }, index) => (
+                <>
+                  <div key={index} className={styles.additional}>
+                    <div className={styles.aside}>
+                      <h3>{title}</h3>
+                      <p>{description}</p>
+                    </div>
+                    <div className={styles.besides}>
+                      <Switcher setter={setter} value={value} />
+                    </div>
+                  </div>
+                  {index < 2 && <hr />}
+                </>
+              ))}
             </div>
           </div>
         </div>
@@ -388,28 +289,23 @@ const Header = ({
             setisSettingsOpen(false);
           }}
           style={
-            isInfoOpen === true
-              ? { background: "#007f5f90", transition: "0.3s" }
-              : { transition: "0.3s" }
+            isInfoOpen
+              ? {
+                  background: "#007f5f90",
+                  transition: "0.3s",
+                }
+              : {
+                  transition: "0.3s",
+                }
           }
-          className={
-            mode === false ? styles.tabs : `${styles.tabs} ${styles.lightTabs}`
-          }
+          className={`${styles.tabs} ${mode ? styles.lightTabs : ""}`}
         >
           <svg
             width="24"
             height="24"
             viewBox="0 0 48 48"
             xmlns="http://www.w3.org/2000/svg"
-            fill={
-              mode === false && isInfoOpen === false
-                ? "#e0e1dd"
-                : mode === true && isInfoOpen === false
-                ? "#414a5e"
-                : isInfoOpen === true
-                ? "#0af025"
-                : "#e0e1dd"
-            }
+            fill={isInfoOpen ? "#0af025" : mode ? "#414a5e" : "#e0e1dd"}
           >
             <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
             <g
@@ -418,22 +314,17 @@ const Header = ({
               strokeLinejoin="round"
             ></g>
             <g id="SVGRepo_iconCarrier">
-              {" "}
               <g id="Layer_2" data-name="Layer 2">
-                {" "}
                 <g id="invisible_box" data-name="invisible box">
-                  {" "}
-                  <rect width="48" height="48" fill="none"></rect>{" "}
-                </g>{" "}
+                  <rect width="48" height="48" fill="none"></rect>
+                </g>
                 <g id="Icons">
-                  {" "}
                   <g>
-                    {" "}
-                    <path d="M27.2,34.8l-4.5.4s2.2-7.9,3.8-13.2a4.1,4.1,0,0,0-3.6-5.5,3.6,3.6,0,0,0-2.7,1.2l-4,3.3a.7.7,0,0,0,.6,1.2l4.5-.4L17.5,35a4.1,4.1,0,0,0,3.6,5.5,3.6,3.6,0,0,0,2.7-1.2l4-3.3A.7.7,0,0,0,27.2,34.8Z"></path>{" "}
-                    <circle cx="26" cy="11" r="3"></circle>{" "}
-                  </g>{" "}
-                </g>{" "}
-              </g>{" "}
+                    <path d="M27.2,34.8l-4.5.4s2.2-7.9,3.8-13.2a4.1,4.1,0,0,0-3.6-5.5,3.6,3.6,0,0,0-2.7,1.2l-4,3.3a.7.7,0,0,0,.6,1.2l4.5-.4L17.5,35a4.1,4.1,0,0,0,3.6,5.5,3.6,3.6,0,0,0,2.7-1.2l4-3.3A.7.7,0,0,0,27.2,34.8Z"></path>
+                    <circle cx="26" cy="11" r="3"></circle>
+                  </g>
+                </g>
+              </g>
             </g>
           </svg>
         </button>

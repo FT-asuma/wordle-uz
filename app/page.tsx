@@ -4,11 +4,13 @@ import styles from "./page.module.css";
 import Header from "@/components/blocks/Header";
 import Game from "@/components/game/Game";
 import { useEffect, useState } from "react";
-import words from "an-array-of-english-words";
 
 import { collection, getDocs } from "firebase/firestore";
 
 export default function Home() {
+
+  const en_words = require("../constants/en_words/words.json")
+
   const [wordLength, setWordLength] = useState(4);
   const [loading, setLoading] = useState(true);
   const [listOfWords, setListOfWords] = useState<string[]>([]);
@@ -19,8 +21,8 @@ export default function Home() {
   const [userData, setUserData] = useState<any[]>([]);
   const [mode, setMode] = useState<boolean>(false);
   useEffect(() => {
-    if (words) {
-      const response = words.filter((word) => word.length === list.length);
+    if (en_words) {
+      const response = en_words.filter((word:string) => word.length === list.length);
       setHiddenWord(randomWord(response, 1, response.length));
       setListOfWords(response);
       setLoading(false);
@@ -54,7 +56,7 @@ export default function Home() {
   };
   useEffect(() => {
     if (wordLength) {
-      const response = words.filter((word) => word.length === wordLength);
+      const response = en_words.filter((word:string) => word.length === wordLength);
       setHiddenWord(randomWord(response, 1, response.length));
       setListOfWords(response);
     }
