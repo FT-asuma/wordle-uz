@@ -1,4 +1,4 @@
-.header {
+.header, .navbar {
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -266,6 +266,15 @@
 .aside > p {
   font-size: 15px;
   color: #b4b4b4;
+}
+
+.tabs > svg {
+  width: 24px;
+  height: 24px;
+}
+
+.wrapperTabs > a {
+  font-size: 14px;
 }
 
 @media screen and (max-width: 601px) {

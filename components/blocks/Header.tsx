@@ -225,7 +225,7 @@ const Header = ({
             <div className={styles.buttonRaw}>
               {[4, 5, 6, 7, 8, 9, 10].map((length) => (
                 <button
-                  key={length}
+                  key={length ** 2 + Math.random() / 23}
                   style={
                     wordLength === length
                       ? {
@@ -253,22 +253,25 @@ const Header = ({
                     "Confetti animation when you find the hidden word",
                   setter: setConfetti,
                   value: confetti,
+                  key: "confetti-animation", // Specific key for this setting
                 },
                 {
                   title: "Swap Buttons",
                   description: "Swap Enter and Backspace buttons",
                   setter: setSwap,
                   value: swap,
+                  key: "swap-buttons", // Specific key for this setting
                 },
                 {
                   title: "Screen mode",
                   description: "Change the color of mode to dark/light",
                   setter: setMode,
                   value: mode,
+                  key: "screen-mode", // Specific key for this setting
                 },
-              ].map(({ title, description, setter, value }, index) => (
-                <>
-                  <div key={index} className={styles.additional}>
+              ].map(({ title, description, setter, value, key }, index) => (
+                <div key={key}>
+                  <div className={styles.additional}>
                     <div className={styles.aside}>
                       <h3>{title}</h3>
                       <p>{description}</p>
@@ -277,8 +280,9 @@ const Header = ({
                       <Switcher setter={setter} value={value} />
                     </div>
                   </div>
-                  {index < 2 && <hr />}
-                </>
+                  {index < 2 && <hr key={`hr-${key}`} />}{" "}
+                  {/* Use a unique key for hr */}
+                </div>
               ))}
             </div>
           </div>
@@ -403,7 +407,7 @@ const Header = ({
               {["P", "L", "A", "N", "T"].map((i) => {
                 return (
                   <div
-                    key={i}
+                    key={`${i + Math.random()}`}
                     style={{ width: 54 }}
                     className={styles.letterCont}
                   >
@@ -440,10 +444,10 @@ const Header = ({
               </p>
             </div>
             <div className={styles.sample2}>
-              {["G", "P", "A", "N", "D"].map((i) => {
+              {["G", "R", "A", "N", "D"].map((i) => {
                 return (
                   <div
-                    key={i}
+                    key={`${i}${Math.random()}`}
                     style={{ width: 54 }}
                     className={styles.letterCont}
                   >
@@ -461,10 +465,10 @@ const Header = ({
               <p style={{ textAlign: "center", fontSize: 14 }}>Almost there!</p>
             </div>
             <div className={styles.sample}>
-              {["G", "P", "A", "P", "E"].map((i) => {
+              {["G", "R", "A", "P", "E"].map((i) => {
                 return (
                   <div
-                    key={i}
+                    key={`${i}${Math.random()}`}
                     style={{
                       width: 54,
                       background: "#4caf50",

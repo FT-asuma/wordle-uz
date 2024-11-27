@@ -241,7 +241,7 @@ const Game = ({
     setLength("");
   };
 
-  // console.log(prevList)
+  // console.log(hiddenWord)
   const [dimension, setDimension] = useState<{
     width: number;
     height: number;
@@ -289,17 +289,17 @@ const Game = ({
         }
         className={styles.congrats}
       >
-        {confetti === true && (
+        {/* {text === "won! 🏆" && (
           <ReactConfetti
             width={1920}
             height={1000}
-            tweenDuration={100}
+            tweenDuration={1000}
             style={{
               width: "100vw",
               height: "100vh",
             }}
           />
-        )}
+        )} */}
       </div>
       <Alert value={error} type="alert" />
       <GameOver
@@ -311,7 +311,6 @@ const Game = ({
         key={"sheesh"}
         whichLib={whichLib}
         setHiddenWord={setHiddenWord}
-        keyPress={key!}
       />
       <div className={styles.attempts}>
         <div
@@ -389,7 +388,10 @@ const Game = ({
                     >
                       {i.perLetter.toLocaleUpperCase()}
                       <sup>
-                        {i.countInWord && i.countInWord !== 0
+                        {(i.countInWord &&
+                          i.countInWord !== 0 &&
+                          i.isCorrect !== false) ||
+                        i.isOccured !== false
                           ? i.countInWord
                           : ""}
                       </sup>
