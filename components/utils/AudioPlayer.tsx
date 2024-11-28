@@ -13,10 +13,12 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ word }) => {
   const [audioInstance, setAudioInstance] = useState<HTMLAudioElement | null>(
     null
   );
+  const [loading, setLoading] = useState(false); // New loading state
 
   useEffect(() => {
     const fetchAudio = async () => {
       if (word) {
+        setLoading(true); // Set loading to true when fetching audio
         try {
           const response = await fetch(
             `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`
@@ -32,6 +34,8 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ word }) => {
           }
         } catch (error) {
           console.error("Error fetching audio:", error);
+        } finally {
+          setLoading(false); // Set loading to false once fetching is done
         }
       }
     };
@@ -62,7 +66,9 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ word }) => {
 
   return (
     <div className={styles.audioPlayer}>
-      {audioUrl ? (
+      {loading ? (
+        <div className={styles.loading}></div> // Show loading spinner
+      ) : audioUrl ? (
         <button onClick={handlePlay} className={styles.playBtn}>
           {isPlaying ? (
             <FaPause className={`${styles.icon} ${styles.pauseIcon}`} />
