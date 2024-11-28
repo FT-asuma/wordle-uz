@@ -2,15 +2,81 @@
     display: flex;
     width: 100%;
     justify-content: center;
+    margin-top: 1rem;
+    flex-direction: column;
 }
 
-.definition {
+.information {
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.definition > p {
-    color: #fff;
+.aboutWord {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.theWord {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.theWord > h1 {
+    font-size: 54px;
+}
+
+.theWord > h3 {
+    color: #0af025;
+}
+
+.next {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+}
+
+.title {
+    display: flex;
+}
+
+.listOfSynonyms {
+    display: flex;
+    gap: 0.3rem;
+    margin-left: 1rem;
+}
+
+.listOfSynonyms > p {
+    color: #0af025;
+}
+
+.title > p {
+    color: #7d7d9b !important;
+}
+
+.next > span {
+    width: 90%;
+    background: #415a77;
+    border-width: 0.5px;
+    height: 1px;
+}
+
+.meaningList {
+    margin-top: 0.8rem;
+    margin-bottom: 0.8rem;
+    margin-left: 2rem;
+}
+
+.meaningList > li {
+    font-size: 14px;
+}
+
+.meaningList > li::marker {
+    color: #0af025;
 }

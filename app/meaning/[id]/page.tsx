@@ -3,6 +3,12 @@ import styles from "./translation.module.css";
 import Wrapper from "@/components/container/Wrapper";
 import { redirect } from "next/navigation";
 import Navbar from "@/components/blocks/Navbar";
+import ThemeChanger from "@/components/blocks/ThemeChanger";
+import { Suspense } from "react";
+import Loading from "./loading";
+import Link from "next/link";
+import SearchBar from "@/components/utils/Searchbar";
+import AudioPlayer from "@/components/utils/AudioPlayer";
 
 interface PageProps {
   params: { id: string }; // Declare the type for params
@@ -22,33 +28,108 @@ async function getWordDefinition(word: string) {
 }
 
 const Page = async ({ params }: PageProps) => {
-  
   const result = await getWordDefinition(params.id.toLocaleLowerCase());
   if (result === "An error occured while translating") {
     return (
-      <main className={styles.meaning}>
-        <Wrapper>
-          <Navbar />
-          <h2>
-            We are truly sorry about that mistake we are currently working on
-            this project
-          </h2>
-        </Wrapper>
-      </main>
+      <Suspense fallback={<Loading />}>
+        <ThemeChanger>
+          <main
+            style={{
+              flexDirection: "column",
+              gap: "1rem",
+            }}
+            className={styles.meaning}
+          >
+            <h2>
+              We are truly sorry about that mistake we are currently working on
+              this project
+            </h2>
+            <p><i>You may checkout the meaning of this word from: </i></p>
+            <br />
+            <Link href={`https://en.wikipedia.org/wiki/${params.id}`}>
+              {params.id.toUpperCase()} --{">"}
+            </Link>
+          </main>
+        </ThemeChanger>
+      </Suspense>
     );
-  } else
+  } else {
     return (
-      <main className={styles.meaning}>
-        <Wrapper>
-          <Navbar />
-          <div className={styles.definition}>
-            <p>
-              {JSON.stringify(result.meanings[0].definitions[0].definition)}
-            </p>
-          </div>
-        </Wrapper>
-      </main>
+      <Suspense fallback={<Loading />}>
+        <ThemeChanger>
+          <main className={styles.meaning}>
+            <div className={styles.information}>
+              <div className={styles.aboutWord}>
+                <div className={styles.theWord}>
+                  <h1 style={{ textTransform: "capitalize" }}>{result.word}</h1>
+                  <h3>
+                    {result.phonetic
+                      ? result?.phonetic
+                      : result.phonetics[1]?.text}
+                  </h3>
+                </div>
+                <div className={styles.audioPlay}>
+                  <AudioPlayer word={params.id} />
+                </div>
+              </div>
+            </div>
+            {result.meanings.slice(0, 4).map((i: {
+              partOfSpeech: string
+              definitions: {
+                definition: string
+                synonyms: string[]
+                antonyms: string[]
+                example: string
+              }[]
+              synonyms: string[]
+              antonyms: string[]
+            }) => {
+              const example = i.definitions.find((item) => item.example)?.example
+              console.log(example)
+              return (
+                <div className="" key={i.partOfSpeech+Math.random()}>
+                  <article className={styles.next}>
+                    <h3>
+                      <i>{i.partOfSpeech}</i>
+                    </h3>{" "}
+                    <span />
+                  </article>
+                  <div className={styles.information}>
+                    <div style={{
+                      flexDirection: "column",
+                      justifyContent: "flex-start",
+                      alignItems: "flex-start"
+                    }} className={styles.aboutWord}>
+                      <div className={styles.title}>
+                        <p>Meaning</p>
+                      </div>
+                      <ul className={styles.meaningList}>
+                        {i.definitions.slice(0, 5).map(item => {
+                          return <li key={item.example}>{item.definition}</li>
+                        })}
+                      </ul>
+                      {i.synonyms.length ? <div className={styles.title}>
+                        <p>Synonyms:</p>
+                        <div className={styles.listOfSynonyms}>{i.synonyms.slice(0,4).map(synonym=> <p key={synonym+i.partOfSpeech+Math.random()}><b>{synonym};</b></p>)}</div>
+                      </div>: ""}
+                      {i.antonyms.length ? <div className={styles.title}>
+                        <p>Antonyms:</p>
+                        <div className={styles.listOfSynonyms}>{i.antonyms.slice(0,4).map(antonym=> <p key={antonym+i.partOfSpeech+Math.random()}><b>{antonym};</b></p>)}</div>
+                      </div>: ""}
+                      {example ? <div className={styles.title}>
+                        <p>Example:</p>
+                        <div className={styles.listOfSynonyms}><p><i>{example};</i></p></div>
+                      </div>: ""}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </main>
+        </ThemeChanger>
+      </Suspense>
     );
+  }
 };
 
 export default Page;
