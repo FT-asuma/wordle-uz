@@ -282,7 +282,8 @@
 .light,
 .dark {
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
+  max-height: fit-content;
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -304,12 +305,17 @@
   color: #2e3239 !important;
 }
 
-.light > section, .dark > section {
+.light > section,
+.dark > section {
   width: 737px;
 }
 
-.handleTheme {
-  
+@media screen and (max-width: 750px) {
+  .light > section,
+  .dark > section {
+    width: 95%;
+    margin: 0 auto;
+  }
 }
 
 @media screen and (max-width: 601px) {
@@ -344,5 +350,32 @@
   }
   .aside > p {
     font-size: 13px;
+  }
+
+  .wrapperTabs > a {
+    font-size: 12px;
+  }
+  .wrapperTabs > h2 {
+    font-size: 20px;
+  }
+
+  .wrapperTabs {
+    width: fit-content !important;
+  }
+}
+
+@media screen and (max-width: 410px) {
+  .wrapperTabs a {
+    display: none;
+  }
+  .wrapperTabs > label {
+    display: none;
+  }
+  .wrapperTabs {
+    max-width: fit-content !important;
+    min-width: fit-content !important;
+  }
+  .wrapperTabs > a {
+    font-size: 11px;
   }
 }

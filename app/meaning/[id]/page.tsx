@@ -9,6 +9,9 @@ import Loading from "./loading";
 import Link from "next/link";
 import SearchBar from "@/components/utils/Searchbar";
 import AudioPlayer from "@/components/utils/AudioPlayer";
+import { getPixabayPhotos } from "@/app/utils/getImage";
+import { PixabayImage } from "@/constants/interface";
+import ImageContainer from "@/components/utils/ImageContainer";
 
 interface PageProps {
   params: { id: string }; // Declare the type for params
@@ -29,6 +32,7 @@ async function getWordDefinition(word: string) {
 
 const Page = async ({ params }: PageProps) => {
   const result = await getWordDefinition(params.id.toLocaleLowerCase());
+  // const foundImage: PixabayImage[] = await getPixabayPhotos(params.id);
   if (result === "An error occured while translating") {
     return (
       <Suspense fallback={<Loading />}>
@@ -44,7 +48,9 @@ const Page = async ({ params }: PageProps) => {
               We are truly sorry about that mistake we are currently working on
               this project
             </h2>
-            <p><i>You may checkout the meaning of this word from: </i></p>
+            <p>
+              <i>You may checkout the meaning of this word from: </i>
+            </p>
             <br />
             <Link href={`https://en.wikipedia.org/wiki/${params.id}`}>
               {params.id.toUpperCase()} --{">"}
@@ -73,58 +79,101 @@ const Page = async ({ params }: PageProps) => {
                 </div>
               </div>
             </div>
-            {result.meanings.slice(0, 4).map((i: {
-              partOfSpeech: string
-              definitions: {
-                definition: string
-                synonyms: string[]
-                antonyms: string[]
-                example: string
-              }[]
-              synonyms: string[]
-              antonyms: string[]
-            }) => {
-              const example = i.definitions.find((item) => item.example)?.example
-              console.log(example)
-              return (
-                <div className="" key={i.partOfSpeech+Math.random()}>
-                  <article className={styles.next}>
-                    <h3>
-                      <i>{i.partOfSpeech}</i>
-                    </h3>{" "}
-                    <span />
-                  </article>
-                  <div className={styles.information}>
-                    <div style={{
-                      flexDirection: "column",
-                      justifyContent: "flex-start",
-                      alignItems: "flex-start"
-                    }} className={styles.aboutWord}>
-                      <div className={styles.title}>
-                        <p>Meaning</p>
+            {result.meanings.slice(0, 4).map(
+              (i: {
+                partOfSpeech: string;
+                definitions: {
+                  definition: string;
+                  synonyms: string[];
+                  antonyms: string[];
+                  example: string;
+                }[];
+                synonyms: string[];
+                antonyms: string[];
+              }) => {
+                const example = i.definitions.find(
+                  (item) => item.example
+                )?.example;
+                console.log(example);
+                return (
+                  <div className="" key={i.partOfSpeech + Math.random()}>
+                    <article className={styles.next}>
+                      <h3>
+                        <i>{i.partOfSpeech}</i>
+                      </h3>{" "}
+                      <span />
+                    </article>
+                    <div className={styles.information}>
+                      <div
+                        style={{
+                          flexDirection: "column",
+                          justifyContent: "flex-start",
+                          alignItems: "flex-start",
+                        }}
+                        className={styles.aboutWord}
+                      >
+                        <div className={styles.title}>
+                          <p>Meaning</p>
+                        </div>
+                        <ul className={styles.meaningList}>
+                          {i.definitions.slice(0, 5).map((item) => {
+                            return (
+                              <li key={item.example}>{item.definition}</li>
+                            );
+                          })}
+                        </ul>
+                        {i.synonyms.length ? (
+                          <div className={styles.title}>
+                            <p>Synonyms:</p>
+                            <div className={styles.listOfSynonyms}>
+                              {i.synonyms.slice(0, 3).map((synonym) => (
+                                <Link
+                                  href={`/meaning/${synonym}`}
+                                  key={synonym + i.partOfSpeech + Math.random()}
+                                >
+                                  <b>{synonym};</b>
+                                </Link>
+                              ))}
+                            </div>
+                          </div>
+                        ) : (
+                          ""
+                        )}
+                        {i.antonyms.length ? (
+                          <div className={styles.title}>
+                            <p>Antonyms:</p>
+                            <div className={styles.listOfSynonyms}>
+                              {i.antonyms.slice(0, 3).map((antonym) => (
+                                <Link
+                                  href={`/meaning/${antonym}`}
+                                  key={antonym + i.partOfSpeech + Math.random()}
+                                >
+                                  <b>{antonym};</b>
+                                </Link>
+                              ))}
+                            </div>
+                          </div>
+                        ) : (
+                          ""
+                        )}
+                        {example ? (
+                          <div className={styles.title}>
+                            <p>Example:</p>
+                            <div className={styles.listOfSynonyms}>
+                              <p>
+                                <i>{example};</i>
+                              </p>
+                            </div>
+                          </div>
+                        ) : (
+                          ""
+                        )}
                       </div>
-                      <ul className={styles.meaningList}>
-                        {i.definitions.slice(0, 5).map(item => {
-                          return <li key={item.example}>{item.definition}</li>
-                        })}
-                      </ul>
-                      {i.synonyms.length ? <div className={styles.title}>
-                        <p>Synonyms:</p>
-                        <div className={styles.listOfSynonyms}>{i.synonyms.slice(0,4).map(synonym=> <p key={synonym+i.partOfSpeech+Math.random()}><b>{synonym};</b></p>)}</div>
-                      </div>: ""}
-                      {i.antonyms.length ? <div className={styles.title}>
-                        <p>Antonyms:</p>
-                        <div className={styles.listOfSynonyms}>{i.antonyms.slice(0,4).map(antonym=> <p key={antonym+i.partOfSpeech+Math.random()}><b>{antonym};</b></p>)}</div>
-                      </div>: ""}
-                      {example ? <div className={styles.title}>
-                        <p>Example:</p>
-                        <div className={styles.listOfSynonyms}><p><i>{example};</i></p></div>
-                      </div>: ""}
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              }
+            )}
           </main>
         </ThemeChanger>
       </Suspense>

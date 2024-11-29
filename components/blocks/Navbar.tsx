@@ -6,6 +6,8 @@ import { ImBooks } from "react-icons/im";
 import Link from "next/link";
 import Switcher from "../utils/Switcher";
 import { IoMoonOutline, IoSunnyOutline } from "react-icons/io5";
+import { redirect } from "next/dist/server/api-utils";
+import { useRouter } from "next/navigation";
 
 const Navbar = ({
   mode,
@@ -14,6 +16,7 @@ const Navbar = ({
   mode: boolean;
   setMode: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
+  const {push} = useRouter()
   return (
     <div className={styles.navbar}>
       <div className={styles.wrapperTabs}>
@@ -25,6 +28,9 @@ const Navbar = ({
             color={mode === false ? "#e0e1dd" : "rgb(65, 74, 94)"}
             height={24}
             width={24}
+            onClick={()=> {
+              push("/")
+            }}
           />
         </button>
         <Link href={"/"} style={mode === true? {background: "#ebedf3"}: {}} className={styles.tabs}>Back to Game</Link>

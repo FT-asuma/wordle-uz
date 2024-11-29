@@ -1,6 +1,10 @@
-import styles from "./utils.module.css"
+import styles from "./utils.module.css";
 const LoadingSkeleton = () => {
-  return <div className={styles.loader}></div>;
+  return (
+    <div className={styles.loadingContainer}>
+      <div className={styles.spinner}></div>
+    </div>
+  );
 };
 
 export default LoadingSkeleton;
