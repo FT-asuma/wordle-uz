@@ -158,3 +158,12 @@
 .share { 
   width: 95% !important;
 }
+
+.linkCopiedMessage {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #28a745;
+  font-size: 14px;
+  margin-top: 10px;
+}

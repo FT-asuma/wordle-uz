@@ -1,10 +1,15 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { doc, increment, updateDoc } from "firebase/firestore";
 import confetti from "canvas-confetti";
 import { auth, db } from "@/app/firebase"; // Make sure you import your Firebase auth and db
 
 const ShortConfettiAnimation = () => {
+  const [hasRun, setHasRun] = useState(false); // State to track if animation has already run
+
   useEffect(() => {
+    if (hasRun) return; // If the animation has already run, exit early
+    setHasRun(true); // Set the flag so that it doesn't run again
+
     // Only run the animation if the user is authenticated
     const user = auth.currentUser; // Get the currently authenticated user
     if (!user) {
@@ -62,7 +67,7 @@ const ShortConfettiAnimation = () => {
 
     // Cleanup the interval when the component unmounts
     return () => clearInterval(interval);
-  }, []); // Empty dependency array to run only once after component mounts
+  }, [hasRun]); // Now, use `hasRun` as the dependency, ensuring this runs only once
 
   return <div></div>;
 };

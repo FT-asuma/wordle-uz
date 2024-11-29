@@ -1,7 +1,8 @@
-import React, { Dispatch, SetStateAction, useEffect } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import styles from "./popups.module.css";
 import Link from "next/link";
 import ShortConfettiAnimation from "../utils/GameWon";
+import { FaCheckCircle } from "react-icons/fa"; // Import the success icon
 
 const GameOver = ({
   text,
@@ -20,6 +21,8 @@ const GameOver = ({
   setHiddenWord: Dispatch<SetStateAction<string>>;
   whichLib: string[];
 }) => {
+  const [linkCopied, setLinkCopied] = useState(false); // State to track if link was copied
+
   const randomWord = (list: string[], min: number, max: number) => {
     if (!list || list.length === 0) return "";
     const random = Math.floor(Math.random() * (max - min)) + min;
@@ -32,6 +35,20 @@ const GameOver = ({
       setHiddenWord(randomWord(whichLib, 1, whichLib.length));
     }, 300);
     setText("");
+  };
+
+  const copyToClipboard = () => {
+    const urlToCopy = window.location.href; // Copy the current page URL
+    navigator.clipboard.writeText(urlToCopy).then(
+      () => {
+        setLinkCopied(true); // Set linkCopied state to true
+        setTimeout(() => setLinkCopied(false), 3000); // Reset after 3 seconds
+      },
+      (err) => {
+        console.error("Failed to copy link: ", err);
+        alert("Failed to copy link.");
+      }
+    );
   };
 
   useEffect(() => {
@@ -56,7 +73,7 @@ const GameOver = ({
       aria-hidden={!modalOpen}
       role="dialog"
     >
-      {text === "won! 🏆" && <ShortConfettiAnimation/>}
+      {text === "won! 🏆" && <ShortConfettiAnimation />}
       <div className={styles.modalCont}>
         <div className={styles.title}>
           <span />
@@ -97,7 +114,20 @@ const GameOver = ({
             Or press <code>Enter</code> to play again
           </p>
           <span>Other options</span>
-          <button className={styles.share}>Share with friends</button>
+          <button
+            className={styles.share}
+            onClick={copyToClipboard} // Copy the current URL to clipboard
+          >
+            Share with friends
+          </button>
+
+          {/* Display "Link copied" message below the button */}
+          {linkCopied && (
+            <div className={styles.linkCopiedMessage}>
+              <FaCheckCircle color="#28a745" size={16} />
+              <span>Link copied!</span>
+            </div>
+          )}
         </div>
       </div>
       <div onClick={resetGame} className={styles.bg} />
