@@ -91,7 +91,6 @@
   transition: all 0.3s ease;
 }
 
-
 .container > button:hover {
   box-shadow: rgba(60, 154, 248, 0.2) 0px 12px 14px;
   background: #4d7097;
@@ -328,7 +327,6 @@
 }
 
 .playersList {
-  margin-top: 20px;
   width: 100%;
 }
 
@@ -375,7 +373,6 @@
 .separator {
   border: none;
   border-top: 1px solid #ddd;
-  margin-top: 0.5rem;
 }
 
 @media screen and (max-width: 750px) {
@@ -474,4 +471,114 @@
   100% {
     transform: rotate(360deg);
   }
+}
+
+/* For circular user avatars with borders */
+.avatar {
+  width: 40px; /* Adjust size as needed */
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #ccc; /* Light grey border for all users */
+  margin-right: 10px; /* Space between image and name */
+  object-fit: cover; /* Ensures the image doesn't stretch */
+}
+
+/* For the top 3 players, change border color and add box shadow */
+.popularAvatar {
+  border-color: gold; /* You can customize colors */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Box shadow for a glowing effect */
+}
+
+/* Ensure that the layout for usernames and avatars works well */
+.username {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.player > .playerItem {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.player > .playerItem.top1 {
+  background-color: #2c3b4d; /* Darker background for top 1 */
+  border-color: gold;
+  box-shadow: 0 4px 8px rgba(255, 215, 0, 0.5);
+  filter: brightness(1.2);
+}
+
+.player > .playerItem.top2 {
+  background-color: #1a2635; /* Slightly lighter dark background for top 2 */
+  border-color: silver;
+  box-shadow: 0 4px 6px rgba(192, 192, 192, 0.5);
+  filter: brightness(1.15);
+}
+
+.player > .playerItem.top3 {
+  background-color: #0d1b2a; /* Darker blue-grey background for top 3 */
+  border-color: #cd7f32; /* Bronze color */
+  box-shadow: 0 4px 6px rgba(205, 127, 50, 0.5);
+  filter: brightness(1.1);
+}
+
+/* Optional: Adjust the title or other modal styles if needed */
+.title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* Default style for player avatars */
+.avatar {
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  margin-right: 10px;
+}
+
+/* Style for top 1 (gold) */
+.top1 {
+  border-color: gold;
+  box-shadow: 0 4px 8px rgba(255, 215, 0, 0.5); /* Noticeable gold box shadow */
+  filter: brightness(1.2); /* Brighter effect */
+}
+
+/* Style for top 2 (silver) */
+.top2 {
+  border-color: silver;
+  box-shadow: 0 4px 6px rgba(192, 192, 192, 0.5);
+  filter: brightness(1.15);
+}
+
+/* Style for top 3 (bronze) */
+.top3 {
+  border-color: #cd7f32; /* Bronze color */
+  box-shadow: 0 4px 6px rgba(205, 127, 50, 0.5);
+  filter: brightness(1.1);
+}
+
+/* Style for regular players */
+.playerItem {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+/* Optional: Adjust the overall style when the top 3 players are displayed */
+.playerItem.top1 {
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.75);
+}
+.playerItem.top2 {
+  box-shadow: 0 4px 10px rgba(192, 192, 192, 0.75);
+}
+.playerItem.top3 {
+  box-shadow: 0 4px 8px rgba(205, 127, 50, 0.75);
+}
+
+.playersList {
+  overflow-y: auto;
+  max-height: 550px; /* Optional, if you want to limit the height */
 }

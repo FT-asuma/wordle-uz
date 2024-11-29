@@ -189,7 +189,11 @@ const Header = ({
                 </svg>
               </button>
             </div>
-            {user ? "" : <button onClick={()=> push("/auth")}>Register</button>}
+            {user ? (
+              ""
+            ) : (
+              <button onClick={() => push("/auth")}>Register</button>
+            )}
           </div>
         </div>
       </div>
@@ -273,45 +277,63 @@ const Header = ({
               ) : (
                 topPlayers
                   .filter((pl) => pl.wins > 0)
-                  .map((player, index) => (
-                    <div className={styles.player} key={player.id}>
-                      <div key={player.id} className={styles.playerItem}>
-                        <div className={styles.leftSide}>
-                          <div className={styles.username}>
-                            {player.displayName.split(" ")[0]}{" "}
-                            {index === 0 && (
-                              <FaTrophy
-                                color="gold"
-                                size={20}
-                                className={styles.icon}
+                  .map((player, index) => {
+                    const playerRankClass =
+                      index === 0
+                        ? styles.top1
+                        : index === 1
+                        ? styles.top2
+                        : index === 2
+                        ? styles.top3
+                        : "";
+
+                    return (
+                      <div className={styles.player} key={player.id}>
+                        {/* <hr className={styles.separator} /> */}
+                        <div
+                          className={`${styles.playerItem} ${playerRankClass}`}
+                        >
+                          <div className={styles.leftSide}>
+                            <div className={styles.username}>
+                              <img
+                                src={player.photoURL || "/default-user.png"}
+                                alt={player.displayName}
+                                className={`${styles.avatar} ${playerRankClass}`}
                               />
-                            )}
-                            {index === 1 && (
-                              <FaTrophy
-                                color="silver"
-                                size={20}
-                                className={styles.icon}
-                              />
-                            )}
-                            {index === 2 && (
-                              <FaTrophy
-                                color="bronze"
-                                size={20}
-                                className={styles.icon}
-                              />
-                            )}
+                              {player.displayName.split(" ")[0]}
+                              {index === 0 && (
+                                <FaTrophy
+                                  color="gold"
+                                  size={20}
+                                  className={styles.icon}
+                                />
+                              )}
+                              {index === 1 && (
+                                <FaTrophy
+                                  color="silver"
+                                  size={20}
+                                  className={styles.icon}
+                                />
+                              )}
+                              {index === 2 && (
+                                <FaTrophy
+                                  color="bronze"
+                                  size={20}
+                                  className={styles.icon}
+                                />
+                              )}
+                            </div>
+                            <div className={styles.email}>{player.email}</div>
                           </div>
-                          <div className={styles.email}>{player.email}</div>
-                        </div>
-                        <div className={styles.rightSide}>
-                          <div className={styles.winRate}>
-                            Wins: <b>{player.wins}</b>
+                          <div className={styles.rightSide}>
+                            <div className={styles.winRate}>
+                              Wins: <b>{player.wins}</b>
+                            </div>
                           </div>
                         </div>
                       </div>
-                      <hr className={styles.separator} />
-                    </div>
-                  ))
+                    );
+                  })
               )}
             </div>
           </div>
