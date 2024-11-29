@@ -241,7 +241,7 @@ const Game = ({
     setLength("");
   };
 
-  // console.log(hiddenWord)
+  console.log(hiddenWord);
   const [dimension, setDimension] = useState<{
     width: number;
     height: number;
@@ -388,10 +388,7 @@ const Game = ({
                     >
                       {i.perLetter.toLocaleUpperCase()}
                       <sup>
-                        {i.countInWord &&
-                        i.countInWord > 1 &&
-                        i.isCorrect !== false &&
-                        i.isOccured !== false
+                        {i.countInWord && i.countInWord > 1 && (i.isCorrect || i.isOccured)
                           ? i.countInWord
                           : ""}
                       </sup>
@@ -471,10 +468,7 @@ const Game = ({
                     >
                       {i.perLetter.toLocaleUpperCase()}
                       <sup>
-                        {i.countInWord &&
-                        i.countInWord > 1 &&
-                        i.isCorrect !== false &&
-                        i.isOccured !== false
+                        {i.countInWord && i.countInWord > 1 && (i.isCorrect || i.isOccured)
                           ? i.countInWord
                           : ""}
                       </sup>
@@ -554,10 +548,7 @@ const Game = ({
                     >
                       {i.perLetter.toLocaleUpperCase()}
                       <sup>
-                        {i.countInWord &&
-                        i.countInWord > 1 &&
-                        i.isCorrect !== false &&
-                        i.isOccured !== false
+                        {i.countInWord && i.countInWord > 1 && (i.isCorrect || i.isOccured)
                           ? i.countInWord
                           : ""}
                       </sup>
@@ -637,10 +628,7 @@ const Game = ({
                     >
                       {i.perLetter.toLocaleUpperCase()}
                       <sup>
-                        {i.countInWord &&
-                        i.countInWord > 1 &&
-                        i.isCorrect !== false &&
-                        i.isOccured !== false
+                        {i.countInWord && i.countInWord > 1 && (i.isCorrect || i.isOccured)
                           ? i.countInWord
                           : ""}
                       </sup>
@@ -720,10 +708,7 @@ const Game = ({
                     >
                       {i.perLetter.toLocaleUpperCase()}
                       <sup>
-                        {i.countInWord &&
-                        i.countInWord > 1 &&
-                        i.isCorrect !== false &&
-                        i.isOccured !== false
+                        {i.countInWord && i.countInWord > 1 && (i.isCorrect || i.isOccured)
                           ? i.countInWord
                           : ""}
                       </sup>
@@ -803,10 +788,7 @@ const Game = ({
                     >
                       {i.perLetter.toLocaleUpperCase()}
                       <sup>
-                        {i.countInWord &&
-                        i.countInWord > 1 &&
-                        i.isCorrect !== false &&
-                        i.isOccured !== false
+                        {i.countInWord && i.countInWord > 1 && (i.isCorrect || i.isOccured)
                           ? i.countInWord
                           : ""}
                       </sup>
