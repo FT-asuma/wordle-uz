@@ -49,7 +49,7 @@ const ShortConfettiAnimation = () => {
       try {
         const userDocRef = doc(db, "users", user.uid);
         await updateDoc(userDocRef, {
-          wins: increment(0.5), // Set wins to 1 or increment it (use Firebase's increment function for incremental updates)
+          wins: increment(1), // Set wins to 1 or increment it (use Firebase's increment function for incremental updates)
         });
         console.log("Wins updated successfully");
       } catch (error) {
