@@ -212,7 +212,7 @@ const Header = ({
                         ).toLocaleDateString()}
                     </div>
                   </div>
-                  <div style={{marginTop: 16}} className={styles.information}>
+                  <div style={{ marginTop: 16 }} className={styles.information}>
                     Dear {user.displayName}! <br />
                     Thanks for you attendence in our game! <br />
                     {index! > 1 && `You won ${index} times!!!`} <br />
@@ -328,7 +328,18 @@ const Header = ({
                           className={`${styles.playerItem} ${playerRankClass}`}
                         >
                           <div className={styles.leftSide}>
-                            <div className={styles.username}>
+                            <div
+                              style={
+                                index === 0
+                                  ? { color: "gold" }
+                                  : index === 1
+                                  ? { color: "silver" }
+                                  : index === 2
+                                  ? { color: "#cd7f32" }
+                                  : {}
+                              }
+                              className={styles.username}
+                            >
                               <img
                                 src={player.photoURL || "/default-user.png"}
                                 alt={player.displayName}
@@ -351,13 +362,19 @@ const Header = ({
                               )}
                               {index === 2 && (
                                 <FaTrophy
-                                  color="bronze"
+                                  color="#cd7f32"
                                   size={20}
                                   className={styles.icon}
                                 />
                               )}
                             </div>
-                            <div className={styles.email}>{player.email}</div>
+                            <div className={styles.email}>
+                              Joined - {" "} 
+                              {user!.metadata.creationTime &&
+                                new Date(
+                                  user!.metadata.creationTime
+                                ).toLocaleDateString()}
+                            </div>
                           </div>
                           <div className={styles.rightSide}>
                             <div className={styles.winRate}>
