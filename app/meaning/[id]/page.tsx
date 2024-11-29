@@ -94,7 +94,6 @@ const Page = async ({ params }: PageProps) => {
                 const example = i.definitions.find(
                   (item) => item.example
                 )?.example;
-                console.log(example);
                 return (
                   <div className="" key={i.partOfSpeech + Math.random()}>
                     <article className={styles.next}>

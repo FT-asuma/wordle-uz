@@ -241,7 +241,9 @@ const Game = ({
     setLength("");
   };
 
-  console.log(hiddenWord);
+  // console.log(hiddenWord);
+  
+  
   const [dimension, setDimension] = useState<{
     width: number;
     height: number;

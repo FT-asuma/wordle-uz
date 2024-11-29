@@ -29,10 +29,8 @@ const AuthPage: React.FC = () => {
         });
       }
 
-      console.log("Google login successful!");
       push("/"); // Navigate to home page or dashboard
     } catch (error: any) {
-      console.error("Google login failed:", error.message);
       alert(error.message); // Display a user-friendly message
     }
   };

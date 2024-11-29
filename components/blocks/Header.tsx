@@ -71,10 +71,8 @@ const Header = ({
     const auth = getAuth();
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        console.log("User is logged in:", user);
         setUser(user);
       } else {
-        console.log("No user is logged in");
       }
     });
   }, []);

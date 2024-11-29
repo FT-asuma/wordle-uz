@@ -18,7 +18,6 @@ export async function getWordDefinition(word: string) {
     const page: any = Object.values(pages)[0];
     return page.extract || "No definition found.";
   } catch (error) {
-    console.error("Error fetching definition:", error);
     return "Error fetching definition.";
   }
 }
