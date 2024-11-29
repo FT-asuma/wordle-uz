@@ -3,6 +3,18 @@ import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import styles from "./blocks.module.css";
 import Switcher from "../utils/Switcher";
 import { useRouter } from "next/navigation";
+import { FaTrophy } from "react-icons/fa";
+import { db } from "@/app/firebase";
+import {
+  collection,
+  query,
+  orderBy,
+  limit,
+  getDocs,
+  doc,
+  getDoc,
+} from "firebase/firestore";
+import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 const Header = ({
   setWordLength,
   wordLength,
@@ -26,7 +38,47 @@ const Header = ({
 }) => {
   const [isSettingsOpen, setisSettingsOpen] = useState(false);
   const [isInfoOpen, setisInfoOpen] = useState(false);
+  const [isStatsOpen, setisStatsOpen] = useState(false);
   const { push } = useRouter();
+  const [authModal, setAuthModal] = useState(false);
+  const [pending, setPending] = useState(true);
+  const [topPlayers, setTopPlayers] = useState<any[]>([]);
+  const [user, setUser] = useState<User>();
+  const [profileModal, setProfileModal] = useState(false);
+  useEffect(() => {
+    const fetchTopPlayers = async () => {
+      try {
+        const usersCollection = collection(db, "users");
+        const q = query(usersCollection, orderBy("wins", "desc"), limit(10)); // Query to get top 10 players by wins
+        const querySnapshot = await getDocs(q);
+
+        const players = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        setTopPlayers(players);
+        setPending(false);
+      } catch (error) {
+        console.error("Error getting documents: ", error);
+      }
+    };
+
+    fetchTopPlayers();
+  }, [isStatsOpen]);
+
+  useEffect(() => {
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log("User is logged in:", user);
+        setUser(user);
+      } else {
+        console.log("No user is logged in");
+      }
+    });
+  }, []);
+
   return (
     <header className={styles.header}>
       <div className={styles.wrapperTabs}>
@@ -63,7 +115,10 @@ const Header = ({
         </button>
         <button
           onClick={() => {
-            // push("/register")
+            setProfileModal(!profileModal);
+            setisInfoOpen(false);
+            setisSettingsOpen(false);
+            setisStatsOpen(false);
           }}
           className={
             mode === false ? styles.tabs : `${styles.tabs} ${styles.lightTabs}`
@@ -99,15 +154,66 @@ const Header = ({
             </g>
           </svg>
         </button>
+        <div
+          style={{
+            height: profileModal ? 600 : 0,
+            opacity: 1,
+            zIndex: profileModal ? 100 : -10,
+            transition: "0.2s",
+          }}
+          className={`${styles.modal} ${mode && styles.lightMode}`}
+        >
+          <div
+            style={{
+              opacity: profileModal ? 1 : 0,
+              transition: "0.3s",
+            }}
+            className={styles.container}
+          >
+            <div className={styles.title}>
+              <span></span>
+              <h2>
+                Welcome -{" "}
+                {user
+                  ? user.displayName?.split(" ")[0]
+                  : `Player${Math.floor(Math.random() * 10000)}`}
+              </h2>
+              <button onClick={() => setisStatsOpen(false)}>
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 1024 1024"
+                  fill={mode ? "#414a5e" : "#e0e1dd"}
+                  className="icon"
+                >
+                  <path d="M176.662 817.173c-8.19 8.471-7.96 21.977 0.51 30.165 8.472 8.19 21.978 7.96 30.166-0.51l618.667-640c8.189-8.472 7.96-21.978-0.511-30.166-8.471-8.19-21.977-7.96-30.166 0.51l-618.666 640z" />
+                  <path d="M795.328 846.827c8.19 8.471 21.695 8.7 30.166 0.511 8.471-8.188 8.7-21.694 0.511-30.165l-618.667-640c-8.188-8.471-21.694-8.7-30.165-0.511-8.471 8.188-8.7 21.694-0.511 30.165l618.666 640z" />
+                </svg>
+              </button>
+            </div>
+            {user ? "" : <button onClick={()=> push("/auth")}>Register</button>}
+          </div>
+        </div>
       </div>
       <div className={styles.wrapperTabs}>
         <button
           className={
             mode === false ? styles.tabs : `${styles.tabs} ${styles.lightTabs}`
           }
+          style={
+            isStatsOpen === true
+              ? { background: "#007f5f90", transition: "0.3s" }
+              : { transition: "0.3s" }
+          }
+          onClick={() => {
+            setisStatsOpen(!isStatsOpen);
+            setisInfoOpen(false);
+            setisSettingsOpen(false);
+            setProfileModal(false);
+          }}
         >
           <svg
-            fill={mode === false ? "#e0e1dd" : "#414a5e"}
+            fill={isStatsOpen ? "#0af025" : mode ? "#414a5e" : "#e0e1dd"}
             width="24"
             height="24"
             viewBox="0 0 512 512"
@@ -129,10 +235,95 @@ const Header = ({
             </g>
           </svg>
         </button>
+        <div
+          style={{
+            height: isStatsOpen ? 600 : 0,
+            opacity: 1,
+            zIndex: isStatsOpen ? 100 : -10,
+            transition: "0.2s",
+          }}
+          className={`${styles.modal} ${mode && styles.lightMode}`}
+        >
+          <div
+            style={{
+              opacity: isStatsOpen ? 1 : 0,
+              transition: "0.3s",
+            }}
+            className={styles.container}
+          >
+            <div className={styles.title}>
+              <span></span>
+              <h2>Top 10 players</h2>
+              <button onClick={() => setisStatsOpen(false)}>
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 1024 1024"
+                  fill={mode ? "#414a5e" : "#e0e1dd"}
+                  className="icon"
+                >
+                  <path d="M176.662 817.173c-8.19 8.471-7.96 21.977 0.51 30.165 8.472 8.19 21.978 7.96 30.166-0.51l618.667-640c8.189-8.472 7.96-21.978-0.511-30.166-8.471-8.19-21.977-7.96-30.166 0.51l-618.666 640z" />
+                  <path d="M795.328 846.827c8.19 8.471 21.695 8.7 30.166 0.511 8.471-8.188 8.7-21.694 0.511-30.165l-618.667-640c-8.188-8.471-21.694-8.7-30.165-0.511-8.471 8.188-8.7 21.694-0.511 30.165l618.666 640z" />
+                </svg>
+              </button>
+            </div>
+            <div className={styles.playersList}>
+              {pending === true ? (
+                <div className={styles.loadingContainer}>
+                  <div className={styles.spinner}></div>
+                </div>
+              ) : (
+                topPlayers
+                  .filter((pl) => pl.wins > 0)
+                  .map((player, index) => (
+                    <div className={styles.player} key={player.id}>
+                      <div key={player.id} className={styles.playerItem}>
+                        <div className={styles.leftSide}>
+                          <div className={styles.username}>
+                            {player.displayName.split(" ")[0]}{" "}
+                            {index === 0 && (
+                              <FaTrophy
+                                color="gold"
+                                size={20}
+                                className={styles.icon}
+                              />
+                            )}
+                            {index === 1 && (
+                              <FaTrophy
+                                color="silver"
+                                size={20}
+                                className={styles.icon}
+                              />
+                            )}
+                            {index === 2 && (
+                              <FaTrophy
+                                color="bronze"
+                                size={20}
+                                className={styles.icon}
+                              />
+                            )}
+                          </div>
+                          <div className={styles.email}>{player.email}</div>
+                        </div>
+                        <div className={styles.rightSide}>
+                          <div className={styles.winRate}>
+                            Wins: <b>{player.wins}</b>
+                          </div>
+                        </div>
+                      </div>
+                      <hr className={styles.separator} />
+                    </div>
+                  ))
+              )}
+            </div>
+          </div>
+        </div>
         <button
           onClick={() => {
             setisSettingsOpen(!isSettingsOpen);
             setisInfoOpen(false);
+            setisStatsOpen(false);
+            setProfileModal(false);
           }}
           style={
             isSettingsOpen === true
@@ -291,6 +482,8 @@ const Header = ({
           onClick={() => {
             setisInfoOpen(!isInfoOpen);
             setisSettingsOpen(false);
+            setisStatsOpen(false);
+            setProfileModal(false);
           }}
           style={
             isInfoOpen

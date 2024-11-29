@@ -1,0 +1,49 @@
+/* Background and general styling */
+.container {
+  background-color: #0d1b2a; /* Light gray from Wordle UZ */
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.authBox {
+  background-color: #415a77; /* White box for contrast */
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(255, 255, 255, 0.322);
+  padding: 30px 40px;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  border: 1px solid #fff;
+}
+
+.googleButton {
+  background-color: #4285f4;
+  color: white;
+  font-size: 16px;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.googleButton:hover {
+  background-color: #357ae8;
+}
+
+.googleIcon {
+  margin-right: 10px;
+}
+
+
+@media (max-width: 500px) {
+  .authBox {
+    padding: 20px;
+  }
+}

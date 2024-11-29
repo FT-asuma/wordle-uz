@@ -80,6 +80,23 @@
   gap: 0.5rem;
 }
 
+.container > button {
+  margin: 0 auto;
+  margin-top: 1rem;
+  background: #415a77;
+  padding: 15px 40px;
+  font-size: 16px;
+  border-radius: 0.5rem;
+  box-shadow: rgba(255, 255, 255, 0.2) 0px 8px 24px;
+  transition: all 0.3s ease;
+}
+
+
+.container > button:hover {
+  box-shadow: rgba(60, 154, 248, 0.2) 0px 12px 14px;
+  background: #4d7097;
+}
+
 .sample,
 .sample2 {
   display: flex;
@@ -310,6 +327,57 @@
   width: 737px;
 }
 
+.playersList {
+  margin-top: 20px;
+  width: 100%;
+}
+
+.playerItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.leftSide {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.rightSide {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.username {
+  font-weight: bold;
+  font-size: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.email {
+  font-size: 14px;
+  color: #777;
+}
+
+.winRate {
+  font-size: 16px;
+  color: #fff;
+}
+
+.separator {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin-top: 0.5rem;
+}
+
 @media screen and (max-width: 750px) {
   .light > section,
   .dark > section {
@@ -377,5 +445,33 @@
   }
   .wrapperTabs > a {
     font-size: 11px;
+  }
+}
+
+.loadingContainer {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Spinner */
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 6px solid #d1d5db; /* Light gray */
+  border-top: 6px solid #3b82f6; /* Accent blue */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+/* Spinner Animation */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
