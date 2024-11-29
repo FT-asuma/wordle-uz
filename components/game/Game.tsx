@@ -65,7 +65,7 @@ const Game = ({
       isOccured: boolean;
     }[]
   >([]);
-  // console.log(hiddenWord)
+  console.log(hiddenWord)
   useEffect(() => {
     const focusTextarea = () => {
       if (textareaRef.current) {
