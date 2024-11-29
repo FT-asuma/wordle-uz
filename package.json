@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@types/canvas-confetti": "^1.6.4",
+    "@vercel/analytics": "^1.4.1",
     "an-array-of-english-words": "^2.0.0",
     "axios": "^1.7.8",
     "canvas-confetti": "^1.9.3",
