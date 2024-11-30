@@ -63,7 +63,7 @@ const ShortConfettiAnimation = ({
         try {
           const userDocRef = doc(db, "users", user.uid);
           await updateDoc(userDocRef, {
-            wins: increment(Math.round(calculator())), // Increment the wins field by 1
+            wins: increment(calculator()), // Increment the wins field by 1
           });
           console.log("Wins updated successfully");
         } catch (error) {
