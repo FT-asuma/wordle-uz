@@ -378,7 +378,7 @@ const Header = ({
                           </div>
                           <div className={styles.rightSide}>
                             <div className={styles.winRate}>
-                              Wins: <b>{player.wins}</b>
+                              Wins: <b>{player.wins.toFixed(1)}</b>
                             </div>
                           </div>
                         </div>
