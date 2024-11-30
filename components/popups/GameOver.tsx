@@ -12,6 +12,9 @@ const GameOver = ({
   setModalOpen,
   setHiddenWord,
   whichLib,
+  lengthOfWord,
+  gameWon,
+  setGameWon
 }: {
   text: string;
   hiddenWord: string;
@@ -20,9 +23,12 @@ const GameOver = ({
   modalOpen: boolean;
   setHiddenWord: Dispatch<SetStateAction<string>>;
   whichLib: string[];
+  lengthOfWord: string[]
+  gameWon: boolean
+  setGameWon: React.Dispatch<React.SetStateAction<boolean>>
 }) => {
   const [linkCopied, setLinkCopied] = useState(false); // State to track if link was copied
-
+  console.log(gameWon)
   const randomWord = (list: string[], min: number, max: number) => {
     if (!list || list.length === 0) return "";
     const random = Math.floor(Math.random() * (max - min)) + min;
@@ -35,6 +41,7 @@ const GameOver = ({
       setHiddenWord(randomWord(whichLib, 1, whichLib.length));
     }, 300);
     setText("");
+    setGameWon(false)
   };
 
   const copyToClipboard = () => {
@@ -42,7 +49,7 @@ const GameOver = ({
     navigator.clipboard.writeText(urlToCopy).then(
       () => {
         setLinkCopied(true); // Set linkCopied state to true
-        setTimeout(() => setLinkCopied(false), 3000); // Reset after 3 seconds
+        setTimeout(() => setLinkCopied(false), 2000); // Reset after 2 seconds
       },
       (err) => {
         console.error("Failed to copy link: ", err);
@@ -73,12 +80,15 @@ const GameOver = ({
       aria-hidden={!modalOpen}
       role="dialog"
     >
-      {text === "won! 🏆" && <ShortConfettiAnimation />}
+      {gameWon === true && <ShortConfettiAnimation lengthOfWord={lengthOfWord} gameWon={gameWon} />}
       <div className={styles.modalCont}>
         <div className={styles.title}>
           <span />
           <h3>You {text}</h3>
-          <button onClick={() => setModalOpen(false)}>
+          <button onClick={() => {
+            setModalOpen(false)
+            setGameWon(false)
+          }}>
             <svg
               width="20"
               height="20"
