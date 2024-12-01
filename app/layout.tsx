@@ -14,16 +14,10 @@ export const metadata: Metadata = {
     "Hi everyone, please note that this is not a direct copy of wordle.org! I have only been inspired by that website!",
 };
 
-interface PageProps {
-  searchParams: { [key: string]: string | undefined };
-}
-
 export default function RootLayout({
   children,
-  searchParams,
 }: Readonly<{
   children: React.ReactNode;
-  searchParams: PageProps;
 }>) {
   return (
     <html lang="en">
@@ -31,7 +25,7 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
       <body className={mont.className}>
-        <Analytics />
+        <Analytics/>
         {children}
       </body>
     </html>

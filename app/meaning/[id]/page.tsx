@@ -32,13 +32,6 @@ async function getWordDefinition(word: string) {
 
 const Page = async ({ params }: PageProps) => {
   const result = await getWordDefinition(params.id.toLocaleLowerCase());
-  console.log(params);
-  const headersList = headers();
-  const xForwardedFor = headersList.get("x-forwarded-for");
-
-  const ip: string =
-    xForwardedFor?.split(",")[0]?.trim() || "Unable to retrieve IP";
-  console.log(ip)
   // const foundImage: PixabayImage[] = await getPixabayPhotos(params.id);
   if (result === "An error occured while translating") {
     return (
@@ -80,7 +73,6 @@ const Page = async ({ params }: PageProps) => {
                       ? result?.phonetic
                       : result.phonetics[1]?.text}
                   </h3>
-                  {ip}
                 </div>
                 <div className={styles.audioPlay}>
                   <AudioPlayer word={params.id} />
