@@ -34,6 +34,14 @@ export default function Home() {
     setIsMounted(true); // Mark the component as mounted
   }, []);
 
+  const [ip, setIp] = useState<string>("");
+
+  useEffect(() => {
+    fetch("/api/ip")
+      .then((res) => res.json())
+      .then((data: { ip: string }) => setIp(data.ip));
+  }, []);
+
   useEffect(() => {
     if (isMounted) {
       const savedConfetti = localStorage.getItem("confetti");
@@ -89,7 +97,7 @@ export default function Home() {
   if (loading || !hiddenWord) {
     return <Suspense fallback={<Loading/>}/>;
   }
-
+  console.log(ip)
   return (
     <Suspense fallback={<Loading />}>
       <main className={`${styles.main} ${mode ? styles.lightMode : ""}`}>
