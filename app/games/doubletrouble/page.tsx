@@ -104,6 +104,7 @@ export default function Home() {
       <main className={`${styles.main} ${mode ? styles.lightMode : ""}`}>
         <GameContainer>
           <Header
+            hiddenWord={hiddenWord}
             setConfetti={setConfetti}
             confetti={confetti}
             setSwap={setSwap}
