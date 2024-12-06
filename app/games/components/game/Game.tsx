@@ -62,8 +62,6 @@ const Game = ({
   >([]);
   const [isGameDisabled, setGameDisabled] = useState(false);
   const [isGameDisabled2, setGameDisabled2] = useState(false);
-
-  // console.log(hiddenWord)
   useEffect(() => {
     const focusTextarea = () => {
       if (textareaRef.current) {
@@ -84,7 +82,6 @@ const Game = ({
       setPrevList([]);
       setPrevList2([]);
       setClose(0);
-      console.log("working");
       setGameDisabled(false)
       setGameDisabled2(false)
       setCheckedLetters([]);
@@ -220,7 +217,6 @@ const Game = ({
     const entered = [];
     const previous: any = { prev: [] };
     const letterCount: any = {};
-    console.log(hiddenWord2, enteredWord);
     // Count letters in the hidden word
     hiddenWord2.split("").forEach((letter) => {
       letterCount[letter.toLowerCase()] =
@@ -271,7 +267,6 @@ const Game = ({
     const entered = [];
     const previous: any = { prev: [] };
     const letterCount: any = {};
-    console.log(hiddenWord2, enteredWord);
     // Count letters in the hidden word
     hiddenWord2.split("").forEach((letter) => {
       letterCount[letter.toLowerCase()] =
@@ -316,9 +311,6 @@ const Game = ({
     setAnimate(animate + 1);
     setLength("");
   };
-
-  console.log(isGameDisabled);
-
   const [dimension, setDimension] = useState<{
     width: number;
     height: number;
@@ -328,11 +320,11 @@ const Game = ({
       setDimension({ width: window.innerWidth, height: window.innerHeight });
     }
   }, []);
-  console.log(hiddenWord);
+
   if (!listOfWords && !dimension) {
     return <>Loading...</>;
   }
-  // console.log(length1);
+
   return (
     <section className={mode === false ? styles.game : styles.lightMode}>
       {isGameDisabled !== true || isGameDisabled2 !== true ? (

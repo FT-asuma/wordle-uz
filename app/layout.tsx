@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
+import { Suspense } from "react";
+import Loading from "./loading";
 const mont = Montserrat({
   subsets: ["latin"],
   weight: ["400", "700", "100", "300", "900"],
@@ -25,8 +27,8 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
       <body className={mont.className}>
-        <Analytics/>
-        {children}
+        <Analytics />
+        <Suspense fallback={<Loading/>}>{children}</Suspense>
       </body>
     </html>
   );
