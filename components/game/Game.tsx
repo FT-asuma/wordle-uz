@@ -8,13 +8,10 @@ import React, {
 } from "react";
 import styles from "./games.module.css";
 import Keyboard from "./Keyboard";
-import { motion } from "framer-motion";
 import { ALPHABET, LIBRARY_2 } from "@/constants";
 import Alert from "../popups/Alert";
-import ReactConfetti from "react-confetti";
 import GameOver from "../popups/GameOver";
-import LetterComponent from "../utils/LetterProps";
-import { v4 as uuidv4 } from "uuid";
+import RenderAttemptRow from "./util/RenderAttemptRow";
 interface IPrevList {
   prev: [
     {
@@ -27,26 +24,20 @@ interface IPrevList {
 }
 
 const Game = ({
-  setWordLength,
   wordLength,
   mode,
-  setConfetti,
-  confetti,
   listOfWords,
   lengthOfWord,
   hiddenWord,
   setHiddenWord,
   swap,
 }: {
-  setWordLength: Dispatch<SetStateAction<number>>;
   wordLength: number;
   listOfWords: string[];
   lengthOfWord: string[];
   hiddenWord: string;
   mode: boolean;
   setHiddenWord: Dispatch<SetStateAction<string>>;
-  setConfetti: Dispatch<SetStateAction<boolean>>;
-  confetti: boolean;
   swap: boolean;
 }) => {
   const [length, setLength] = useState<string>("");
@@ -144,11 +135,9 @@ const Game = ({
       setCheckedLetters(uniqueLetters);
     }
   }, [prevList]);
-
-  const [btn, setBtn] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [text, setText] = useState<string>("win");
-  const [gameWon, setGameWon] = useState(false)
+  const [gameWon, setGameWon] = useState(false);
   const checkEachLetter = (word: string) => {
     if (word?.length === wordLength) {
       const pend = whichLib.find(
@@ -156,15 +145,11 @@ const Game = ({
       );
       if (pend !== undefined) {
         if (pend === hiddenWord) {
-          setBtn(true);
-          setTimeout(() => {
-            setBtn(false);
-          }, 1500);
           checkWord(hiddenWord, pend);
           textareaRef.current.disabled = true;
           setModalOpen(true);
           setText("won! 🏆");
-          setGameWon(true)
+          setGameWon(true);
         } else {
           if (pend) {
             checkWord(hiddenWord, pend);
@@ -242,7 +227,6 @@ const Game = ({
     setAnimate(animate + 1);
     setLength("");
   };
-  console.log(hiddenWord);
 
   const [dimension, setDimension] = useState<{
     width: number;
@@ -283,14 +267,6 @@ const Game = ({
         }}
         id=""
       ></textarea>
-      <div
-        style={
-          btn === true
-            ? { transition: "0.3s", opacity: 1, width: "100vw", zIndex: 100 }
-            : { transition: "0.2s", opacity: 0, width: "100vw", zIndex: -100 }
-        }
-        className={styles.congrats}
-      ></div>
       <Alert value={error} type="alert" />
       <GameOver
         setText={setText}
@@ -306,290 +282,17 @@ const Game = ({
         setHiddenWord={setHiddenWord}
       />
       <div className={styles.attempts}>
-        <div
-          className={
-            mode === false && prevList[0]
-              ? styles.attempt
-              : mode === true || prevList[0]
-              ? `${styles.attempt} ${styles.attemptLight}`
-              : styles.attempt
-          }
-        >
-          {!prevList[0]
-            ? lengthOfWord.map((i, a) => {
-                return (
-                  <motion.div
-                    key={a} // Using index `a` as key
-                    style={
-                      lengthOfWord.length < 10
-                        ? { width: 56 }
-                        : lengthOfWord.length === 10
-                        ? { width: 54 }
-                        : lengthOfWord.length === 11
-                        ? { width: 48.5 }
-                        : {}
-                    }
-                    className={styles.letterCont}
-                    initial={{ scale: 1 }} // Normal size before typing
-                    transition={{
-                      duration: 0.3, // Quick pop animation
-                      ease: "easeInOut",
-                    }}
-                  >
-                    <motion.span
-                      style={mode === true ? { color: "#2e3239" } : {}}
-                      className={styles.letter}
-                    >
-                      {close === 0 ? length[a]?.toLocaleUpperCase() || "" : ""}
-                    </motion.span>
-                  </motion.div>
-                );
-              })
-            : prevList[0]?.prev.map((i, a) => {
-                return (
-                  <LetterComponent
-                    key={i.perLetter + a} // Make key unique by combining letter and index
-                    a={a}
-                    i={i}
-                    lengthOfWord={lengthOfWord}
-                  />
-                );
-              })}
-        </div>
-        <div className={styles.attempt}>
-          {!prevList[1]
-            ? lengthOfWord.map((i, a) => {
-                return (
-                  <motion.div
-                    key={a} // Use index for stable keys
-                    style={
-                      lengthOfWord.length < 10
-                        ? { width: 56 }
-                        : lengthOfWord.length === 10
-                        ? { width: 54 }
-                        : lengthOfWord.length === 11
-                        ? { width: 48.5 }
-                        : {}
-                    }
-                    className={styles.letterCont}
-                    initial={{ scale: 1 }} // Initial scale
-                    transition={{
-                      duration: 0.3, // Speed of the animation
-                      ease: "easeInOut",
-                    }}
-                  >
-                    <motion.span
-                      style={mode === true ? { color: "#2e3239" } : {}}
-                      className={styles.letter}
-                    >
-                      {close === 1
-                        ? length
-                          ? length[a]?.toLocaleUpperCase()
-                          : i
-                        : ""}
-                    </motion.span>
-                  </motion.div>
-                );
-              })
-            : prevList[1].prev.map((i, a) => {
-                return (
-                  <LetterComponent
-                    a={a}
-                    i={i}
-                    lengthOfWord={lengthOfWord}
-                    key={i.perLetter + a} // Make key unique by combining letter and index
-                  />
-                );
-              })}
-        </div>
-        <div className={styles.attempt}>
-          {!prevList[2]
-            ? lengthOfWord.map((i, a) => {
-                return (
-                  <motion.div
-                    key={a}
-                    style={
-                      lengthOfWord.length < 10
-                        ? { width: 56 }
-                        : lengthOfWord.length === 10
-                        ? { width: 54 }
-                        : lengthOfWord.length === 11
-                        ? { width: 48.5 }
-                        : {}
-                    }
-                    className={styles.letterCont}
-                    initial={{ scale: 1 }}
-                    // animate={length[a] ? { scale: [1, 1.1, 1] } : {}}
-                    transition={{
-                      duration: 0.3,
-                      ease: "easeInOut",
-                    }}
-                  >
-                    <motion.span
-                      style={mode === true ? { color: "#2e3239 " } : {}}
-                      className={styles.letter}
-                    >
-                      {close === 2
-                        ? length
-                          ? length[a]?.toLocaleUpperCase()
-                          : i
-                        : ""}
-                    </motion.span>
-                  </motion.div>
-                );
-              })
-            : prevList[2].prev.map((i, a) => {
-                return (
-                  <LetterComponent
-                    key={i.perLetter + a} // Make key unique by combining letter and index
-                    a={a}
-                    i={i}
-                    lengthOfWord={lengthOfWord}
-                  />
-                );
-              })}
-        </div>
-        <div className={styles.attempt}>
-          {!prevList[3]
-            ? lengthOfWord.map((i, a) => {
-                return (
-                  <motion.div
-                    key={a}
-                    style={
-                      lengthOfWord.length < 10
-                        ? { width: 56 }
-                        : lengthOfWord.length === 10
-                        ? { width: 54 }
-                        : lengthOfWord.length === 11
-                        ? { width: 48.5 }
-                        : {}
-                    }
-                    className={styles.letterCont}
-                    initial={{ scale: 1 }}
-                    // animate={length[a] ? { scale: [1, 1.1, 1] } : {}}
-                    transition={{
-                      duration: 0.3,
-                      ease: "easeInOut",
-                    }}
-                  >
-                    <motion.span
-                      style={mode === true ? { color: "#2e3239 " } : {}}
-                      className={styles.letter}
-                    >
-                      {close === 3
-                        ? length
-                          ? length[a]?.toLocaleUpperCase()
-                          : i
-                        : ""}
-                    </motion.span>
-                  </motion.div>
-                );
-              })
-            : prevList[3].prev.map((i, a) => {
-                return (
-                  <LetterComponent
-                    key={i.perLetter + a} // Make key unique by combining letter and index
-                    a={a}
-                    i={i}
-                    lengthOfWord={lengthOfWord}
-                  />
-                );
-              })}
-        </div>
-        <div className={styles.attempt}>
-          {!prevList[4]
-            ? lengthOfWord.map((i, a) => {
-                return (
-                  <motion.div
-                    key={a}
-                    style={
-                      lengthOfWord.length < 10
-                        ? { width: 56 }
-                        : lengthOfWord.length === 10
-                        ? { width: 54 }
-                        : lengthOfWord.length === 11
-                        ? { width: 48.5 }
-                        : {}
-                    }
-                    className={styles.letterCont}
-                    initial={{ scale: 1 }}
-                    // animate={length[a] ? { scale: [1, 1.1, 1] } : {}}
-                    transition={{
-                      duration: 0.3,
-                      ease: "easeInOut",
-                    }}
-                  >
-                    <motion.span
-                      style={mode === true ? { color: "#2e3239 " } : {}}
-                      className={styles.letter}
-                    >
-                      {close === 4
-                        ? length
-                          ? length[a]?.toLocaleUpperCase()
-                          : i
-                        : ""}
-                    </motion.span>
-                  </motion.div>
-                );
-              })
-            : prevList[4].prev.map((i, a) => {
-                return (
-                  <LetterComponent
-                    key={i.perLetter + a} // Make key unique by combining letter and index
-                    a={a}
-                    i={i}
-                    lengthOfWord={lengthOfWord}
-                  />
-                );
-              })}
-        </div>
-        <div className={styles.attempt}>
-          {!prevList[5]
-            ? lengthOfWord.map((i, a) => {
-                return (
-                  <motion.div
-                    key={a}
-                    style={
-                      lengthOfWord.length < 10
-                        ? { width: 56 }
-                        : lengthOfWord.length === 10
-                        ? { width: 54 }
-                        : lengthOfWord.length === 11
-                        ? { width: 48.5 }
-                        : {}
-                    }
-                    className={styles.letterCont}
-                    initial={{ scale: 1 }}
-                    // animate={length[a] ? { scale: [1, 1.1, 1] } : {}}
-                    transition={{
-                      duration: 0.3,
-                      ease: "easeInOut",
-                    }}
-                  >
-                    <motion.span
-                      style={mode === true ? { color: "#2e3239 " } : {}}
-                      className={styles.letter}
-                    >
-                      {close === 5
-                        ? length
-                          ? length[a]?.toLocaleUpperCase()
-                          : i
-                        : ""}
-                    </motion.span>
-                  </motion.div>
-                );
-              })
-            : prevList[5].prev.map((i, a) => {
-                return (
-                  <LetterComponent
-                    key={i.perLetter + a} // Make key unique by combining letter and index
-                    a={a}
-                    i={i}
-                    lengthOfWord={lengthOfWord}
-                  />
-                );
-              })}
-        </div>
+        {Array.from({ length: 6 }).map((_, attemptIndex) => (
+          <RenderAttemptRow
+            key={`row-${attemptIndex}`}
+            attemptIndex={attemptIndex}
+            prevList={prevList}
+            lengthOfWord={lengthOfWord}
+            close={close}
+            length={length}
+            mode={mode}
+          />
+        ))}
       </div>
       {text === "won! 🏆" && prevList?.length > 0 ? (
         <p className={styles.reward}>You Won! 🏆</p>

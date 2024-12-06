@@ -56,6 +56,7 @@ const Keyboard: React.FC<KeyboardProps> = ({
         key={item.key}
         per_key={item.key}
         text={text}
+        mode={mode}
         wordLength={wordLength}
         letter={letter as KeyboardEvent}
         setLength={setLength}

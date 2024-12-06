@@ -1,7 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import styles from "../game/games.module.css";
+import styles from "../game.module.css";
 
 interface LetterProps {
   a: number; // Index for the letter

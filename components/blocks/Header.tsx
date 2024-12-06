@@ -25,6 +25,7 @@ const Header = ({
   setSwap,
   swap,
   mode,
+  hiddenWord,
   setMode,
 }: {
   setWordLength: Dispatch<SetStateAction<number>>;
@@ -36,6 +37,7 @@ const Header = ({
   swap: boolean;
   setMode: Dispatch<SetStateAction<boolean>>;
   mode: boolean;
+  hiddenWord: string | string[]
 }) => {
   const [isSettingsOpen, setisSettingsOpen] = useState(false);
   const [isInfoOpen, setisInfoOpen] = useState(false);
@@ -485,7 +487,26 @@ const Header = ({
             </div>
             <h3>Number of Letters</h3>
             <div className={styles.buttonRaw}>
-              {[4, 5, 6, 7, 8, 9, 10].map((length) => (
+              {typeof hiddenWord === "string" ? [4, 5, 6, 7, 8, 9, 10].map((length) => (
+                <button
+                  key={length ** 2 + Math.random() / 23}
+                  style={
+                    wordLength === length
+                      ? {
+                          background: "#007f5f",
+                          fontWeight: 700,
+                          color: "#fff",
+                        }
+                      : {}
+                  }
+                  onClick={() => {
+                    setWordLength(length);
+                    setList(Array(length).fill(""));
+                  }}
+                >
+                  {length}
+                </button>
+              )): [4, 5, 6].map((length) => (
                 <button
                   key={length ** 2 + Math.random() / 23}
                   style={

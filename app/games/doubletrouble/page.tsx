@@ -1,19 +1,20 @@
 "use client";
+import React from "react";
 import { Suspense, useEffect, useState } from "react";
 import GameContainer from "@/components/container/GameContainer";
 import styles from "./page.module.css";
 import Header from "@/components/blocks/Header";
-import Game from "@/components/game/Game";
-import Loading from "./loading";
+import Game from "../components/game/Game";
+import Loading from "@/app/loading";
 import GameList from "@/components/blocks/GameList";
 
 export default function Home() {
-  const en_words = require("../constants/en_words/words.json");
+  const en_words = require("@/constants/en_words/words.json");
 
   const [wordLength, setWordLength] = useState(4);
   const [loading, setLoading] = useState(true);
   const [listOfWords, setListOfWords] = useState<string[]>([]);
-  const [hiddenWord, setHiddenWord] = useState<string>("");
+  const [hiddenWord, setHiddenWord] = useState<string[]>([]);
 
   // States for settings
   const [list, setList] = useState<string[]>(Array(wordLength).fill(""));
@@ -25,9 +26,16 @@ export default function Home() {
 
   const [isMounted, setIsMounted] = useState(false); // Track if the component has mounted
 
-  const randomWord = (list: string[], min: number, max: number) => {
-    const random = Math.floor(Math.random() * (max - min)) + min;
-    return list[random];
+  const randomWords = (list: string[], min: number, max: number) => {
+    const randomIndex1 = Math.floor(Math.random() * (max - min)) + min;
+    let randomIndex2 = Math.floor(Math.random() * (max - min)) + min;
+
+    // Ensure the second word is not the same as the first
+    while (randomIndex2 === randomIndex1) {
+      randomIndex2 = Math.floor(Math.random() * (max - min)) + min;
+    }
+
+    return [list[randomIndex1], list[randomIndex2]]; // Return two different words
   };
 
   // Load settings from localStorage (only after component has mounted)
@@ -67,11 +75,12 @@ export default function Home() {
     const response = en_words.filter(
       (word: string) => word.length === wordLength
     );
-    setHiddenWord(randomWord(response, 1, response.length));
+
+    // Adjust difficulty by changing word list size or other properties
+    setHiddenWord(randomWords(response, 0, response.length)); // Hard difficulty: long list of words
     setListOfWords(response);
     setLoading(false);
-  }, [wordLength]);
-
+  }, [wordLength]); // Re-run when difficulty changes
   // Toggle light/dark mode
   useEffect(() => {
     const body = document.body;
@@ -104,7 +113,6 @@ export default function Home() {
             wordLength={wordLength}
             setMode={setMode}
             mode={mode}
-            hiddenWord={hiddenWord}
           />
           <Game
             wordLength={wordLength}
@@ -115,28 +123,6 @@ export default function Home() {
             setHiddenWord={setHiddenWord}
             swap={swap}
           />
-          {/* <p style={{ color: "white" }}>You are a {deviceType} user</p>
-          <p style={{ fontSize: 14 }}>
-            I am currently working on the <code>Puzzle-Game</code> project, a
-            web-based game designed to provide an interactive and enjoyable
-            puzzle-solving experience. In this project, I’m using{" "}
-            <code>Next.js</code> to create a dynamic and responsive interface.
-            The game features customizable settings such as adjustable word
-            lengths, animated feedback, and options for{" "}
-            <code>
-              <i>light</i>
-            </code>{" "}
-            and{" "}
-            <code>
-              <i>dark</i>
-            </code>{" "}
-            modes. I’m focusing on creating an intuitive and engaging user
-            experience, ensuring the game is both fun and easy to play{" "}
-            <i>
-              <b>across devices</b>
-            </i>
-            .
-          </p> */}
         </GameContainer>
         <GameList mode={mode} />
       </main>

@@ -16,60 +16,68 @@ interface KeyProperties {
   length: string;
   text: string;
   wordLength: number;
+  mode: boolean;
   checkedLetters: CheckedLetter[];
 }
 
-const Key = memo(({
-  per_key,
-  setIsClick,
-  isClick,
-  setLength,
-  length,
-  text,
-  wordLength,
-  checkedLetters,
-}: KeyProperties) => {
-  const [result, setResult] = useState<CheckedLetter | undefined>(undefined);
+const Key = memo(
+  ({
+    per_key,
+    setIsClick,
+    isClick,
+    setLength,
+    length,
+    text,
+    wordLength,
+    checkedLetters,
+    mode,
+  }: KeyProperties) => {
+    const [result, setResult] = useState<CheckedLetter | undefined>(undefined);
 
-  useEffect(() => {
-    const searchForALetter = checkedLetters.find(
-      (i) => i.perLetter.toLowerCase() === per_key.toLowerCase()
-    );
-    setResult(searchForALetter || undefined);
-  }, [checkedLetters, per_key]);
+    useEffect(() => {
+      const searchForALetter = checkedLetters.find(
+        (i) => i.perLetter.toLowerCase() === per_key.toLowerCase()
+      );
+      setResult(searchForALetter || undefined);
+    }, [checkedLetters, per_key]);
 
-  const getClassName = (): string => {
-    if (!result) return styles.key;
-    if (result.isCorrect) return `${styles.key} ${styles.correctLetter}`;
-    if (result.isOccured) return `${styles.key} ${styles.occuredLetter}`;
-    return `${styles.key} ${styles.incorrectLetter}`;
-  };
-  return (
-    <button
-      onClick={() => {
-        setIsClick(per_key);
-        if (length.length < wordLength && text !== "won! 🏆") {
-          setLength(length + per_key);
-        }
-      }}
-      style={
-        per_key === isClick
-          ? { background: "#78838b", color: "#fff", transition: "0.3s" }
-          : { transition: "0.3s" }
-      }
-      className={getClassName()}
-    >
-      <span
-        style={
-          per_key === isClick
-            ? { color: "#fff", transition: "1s", lineHeight: 1.1 }
-            : { transition: "1s", lineHeight: 1.1 }
-        }
+    const getClassName = (): string => {
+      if (!result) return styles.key; // Default state
+      if (result.isCorrect) return `${styles.key} ${styles.correctLetter}`;
+      if (result.isOccured) return `${styles.key} ${styles.occuredLetter}`;
+      return `${styles.key} ${styles.incorrectLetter}`;
+    };
+    return (
+      <button
+        onClick={() => {
+          setIsClick(per_key);
+          if (length.length < wordLength && text !== "won! 🏆") {
+            setLength(length + per_key);
+          }
+        }}
+        style={{
+          transition: `background-color 0.3s ease ${
+            Math.random() * 0.5
+          }s, color 0.3s ease ${Math.random() * 0.5}s`, // Dynamic delay
+          backgroundColor: result?.isCorrect
+            ? "#6aaa64"
+            : result?.isOccured
+            ? "#c9b458"
+            : result
+            ? "#787c7e"
+            : mode === false
+            ? "#7a858d"
+            : "#d1d7de",
+          color: result ? "#fff" : "#000",
+        }}
+        className={getClassName()}
       >
-        {per_key ? per_key : "~"}
-      </span>
-    </button>
-  );
-});
+        <span style={mode === false ? { color: "#fff" } : {}}>
+          {per_key ? per_key : "~"}
+        </span>
+      </button>
+    );
+  }
+);
 
 export default Key;

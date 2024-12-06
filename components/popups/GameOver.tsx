@@ -3,6 +3,7 @@ import styles from "./popups.module.css";
 import Link from "next/link";
 import ShortConfettiAnimation from "../utils/GameWon";
 import { FaCheckCircle } from "react-icons/fa"; // Import the success icon
+import { v4 as uuidv4 } from "uuid"; // Import uuid
 
 const GameOver = ({
   text,
@@ -14,21 +15,23 @@ const GameOver = ({
   whichLib,
   lengthOfWord,
   gameWon,
-  setGameWon
+  setGameWon,
 }: {
   text: string;
-  hiddenWord: string;
+  hiddenWord: string | string[];
   setText: Dispatch<SetStateAction<string>>;
   setModalOpen: Dispatch<SetStateAction<boolean>>;
   modalOpen: boolean;
-  setHiddenWord: Dispatch<SetStateAction<string>>;
+  setHiddenWord:
+    | Dispatch<SetStateAction<string>>
+    | Dispatch<SetStateAction<string[]>>;
   whichLib: string[];
-  lengthOfWord: string[]
-  gameWon: boolean
-  setGameWon: React.Dispatch<React.SetStateAction<boolean>>
+  lengthOfWord: string[];
+  gameWon: boolean;
+  setGameWon: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const [linkCopied, setLinkCopied] = useState(false); // State to track if link was copied
-  console.log(gameWon)
+
   const randomWord = (list: string[], min: number, max: number) => {
     if (!list || list.length === 0) return "";
     const random = Math.floor(Math.random() * (max - min)) + min;
@@ -38,10 +41,18 @@ const GameOver = ({
   const resetGame = () => {
     setModalOpen(false);
     setTimeout(() => {
-      setHiddenWord(randomWord(whichLib, 1, whichLib.length));
+      if (typeof hiddenWord === "string") {
+        // @ts-ignore
+        setHiddenWord(randomWord(whichLib, 1, whichLib.length));
+      } else {
+        const hiddenWord = randomWord(whichLib, 1, whichLib.length);
+        const hiddenWord1 = randomWord(whichLib, 1, whichLib.length);
+        // @ts-ignore
+        setHiddenWord([hiddenWord, hiddenWord1]);
+      }
     }, 300);
     setText("");
-    setGameWon(false)
+    setGameWon(false);
   };
 
   const copyToClipboard = () => {
@@ -58,6 +69,14 @@ const GameOver = ({
     );
   };
 
+  useEffect(()=> {
+    if (gameWon === true) {
+      document.body.style.overflow = "hidden"
+    } else {
+      document.body.style.overflow = ""
+    }
+  }, [gameWon])
+
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (modalOpen && event.key === "Enter") {
@@ -69,26 +88,32 @@ const GameOver = ({
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [modalOpen, whichLib, setHiddenWord, setModalOpen, setText]);
 
+  if (!hiddenWord) return;
+
   return (
     <div
       className={styles.gameover}
       style={{
         opacity: modalOpen ? 1 : 0,
         transition: "0.3s",
-        zIndex: modalOpen ? 1 : -100,
+        zIndex: modalOpen ? 100 : -100,
       }}
       aria-hidden={!modalOpen}
       role="dialog"
     >
-      {gameWon === true && <ShortConfettiAnimation lengthOfWord={lengthOfWord} gameWon={gameWon} />}
+      {gameWon === true && (
+        <ShortConfettiAnimation lengthOfWord={lengthOfWord} gameWon={gameWon} />
+      )}
       <div className={styles.modalCont}>
         <div className={styles.title}>
           <span />
           <h3>You {text}</h3>
-          <button onClick={() => {
-            setModalOpen(false)
-            setGameWon(false)
-          }}>
+          <button
+            onClick={() => {
+              setModalOpen(false);
+              setGameWon(false);
+            }}
+          >
             <svg
               width="20"
               height="20"
@@ -104,21 +129,46 @@ const GameOver = ({
           </button>
         </div>
         <div className={styles.list}>
-          <p>The answer was:</p>
-          <div className={styles.hiddenWord}>
-            {hiddenWord?.split("").map((e, index) => (
-              <p key={`${e}-${index}`} className={styles.eachLetter}>
-                {e}
-              </p>
-            ))}
-          </div>
-          <Link
-            className={styles.link}
-            target="_blank"
-            href={`/meaning/${hiddenWord}`}
-          >
-            What does this word mean?
-          </Link>
+          <p>The answer{typeof hiddenWord === "string" ? "": "s"} {typeof hiddenWord === "string" ? "was" : "were"}:</p>
+          {typeof hiddenWord === "string" && hiddenWord ? (
+            <div className={styles.hiddenWord}>
+              {hiddenWord.split("").map((e) => (
+                <p key={uuidv4()} className={styles.eachLetter}>
+                  {e}
+                </p>
+              ))}
+            </div>
+          ) : (
+            hiddenWord.length &&
+            // @ts-ignore
+            hiddenWord.map((word: string) => (
+              <div key={uuidv4()}>
+                <div key={uuidv4()} className={styles.hiddenWord}>
+                  {word.split("").map((e) => (
+                    <p key={uuidv4()} className={styles.eachLetter}>
+                      {e}
+                    </p>
+                  ))}
+                </div>
+                <Link
+                  className={styles.link}
+                  target="_blank"
+                  href={`/meaning/${word}`}
+                >
+                  What does this word mean?
+                </Link>
+              </div>
+            ))
+          )}
+          {typeof hiddenWord === "string" && (
+            <Link
+              className={styles.link}
+              target="_blank"
+              href={`/meaning/${hiddenWord}`}
+            >
+              What does this word mean?
+            </Link>
+          )}
           <button onClick={resetGame}>New game</button>
           <p>
             Or press <code>Enter</code> to play again
@@ -130,8 +180,6 @@ const GameOver = ({
           >
             Share with friends
           </button>
-
-          {/* Display "Link copied" message below the button */}
           {linkCopied && (
             <div className={styles.linkCopiedMessage}>
               <FaCheckCircle color="#28a745" size={16} />

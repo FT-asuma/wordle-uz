@@ -16,6 +16,11 @@
   background: #fbfcff;
 }
 
+.content {
+    display: flex;
+    gap: 1rem;
+}
+
 .attempts {
   display: flex;
   justify-content: center;
@@ -105,6 +110,10 @@
   transition: all 0.3s;
 }
 
+.key > span {
+  color: #fff;
+}
+
 .key:hover,
 .excludedKey:hover {
   background: #656a77;
@@ -184,12 +193,13 @@
 /* Responsive Styles */
 @media screen and (max-width: 601px) {
   .letterCont {
-    height: 42px;
-    width: 44px !important;
+    height: 32px;
+    width: 28px !important;
+    margin: 1px;
   }
 
   .attempt {
-    height: 48px;
+    height: 36px;
   }
 
   .letter {
@@ -204,7 +214,11 @@
   .excludedKey > svg {
     width: 24px;
   }
+  .content {
+    gap: 0.3rem;
+  }
 }
+
 
 @media screen and (max-width: 400px) {
   .rawList {
@@ -215,5 +229,9 @@
   .excludedKey {
     height: 42px;
     font-size: 13px;
+  }
+
+  .letterCont {
+    width: 24px !important;
   }
 }

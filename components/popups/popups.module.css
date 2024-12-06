@@ -57,7 +57,7 @@
   width: 350px;
   height: fit-content;
   padding-bottom: 1rem;
-  max-height: 370px;
+  max-height: fit-content;
   border-radius: 0.5rem;
   box-shadow: #ffffff33 0px 7px 29px 0px;
 }

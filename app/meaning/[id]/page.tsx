@@ -1,18 +1,9 @@
-import Header from "@/components/blocks/Header";
 import styles from "./translation.module.css";
-import Wrapper from "@/components/container/Wrapper";
-import { redirect } from "next/navigation";
-import Navbar from "@/components/blocks/Navbar";
 import ThemeChanger from "@/components/blocks/ThemeChanger";
 import { Suspense } from "react";
 import Loading from "./loading";
 import Link from "next/link";
-import SearchBar from "@/components/utils/Searchbar";
 import AudioPlayer from "@/components/utils/AudioPlayer";
-import { getPixabayPhotos } from "@/app/utils/getImage";
-import { PixabayImage } from "@/constants/interface";
-import ImageContainer from "@/components/utils/ImageContainer";
-import { headers } from "next/headers";
 interface PageProps {
   params: { id: string }; // Declare the type for params
 }

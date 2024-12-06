@@ -441,11 +441,9 @@
   background-color: #45a049;
 }
 
-
 .information {
   width: 100%;
   margin-top: 1rem;
-
 }
 
 @media screen and (max-width: 750px) {
@@ -500,11 +498,33 @@
   .wrapperTabs {
     width: fit-content !important;
   }
+  .description > p,
+  .case > p {
+    font-size: 12px !important;
+  }
+  .sample > .letterCont,
+  .sample2 > .letterCont {
+    width: 48px !important;
+    height: 48px;
+  }
+  .modal {
+    height: 520px !important;
+    transition: 0.2s all ease !important;
+  }
+  .modal > .container {
+    transition: 0.2s all ease !important;
+  }
 }
 
-@media screen and (max-width: 410px) {
+@media screen and (max-width: 460px) {
   .wrapperTabs a {
     display: none;
+  }
+  .title {
+    margin-bottom: 0 !important;
+  }
+  .modal {
+    height: 490px !important; 
   }
   .wrapperTabs > label {
     display: none;
@@ -515,6 +535,21 @@
   }
   .wrapperTabs > a {
     font-size: 11px;
+  }
+  .case,
+  .description {
+    gap: 0.1rem;
+  }
+  .showcase {
+    padding: 0 0.5rem;
+  }
+  .sample > .letterCont,
+  .sample2 > .letterCont {
+    width: 30px !important;
+    height: 30px;
+  }
+  .letterCont > span {
+    font-size: 20px;
   }
 }
 
