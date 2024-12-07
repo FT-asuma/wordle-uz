@@ -37,7 +37,7 @@ const Header = ({
   swap: boolean;
   setMode: Dispatch<SetStateAction<boolean>>;
   mode: boolean;
-  hiddenWord: string | string[]
+  hiddenWord: string | string[];
 }) => {
   const [isSettingsOpen, setisSettingsOpen] = useState(false);
   const [isInfoOpen, setisInfoOpen] = useState(false);
@@ -87,6 +87,7 @@ const Header = ({
       }
     }
   }, [topPlayers, user]);
+  console.log(topPlayers);
   return (
     <header className={styles.header}>
       <div className={styles.wrapperTabs}>
@@ -190,7 +191,7 @@ const Header = ({
               </button>
             </div>
             <div className={styles.profile}>
-              {user ? (
+              {user && user.metadata ? (
                 <div className={styles.profileContent}>
                   <div className={styles.avatarSection}>
                     <img
@@ -371,11 +372,9 @@ const Header = ({
                               )}
                             </div>
                             <div className={styles.email}>
-                              Joined - {" "} 
-                              {user!.metadata.creationTime &&
-                                new Date(
-                                  user!.metadata.creationTime
-                                ).toLocaleDateString()}
+                              Joined -{" "}
+                              {player.joinDate &&
+                                new Date(player.joinDate).toLocaleDateString()}
                             </div>
                           </div>
                           <div className={styles.rightSide}>
@@ -487,45 +486,47 @@ const Header = ({
             </div>
             <h3>Number of Letters</h3>
             <div className={styles.buttonRaw}>
-              {typeof hiddenWord === "string" ? [4, 5, 6, 7, 8, 9, 10].map((length) => (
-                <button
-                  key={length ** 2 + Math.random() / 23}
-                  style={
-                    wordLength === length
-                      ? {
-                          background: "#007f5f",
-                          fontWeight: 700,
-                          color: "#fff",
-                        }
-                      : {}
-                  }
-                  onClick={() => {
-                    setWordLength(length);
-                    setList(Array(length).fill(""));
-                  }}
-                >
-                  {length}
-                </button>
-              )): [4, 5, 6].map((length) => (
-                <button
-                  key={length ** 2 + Math.random() / 23}
-                  style={
-                    wordLength === length
-                      ? {
-                          background: "#007f5f",
-                          fontWeight: 700,
-                          color: "#fff",
-                        }
-                      : {}
-                  }
-                  onClick={() => {
-                    setWordLength(length);
-                    setList(Array(length).fill(""));
-                  }}
-                >
-                  {length}
-                </button>
-              ))}
+              {typeof hiddenWord === "string"
+                ? [4, 5, 6, 7, 8, 9, 10].map((length) => (
+                    <button
+                      key={length ** 2 + Math.random() / 23}
+                      style={
+                        wordLength === length
+                          ? {
+                              background: "#007f5f",
+                              fontWeight: 700,
+                              color: "#fff",
+                            }
+                          : {}
+                      }
+                      onClick={() => {
+                        setWordLength(length);
+                        setList(Array(length).fill(""));
+                      }}
+                    >
+                      {length}
+                    </button>
+                  ))
+                : [4, 5, 6].map((length) => (
+                    <button
+                      key={length ** 2 + Math.random() / 23}
+                      style={
+                        wordLength === length
+                          ? {
+                              background: "#007f5f",
+                              fontWeight: 700,
+                              color: "#fff",
+                            }
+                          : {}
+                      }
+                      onClick={() => {
+                        setWordLength(length);
+                        setList(Array(length).fill(""));
+                      }}
+                    >
+                      {length}
+                    </button>
+                  ))}
             </div>
             <div className={styles.furtherSettings}>
               <hr />

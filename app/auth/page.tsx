@@ -10,8 +10,6 @@ import { useRouter } from "next/navigation";
 
 const AuthPage: React.FC = () => {
   const { push } = useRouter();
-
-  // Google Login Function
   const handleGoogleLogin = async () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
@@ -25,13 +23,14 @@ const AuthPage: React.FC = () => {
           displayName: user.displayName,
           email: user.email,
           photoURL: user.photoURL,
-          wins: 0, // Initialize 'wins' field
+          wins: 0,
+          joinDate: user.metadata.creationTime
         });
       }
 
-      push("/"); // Navigate to home page or dashboard
+      push("/");
     } catch (error: any) {
-      alert(error.message); // Display a user-friendly message
+      alert(error.message);
     }
   };
 

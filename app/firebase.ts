@@ -5,7 +5,7 @@ import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyAVRWengLsY9sUYurQm-E6101io8ofrp4s",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: "wordle-uz.firebaseapp.com",
   projectId: "wordle-uz",
   storageBucket: "wordle-uz.firebasestorage.app",
