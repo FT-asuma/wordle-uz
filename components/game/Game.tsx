@@ -1,45 +1,28 @@
 "use client";
-import React, {
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "./games.module.css";
 import Keyboard from "./Keyboard";
 import { ALPHABET, LIBRARY_2 } from "@/constants";
 import Alert from "../popups/Alert";
 import GameOver from "../popups/GameOver";
 import RenderAttemptRow from "./util/RenderAttemptRow";
+import { useAppContext } from "@/context/AppContext";
+import { ILetterData } from "@/interface";
 interface IPrevList {
-  prev: [
-    {
-      perLetter: string;
-      isCorrect: boolean;
-      isOccured: boolean;
-      countInWord: number;
-    }
-  ];
+  prev: [ILetterData];
 }
 
-const Game = ({
-  wordLength,
-  mode,
-  listOfWords,
-  lengthOfWord,
-  hiddenWord,
-  setHiddenWord,
-  swap,
-}: {
-  wordLength: number;
-  listOfWords: string[];
-  lengthOfWord: string[];
-  hiddenWord: string;
-  mode: boolean;
-  setHiddenWord: Dispatch<SetStateAction<string>>;
-  swap: boolean;
-}) => {
+const Game: React.FC = () => {
+  const {
+    wordLength,
+    mode,
+    listOfWords,
+    lengthOfWord,
+    hiddenWord,
+    setHiddenWord,
+    swap,
+  } = useAppContext();
+
   const [length, setLength] = useState<string>("");
   const [prevList, setPrevList] = useState<IPrevList[]>([]);
   const [close, setClose] = useState(0);
@@ -50,13 +33,7 @@ const Game = ({
   const textareaRef = useRef<HTMLTextAreaElement | any>(null);
   const [whichLib, setWhichLib] = useState<string[]>(listOfWords);
   const [isEnterPressed, setIsEnterPressed] = useState<boolean>(false);
-  const [checkedLetters, setCheckedLetters] = useState<
-    {
-      perLetter: string;
-      isCorrect: boolean;
-      isOccured: boolean;
-    }[]
-  >([]);
+  const [checkedLetters, setCheckedLetters] = useState<ILetterData[]>([]);
   // console.log(hiddenWord)
   useEffect(() => {
     const focusTextarea = () => {
@@ -237,7 +214,19 @@ const Game = ({
       setDimension({ width: window.innerWidth, height: window.innerHeight });
     }
   }, []);
-
+  const saveUserTextHandler = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const listOfLetters = e.currentTarget.value.split("");
+    const res: string[] = [];
+    listOfLetters.map((l) => {
+      const a = ALPHABET.find(
+        (c) => c.toLocaleLowerCase() === l.toLocaleLowerCase()
+      );
+      if (a !== undefined) {
+        res.push(a);
+      }
+    });
+    setLength(res.join("").trim());
+  };
   if (!listOfWords && !dimension) {
     return <>Loading...</>;
   }
@@ -253,17 +242,7 @@ const Game = ({
         maxLength={lengthOfWord.length}
         value={length}
         onChange={(e) => {
-          const listOfLetters = e.currentTarget.value.split("");
-          const res: string[] = [];
-          listOfLetters.map((l) => {
-            const a = ALPHABET.find(
-              (c) => c.toLocaleLowerCase() === l.toLocaleLowerCase()
-            );
-            if (a !== undefined) {
-              res.push(a);
-            }
-          });
-          setLength(res.join("").trim());
+          saveUserTextHandler(e);
         }}
         id=""
       ></textarea>
@@ -274,7 +253,6 @@ const Game = ({
         hiddenWord={hiddenWord}
         modalOpen={modalOpen}
         setModalOpen={setModalOpen}
-        key={"sheesh"}
         gameWon={gameWon}
         setGameWon={setGameWon}
         whichLib={whichLib}

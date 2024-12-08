@@ -2,28 +2,10 @@ import LetterComponent from "@/components/utils/LetterProps";
 import { motion } from "framer-motion";
 import styles from "../games.module.css";
 import React from "react";
-interface LetterData {
-  isCorrect: boolean;
-  isOccured: boolean;
-  perLetter: string;
-  countInWord?: number | undefined;
-}
-
-interface AttemptData {
-  prev: LetterData[]; // Array of letter data for the attempt
-}
-
-interface Props {
-  attemptIndex: number; // Index of the current attempt
-  prevList: AttemptData[]; // Array of previous attempts
-  lengthOfWord: string[]; // Array representing the length of the word (e.g., underscores or letters)
-  close: number | null; // Index of the current attempt being guessed
-  length?: string; // Array of guessed letters
-  mode: boolean; // True for dark mode, false for light mode
-}
+import { IRenderAttempRowProps } from "@/interface";
 
 const RenderAttemptRow = React.memo(
-  ({ attemptIndex, prevList, lengthOfWord, close, length, mode }: Props) => {
+  ({ attemptIndex, prevList, lengthOfWord, close, length, mode }: IRenderAttempRowProps) => {
     const attemptData = prevList[attemptIndex];
     const isAttemptEmpty = !attemptData;
     const shouldRenderEmptyAttempt = isAttemptEmpty;

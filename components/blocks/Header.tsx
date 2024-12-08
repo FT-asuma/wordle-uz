@@ -16,29 +16,27 @@ import {
 } from "firebase/firestore";
 import { FaUser } from "react-icons/fa";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
+import { useAppContext } from "@/context/AppContext";
 const Header = ({
   setWordLength,
   wordLength,
   setList,
-  setConfetti,
-  confetti,
-  setSwap,
-  swap,
-  mode,
   hiddenWord,
-  setMode,
 }: {
   setWordLength: Dispatch<SetStateAction<number>>;
   wordLength: number;
   setList: Dispatch<SetStateAction<string[]>>;
-  setConfetti: Dispatch<SetStateAction<boolean>>;
-  confetti: boolean;
-  setSwap: Dispatch<SetStateAction<boolean>>;
-  swap: boolean;
-  setMode: Dispatch<SetStateAction<boolean>>;
-  mode: boolean;
   hiddenWord: string | string[];
 }) => {
+
+  const {
+    mode,
+    setConfetti,
+    confetti,
+    setSwap,
+    swap,
+    setMode,
+  } = useAppContext();
   const [isSettingsOpen, setisSettingsOpen] = useState(false);
   const [isInfoOpen, setisInfoOpen] = useState(false);
   const [isStatsOpen, setisStatsOpen] = useState(false);

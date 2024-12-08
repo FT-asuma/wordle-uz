@@ -4,6 +4,7 @@ import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
 import { Suspense } from "react";
 import Loading from "./loading";
+import AppProvider from "@/context/AppContext";
 const mont = Montserrat({
   subsets: ["latin"],
   weight: ["400", "700", "100", "300", "900"],
@@ -28,7 +29,7 @@ export default function RootLayout({
       </head>
       <body className={mont.className}>
         <Analytics />
-        <Suspense fallback={<Loading/>}>{children}</Suspense>
+        <Suspense fallback={<Loading/>}><AppProvider>{children}</AppProvider></Suspense>
       </body>
     </html>
   );

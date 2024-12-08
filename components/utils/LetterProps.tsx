@@ -1,33 +1,25 @@
 "use client";
-import { motion } from "framer-motion";
 import { useState } from "react";
+
 import styles from "../game/games.module.css";
 
-interface LetterProps {
-  a: number; // Index for the letter
-  i: {
-    isCorrect: boolean;
-    isOccured: boolean;
-    perLetter: string;
-    countInWord?: number;
-  };
-  lengthOfWord: string[]; // Assuming lengthOfWord is an array of strings
-}
+// framer-motion
+import { motion } from "framer-motion";
 
-const LetterComponent: React.FC<LetterProps> = ({ a, i, lengthOfWord }) => {
-  const [bgClass, setBgClass] = useState<string>(""); // To store background class
+import { ILetterProps } from "@/interface";
 
-  // Function to get the background class based on letter's correctness
+const LetterComponent: React.FC<ILetterProps> = ({ a, i, lengthOfWord }) => {
+  const [bgClass, setBgClass] = useState<string>("");
   const getBackgroundClass = () => {
-    if (i.isCorrect) return styles.correctLetter; // Correct letter background
-    if (i.isOccured) return styles.occuredLetter; // Occurred letter background
-    return styles.incorrectLetter; // Incorrect letter background
+    if (i.isCorrect) return styles.correctLetter;
+    if (i.isOccured) return styles.occuredLetter;
+    return styles.incorrectLetter;
   };
 
   return (
     <motion.div
       key={a}
-      data-key={a} // Using a custom data attribute for easy targeting
+      data-key={a}
       style={{
         width:
           lengthOfWord.length < 10
@@ -38,15 +30,15 @@ const LetterComponent: React.FC<LetterProps> = ({ a, i, lengthOfWord }) => {
             ? 48.5
             : undefined,
       }}
-      className={`${styles.letterCont} ${bgClass}`} // Apply the background class here
-      initial={{ rotateX: 0 }} // Initial rotation state
-      animate={{ rotateX: 360 }} // Final flip
-      onAnimationComplete={() => setBgClass(getBackgroundClass())} // Set background after flip
+      className={`${styles.letterCont} ${bgClass}`}
+      initial={{ rotateX: 0 }}
+      animate={{ rotateX: 360 }}
+      onAnimationComplete={() => setBgClass(getBackgroundClass())}
       transition={{
         duration: 0.6,
-        delay: a * 0.3, // Staggered animation
-        ease: "easeInOut", // Smooth animation
-        repeat: 0, // No repetition
+        delay: a * 0.3,
+        ease: "easeInOut",
+        repeat: 0,
       }}
     >
       <span style={{ color: "#e0e1dd" }} className={styles.letter}>

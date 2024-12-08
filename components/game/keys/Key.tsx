@@ -1,24 +1,7 @@
 import React, { memo, useEffect, useState } from "react";
 import styles from "../games.module.css";
+import { IKeyProps, ILetterData } from "@/interface";
 
-interface CheckedLetter {
-  perLetter: string;
-  isCorrect: boolean;
-  isOccured: boolean;
-}
-
-interface KeyProperties {
-  per_key: string;
-  letter: KeyboardEvent | null;
-  setIsClick: React.Dispatch<React.SetStateAction<string>>;
-  isClick: string;
-  setLength: React.Dispatch<React.SetStateAction<string>>;
-  length: string;
-  text: string;
-  wordLength: number;
-  mode: boolean;
-  checkedLetters: CheckedLetter[];
-}
 
 const Key = memo(
   ({
@@ -31,8 +14,8 @@ const Key = memo(
     wordLength,
     checkedLetters,
     mode,
-  }: KeyProperties) => {
-    const [result, setResult] = useState<CheckedLetter | undefined>(undefined);
+  }: IKeyProps) => {
+    const [result, setResult] = useState<ILetterData | undefined>(undefined);
 
     useEffect(() => {
       const searchForALetter = checkedLetters.find(
@@ -42,7 +25,7 @@ const Key = memo(
     }, [checkedLetters, per_key]);
 
     const getClassName = (): string => {
-      if (!result) return styles.key; // Default state
+      if (!result) return styles.key;
       if (result.isCorrect) return `${styles.key} ${styles.correctLetter}`;
       if (result.isOccured) return `${styles.key} ${styles.occuredLetter}`;
       return `${styles.key} ${styles.incorrectLetter}`;
@@ -72,8 +55,8 @@ const Key = memo(
         }}
         className={getClassName()}
       >
-        <span style={mode === false ? { color: "#fff" } : {}}>
-          {per_key ? per_key : "~"}
+        <span style={mode === false ? { color: "#fff" } : undefined}>
+          {per_key ? per_key : undefined}
         </span>
       </button>
     );

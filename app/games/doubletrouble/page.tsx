@@ -1,16 +1,23 @@
 "use client";
-import React from "react";
 import { Suspense, useEffect, useState } from "react";
-import GameContainer from "@/components/container/GameContainer";
+
 import styles from "./page.module.css";
+
+
+// components
+import Loading from "@/app/loading";
 import Header from "@/components/blocks/Header";
 import Game from "../components/game/Game";
-import Loading from "@/app/loading";
 import GameList from "@/components/blocks/GameList";
+import GameContainer from "@/components/container/GameContainer";
+
+// provider
+import { useAppContext } from "../context/AppContext";
 
 export default function Home() {
   const en_words = require("@/constants/en_words/words.json");
-
+  const {value, setValue} = useAppContext()
+  console.log(value)
   const [wordLength, setWordLength] = useState(4);
   const [loading, setLoading] = useState(true);
   const [listOfWords, setListOfWords] = useState<string[]>([]);
