@@ -7,9 +7,11 @@ import styles from "../game/games.module.css";
 import { motion } from "framer-motion";
 
 import { ILetterProps } from "@/interface";
+import { useAppContext } from "@/context/AppContext";
 
-const LetterComponent: React.FC<ILetterProps> = ({ a, i, lengthOfWord }) => {
+const LetterComponent: React.FC<ILetterProps> = ({ a, i }) => {
   const [bgClass, setBgClass] = useState<string>("");
+  const {wordLength} = useAppContext()
   const getBackgroundClass = () => {
     if (i.isCorrect) return styles.correctLetter;
     if (i.isOccured) return styles.occuredLetter;
@@ -22,11 +24,11 @@ const LetterComponent: React.FC<ILetterProps> = ({ a, i, lengthOfWord }) => {
       data-key={a}
       style={{
         width:
-          lengthOfWord.length < 10
+          wordLength < 10
             ? 56
-            : lengthOfWord.length === 10
+            : wordLength === 10
             ? 54
-            : lengthOfWord.length === 11
+            : wordLength === 11
             ? 48.5
             : undefined,
       }}

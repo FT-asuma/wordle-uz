@@ -1,28 +1,29 @@
+import React from "react";
+import styles from "../games.module.css";
 import LetterComponent from "@/components/utils/LetterProps";
 import { motion } from "framer-motion";
-import styles from "../games.module.css";
-import React from "react";
+
+// renderAttempt properties & page context
 import { IRenderAttempRowProps } from "@/interface";
+import { useAppContext } from "@/context/AppContext";
 
 const RenderAttemptRow = React.memo(
-  ({ attemptIndex, prevList, lengthOfWord, close, length, mode }: IRenderAttempRowProps) => {
+  ({ attemptIndex, prevList, close, length }: IRenderAttempRowProps) => {
     const attemptData = prevList[attemptIndex];
-    const isAttemptEmpty = !attemptData;
-    const shouldRenderEmptyAttempt = isAttemptEmpty;
-
+    const { wordLength, mode } = useAppContext();
     return (
       <div key={`attempt-${attemptIndex}`} className={styles.attempt}>
-        {shouldRenderEmptyAttempt
-          ? lengthOfWord.map((_, a) => (
+        {!attemptData
+          ? Array.from({ length: 4 }).map((_, a) => (
               <motion.div
                 key={`empty-${attemptIndex}-${a}`}
                 style={{
                   width:
-                    lengthOfWord.length < 10
+                    wordLength < 10
                       ? 56
-                      : lengthOfWord.length === 10
+                      : wordLength === 10
                       ? 54
-                      : lengthOfWord.length === 11
+                      : wordLength === 11
                       ? 48.5
                       : undefined,
                 }}
@@ -48,7 +49,6 @@ const RenderAttemptRow = React.memo(
                 key={`letter-${attemptIndex}-${a}`}
                 a={a}
                 i={i}
-                lengthOfWord={lengthOfWord}
               />
             ))}
       </div>

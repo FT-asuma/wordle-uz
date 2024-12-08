@@ -1,6 +1,8 @@
 import React from "react";
+
 import styles from "./popups.module.css";
-const Alert = ({ value, type }: { value: string; type: string }) => {
+
+const Alert = ({ value }: { value: string; }) => {
   return (
     <div
       style={

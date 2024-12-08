@@ -1,17 +1,13 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect } from "react";
 import { doc, increment, updateDoc } from "firebase/firestore";
 import confetti from "canvas-confetti";
 import { auth, db } from "@/app/firebase"; // Make sure you import your Firebase auth and db
+import { useAppContext } from "@/context/AppContext";
 
-const ShortConfettiAnimation = ({
-  gameWon,
-  lengthOfWord,
-}: {
-  gameWon: boolean;
-  lengthOfWord: string[];
-}) => {
+const ShortConfettiAnimation = ({ gameWon }: { gameWon: boolean }) => {
+  const { wordLength } = useAppContext();
   // Calculator function based on word length
-  const calculator = () => (lengthOfWord.length - 2) * 0.4; // Multiplies length by 0.4
+  const calculator = () => (wordLength - 2) * 0.4; // Multiplies length by 0.4
   useEffect(() => {
     // Only run the animation if the user is authenticated and gameWon is true
     if (!gameWon) return;

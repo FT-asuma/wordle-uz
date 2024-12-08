@@ -1,7 +1,13 @@
 "use client";
 import Loading from "@/app/loading";
 import { IGame } from "@/interface";
-import React, { createContext, Suspense, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  Suspense,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 export const defaultValue: IGame = {
   wordLength: 4,
@@ -25,7 +31,6 @@ export const defaultValue: IGame = {
   randomWord: (list: string[], min: number, max: number) => list[0],
 };
 
-
 const AppContext = createContext<IGame>(defaultValue);
 
 const AppProvider = ({ children }: { children: React.ReactNode }) => {
@@ -37,7 +42,9 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [hiddenWord, setHiddenWord] = useState<string>("");
 
   // States for settings
-  const [lengthOfWord, setList] = useState<string[]>(Array(wordLength).fill(""));
+  const [lengthOfWord, setList] = useState<string[]>(
+    Array(wordLength).fill("")
+  );
   const [confetti, setConfetti] = useState<boolean>(true);
   const [swap, setSwap] = useState<boolean>(false);
   const [mode, setMode] = useState<boolean>(false);
@@ -45,10 +52,10 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [deviceType, setDeviceType] = useState<string>("Desktop");
 
   const randomWord = (list: string[], min: number, max: number) => {
+    if (!list || list.length === 0) return "";
     const random = Math.floor(Math.random() * (max - min)) + min;
-    return list[random];
+    return list[random % list.length];
   };
-
   // Load settings from localStorage (only after component has mounted)
   useEffect(() => {
     const isMobile = /Mobi|Android/i.test(navigator.userAgent);
@@ -101,7 +108,29 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
     return <Suspense fallback={<Loading />} />;
   }
   return (
-    <AppContext.Provider value={{ confetti,deviceType,hiddenWord,lengthOfWord,listOfWords,loading,mode,randomWord,setConfetti,setDeviceType,setHiddenWord,setList,setListOfWords,setLoading,setMode,setSwap,setWordLength,swap,wordLength }}>
+    <AppContext.Provider
+      value={{
+        confetti,
+        deviceType,
+        hiddenWord,
+        lengthOfWord,
+        listOfWords,
+        loading,
+        mode,
+        randomWord,
+        setConfetti,
+        setDeviceType,
+        setHiddenWord,
+        setList,
+        setListOfWords,
+        setLoading,
+        setMode,
+        setSwap,
+        setWordLength,
+        swap,
+        wordLength,
+      }}
+    >
       {children}
     </AppContext.Provider>
   );

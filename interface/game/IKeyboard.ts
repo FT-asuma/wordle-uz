@@ -1,12 +1,25 @@
 // RenderAttemptRow properties
+export interface IKeyboardProps {
+  textareaRef: any;
+  length: string;
+  setLength: React.Dispatch<React.SetStateAction<string>>;
+  setIsEnterPressed: React.Dispatch<React.SetStateAction<boolean>>;
+  text: string;
+  checkedLetters: ILetterData[];
+}
+
+export interface IRenderAttemptRowsProps {
+  totalAttempts?: number; // Optional, defaults to 6
+  prevList: IAttemptData[];
+  close: number;
+  length: string;
+}
 
 export interface IRenderAttempRowProps {
   attemptIndex: number;
   prevList: IAttemptData[];
-  lengthOfWord: string[];
   close: number | null;
   length?: string;
-  mode: boolean;
 }
 
 export interface ILetterData {
@@ -23,7 +36,6 @@ export interface IAttemptData {
 export interface ILetterProps {
   a: number;
   i: ILetterData;
-  lengthOfWord: string[];
 }
 
 // Key properties

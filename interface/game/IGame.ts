@@ -1,21 +1,38 @@
+import { Dispatch, SetStateAction } from "react";
+import { ILetterData } from "..";
+
 export interface IGame {
   wordLength: number;
-  setWordLength: React.Dispatch<React.SetStateAction<number>>;
+  setWordLength: Dispatch<SetStateAction<number>>;
   loading: boolean;
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setLoading: Dispatch<SetStateAction<boolean>>;
   listOfWords: string[];
-  setListOfWords: React.Dispatch<React.SetStateAction<string[]>>;
-  hiddenWord: string;
-  setHiddenWord: React.Dispatch<React.SetStateAction<string>>;
+  setListOfWords: Dispatch<SetStateAction<string[]>>;
+  hiddenWord: string | string[];
+  setHiddenWord: Dispatch<SetStateAction<string>> | Dispatch<SetStateAction<string[]>>;
   lengthOfWord: string[];
-  setList: React.Dispatch<React.SetStateAction<string[]>>;
+  setList: Dispatch<SetStateAction<string[]>>;
   confetti: boolean;
-  setConfetti: React.Dispatch<React.SetStateAction<boolean>>;
+  setConfetti: Dispatch<SetStateAction<boolean>>;
   swap: boolean;
-  setSwap: React.Dispatch<React.SetStateAction<boolean>>;
+  setSwap: Dispatch<SetStateAction<boolean>>;
   mode: boolean;
-  setMode: React.Dispatch<React.SetStateAction<boolean>>;
+  setMode: Dispatch<SetStateAction<boolean>>;
   deviceType: string;
-  setDeviceType: React.Dispatch<React.SetStateAction<string>>;
+  setDeviceType: Dispatch<SetStateAction<string>>;
   randomWord: (list: string[], min: number, max: number) => string;
+}
+
+interface IPrevList {
+  prev: [ILetterData];
+}
+
+export interface IGameOverProps {
+  setText: (text: string) => void;
+  text: string;
+  modalOpen: boolean;
+  setModalOpen: Dispatch<SetStateAction<boolean>>;
+  gameWon: boolean;
+  setGameWon: Dispatch<SetStateAction<boolean>>;
+  setPrevList: React.Dispatch<React.SetStateAction<IPrevList[]>>
 }

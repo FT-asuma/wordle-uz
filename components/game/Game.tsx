@@ -1,89 +1,88 @@
 "use client";
+
 import React, { useEffect, useRef, useState } from "react";
+
 import styles from "./games.module.css";
+
+// components
 import Keyboard from "./Keyboard";
-import { ALPHABET, LIBRARY_2 } from "@/constants";
-import Alert from "../popups/Alert";
-import GameOver from "../popups/GameOver";
-import RenderAttemptRow from "./util/RenderAttemptRow";
+import { GameOver, Alert } from "../popups";
+import { RenderAttemptRow } from "./util";
+
+// context & interface & constant
 import { useAppContext } from "@/context/AppContext";
-import { ILetterData } from "@/interface";
+import {
+  IGameOverProps,
+  IKeyboardProps,
+  ILetterData,
+  IRenderAttempRowProps,
+} from "@/interface";
+import { ALPHABET } from "@/constants";
+
 interface IPrevList {
   prev: [ILetterData];
 }
 
-const Game: React.FC = () => {
-  const {
-    wordLength,
-    mode,
-    listOfWords,
-    lengthOfWord,
-    hiddenWord,
-    setHiddenWord,
-    swap,
-  } = useAppContext();
+const Game: React.FC<IPrevList> = () => {
+  const { wordLength, mode, listOfWords, lengthOfWord, hiddenWord, swap } =
+    useAppContext();
 
   const [length, setLength] = useState<string>("");
   const [prevList, setPrevList] = useState<IPrevList[]>([]);
   const [close, setClose] = useState(0);
   const [animate, setAnimate] = useState(0);
-  const [check, setCheck] = useState(false);
-  const [key, setKey] = useState<KeyboardEvent>();
   const [error, setError] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement | any>(null);
-  const [whichLib, setWhichLib] = useState<string[]>(listOfWords);
   const [isEnterPressed, setIsEnterPressed] = useState<boolean>(false);
   const [checkedLetters, setCheckedLetters] = useState<ILetterData[]>([]);
-  // console.log(hiddenWord)
+  const [modalOpen, setModalOpen] = useState(false);
+  const [text, setText] = useState<string>("win");
+  const [gameWon, setGameWon] = useState(false);
+  const [dimension, setDimension] = useState<{
+    width: number;
+    height: number;
+  }>();
+
   useEffect(() => {
+    if (dimension)
+      setDimension({ width: window.innerWidth, height: window.innerHeight });
+
     const focusTextarea = () => {
       if (textareaRef.current) {
-        // @ts-ignore
         textareaRef.current.focus();
       }
     };
     document.addEventListener("click", focusTextarea);
     document.addEventListener("keydown", focusTextarea);
+
     return () => {
       document.removeEventListener("click", focusTextarea);
       document.removeEventListener("keydown", focusTextarea);
     };
-  }, []);
+  }, [dimension]);
+
   useEffect(() => {
     if (hiddenWord) {
-      setWhichLib(listOfWords);
       setPrevList([]);
       setClose(0);
-      console.log("working");
       textareaRef.current.disabled = false;
       setCheckedLetters([]);
     }
   }, [hiddenWord]);
-  useEffect(() => {
-    document.addEventListener("keypress", (e) => {
-      setKey(e);
-    });
-  }, [textareaRef]);
-  useEffect(() => {
-    if (length?.length) {
-      setCheck(false);
-    }
-  }, [length]);
 
   useEffect(() => {
-    if (key) {
-      if (key.key === "Enter") {
-        setCheck(!check);
-        checkEachLetter(length!);
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.key === "Enter") {
+        checkEachLetter(length);
       }
-    }
-  }, [key]);
-  useEffect(() => {
+    };
     if (isEnterPressed === true) {
-      setCheck(!check);
-      checkEachLetter(length!);
+      checkEachLetter(length);
     }
-  }, [isEnterPressed]);
+
+    document.addEventListener("keypress", handleKeyPress);
+    return () => document.removeEventListener("keypress", handleKeyPress);
+  }, [isEnterPressed, length]);
   useEffect(() => {
     if (prevList.length === 6) {
       if (modalOpen === false) {
@@ -91,33 +90,30 @@ const Game: React.FC = () => {
         setText("lost!");
       }
     }
-    if (prevList && prevList.length > 0) {
+
+    if (prevList.length > 0) {
       const getUniqueLetters = (attempts: any) => {
-        const seen = new Set(); // To track already seen letters
-        const uniqueLetters: any = [];
-
-        attempts.forEach((attempt: any) => {
-          attempt.prev.forEach((letterObj: any) => {
+        const seen = new Set();
+        return attempts.flatMap((attempt: any) =>
+          attempt.prev.filter((letterObj: any) => {
             if (!seen.has(letterObj.perLetter)) {
-              seen.add(letterObj.perLetter); // Add to the set if it's not seen yet
-              uniqueLetters.push(letterObj); // Add the letter object to the final array
+              seen.add(letterObj.perLetter);
+              return true;
             }
-          });
-        });
-
-        return uniqueLetters;
+            return false;
+          })
+        );
       };
 
-      const uniqueLetters = getUniqueLetters(prevList);
-      setCheckedLetters(uniqueLetters);
+      setCheckedLetters(getUniqueLetters(prevList));
     }
-  }, [prevList]);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [text, setText] = useState<string>("win");
-  const [gameWon, setGameWon] = useState(false);
+  }, [prevList, modalOpen]);
+
+  // checking the word/letters
+
   const checkEachLetter = (word: string) => {
     if (word?.length === wordLength) {
-      const pend = whichLib.find(
+      const pend = listOfWords.find(
         (c) => c.toLocaleLowerCase() === word.toLocaleLowerCase()
       );
       if (pend !== undefined) {
@@ -129,7 +125,7 @@ const Game: React.FC = () => {
           setGameWon(true);
         } else {
           if (pend) {
-            checkWord(hiddenWord, pend);
+            checkWord(hiddenWord as string, pend);
           }
         }
       } else {
@@ -154,13 +150,13 @@ const Game: React.FC = () => {
     }
     setIsEnterPressed(false);
   };
-  const checkWord = (hiddenWord2: string, enteredWord: string) => {
+  const checkWord = (hiddenWord: string, enteredWord: string) => {
     const entered = [];
     const previous: any = { prev: [] };
     const letterCount: any = {};
 
     // Count letters in the hidden word
-    hiddenWord2.split("").forEach((letter) => {
+    hiddenWord.split("").forEach((letter) => {
       letterCount[letter.toLowerCase()] =
         (letterCount[letter.toLowerCase()] || 0) + 1;
     });
@@ -168,7 +164,7 @@ const Game: React.FC = () => {
     // First pass - check for exact matches
     enteredWord.split("").forEach((letter, i) => {
       const lowerLetter = letter.toLowerCase();
-      const isCorrect = hiddenWord2[i].toLocaleLowerCase() === lowerLetter;
+      const isCorrect = hiddenWord[i].toLocaleLowerCase() === lowerLetter;
 
       if (isCorrect) {
         letterCount[lowerLetter]--;
@@ -205,15 +201,6 @@ const Game: React.FC = () => {
     setLength("");
   };
 
-  const [dimension, setDimension] = useState<{
-    width: number;
-    height: number;
-  }>();
-  useEffect(() => {
-    if (dimension) {
-      setDimension({ width: window.innerWidth, height: window.innerHeight });
-    }
-  }, []);
   const saveUserTextHandler = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const listOfLetters = e.currentTarget.value.split("");
     const res: string[] = [];
@@ -227,70 +214,67 @@ const Game: React.FC = () => {
     });
     setLength(res.join("").trim());
   };
-  if (!listOfWords && !dimension) {
-    return <>Loading...</>;
-  }
+
+  const renderGameStatus = () => {
+    if (prevList?.length > 0) {
+      switch (text) {
+        case "won! 🏆":
+          return <p className={styles.reward}>You Won! 🏆</p>;
+        case "lost!":
+          return <p className={styles.reward}>You lost!</p>;
+        default:
+          return null;
+      }
+    }
+    return <p style={{ height: 28 }}></p>;
+  };
+
+  // props~
+
+  const gameOverProps: IGameOverProps = {
+    setText,
+    text,
+    modalOpen,
+    setModalOpen,
+    gameWon,
+    setGameWon,
+    setPrevList,
+  };
+
+  const keyboardProps: IKeyboardProps = {
+    checkedLetters,
+    length,
+    setIsEnterPressed,
+    setLength,
+    text,
+    textareaRef,
+  };
+
   return (
     <section className={mode === false ? styles.game : styles.lightMode}>
       <textarea
-        name=""
-        inputMode="none"
         ref={textareaRef}
         style={{ position: "fixed", zIndex: -1, opacity: 0 }}
-        cols={0}
-        rows={0}
-        maxLength={lengthOfWord.length}
+        maxLength={wordLength}
         value={length}
-        onChange={(e) => {
-          saveUserTextHandler(e);
-        }}
-        id=""
-      ></textarea>
-      <Alert value={error} type="alert" />
-      <GameOver
-        setText={setText}
-        text={text}
-        hiddenWord={hiddenWord}
-        modalOpen={modalOpen}
-        setModalOpen={setModalOpen}
-        gameWon={gameWon}
-        setGameWon={setGameWon}
-        whichLib={whichLib}
-        lengthOfWord={lengthOfWord}
-        setHiddenWord={setHiddenWord}
+        onChange={saveUserTextHandler}
       />
+      <Alert value={error} />
+      <GameOver {...gameOverProps} />
       <div className={styles.attempts}>
-        {Array.from({ length: 6 }).map((_, attemptIndex) => (
-          <RenderAttemptRow
-            key={`row-${attemptIndex}`}
-            attemptIndex={attemptIndex}
-            prevList={prevList}
-            lengthOfWord={lengthOfWord}
-            close={close}
-            length={length}
-            mode={mode}
-          />
-        ))}
+        {Array.from({ length: 6 }).map((_, attemptIndex) => {
+          const attemptProps = {
+            key: `row-${attemptIndex}`,
+            attemptIndex,
+            prevList,
+            close,
+            length,
+          };
+          return <RenderAttemptRow {...attemptProps} />;
+        })}
       </div>
-      {text === "won! 🏆" && prevList?.length > 0 ? (
-        <p className={styles.reward}>You Won! 🏆</p>
-      ) : text === "lost!" && prevList?.length > 0 ? (
-        <p className={styles.reward}>You lost!</p>
-      ) : (
-        <p style={{ height: 28 }}></p>
-      )}
-      <Keyboard
-        length={length}
-        setIsEnterPressed={setIsEnterPressed}
-        isEnterPressed={isEnterPressed}
-        setLength={setLength}
-        text={text}
-        wordLength={wordLength}
-        textareaRef={textareaRef}
-        swap={swap}
-        checkedLetters={checkedLetters}
-        mode={mode}
-      />
+      {renderGameStatus()}
+      <Keyboard {...keyboardProps} />
     </section>
   );
 };
