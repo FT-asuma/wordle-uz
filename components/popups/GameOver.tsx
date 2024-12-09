@@ -11,22 +11,13 @@ import { AiOutlineClose } from "react-icons/ai";
 import { useAppContext } from "@/context/AppContext";
 import { IGameOverProps } from "@/interface";
 
-const GameOver: React.FC<IGameOverProps> = ({
-  text,
-  setText,
-  modalOpen,
-  setModalOpen,
-  gameWon,
-  setGameWon,
-  setPrevList,
-}) => {
+const GameOver: React.FC<IGameOverProps> = ({ state, dispatch }) => {
   const [linkCopied, setLinkCopied] = useState(false);
   const { hiddenWord, listOfWords, setHiddenWord, randomWord } =
     useAppContext();
 
   const resetGame = () => {
-    setModalOpen(false);
-    setPrevList([]);
+    dispatch({ type: "RESET_STATE" });
     setTimeout(() => {
       const newHiddenWords = Array.isArray(hiddenWord)
         ? Array(2)
@@ -36,8 +27,6 @@ const GameOver: React.FC<IGameOverProps> = ({
       // @ts-ignore
       setHiddenWord(newHiddenWords);
     }, 300);
-    setText("");
-    setGameWon(false);
   };
 
   const copyToClipboard = () => {
@@ -48,40 +37,36 @@ const GameOver: React.FC<IGameOverProps> = ({
   };
 
   useEffect(() => {
-    document.body.style.overflow = gameWon ? "hidden" : "";
+    document.body.style.overflow = state.gameWon ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
-  }, [gameWon]);
+  }, [state.gameWon]);
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
-      if (modalOpen && event.key === "Enter") {
+      if (state.modalOpen && event.key === "Enter") {
         resetGame();
       }
     };
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [modalOpen]);
-
+  }, [state.modalOpen]);
   return (
     <div
       className={styles.gameover}
       style={{
-        opacity: modalOpen ? 1 : 0,
+        opacity: state.modalOpen ? 1 : 0,
         transition: "0.3s",
-        zIndex: modalOpen ? 100 : -100,
+        zIndex: state.modalOpen ? 100 : -100,
       }}
-      aria-hidden={!modalOpen}
+      aria-hidden={!state.modalOpen}
     >
-      {gameWon && <ShortConfettiAnimation gameWon={gameWon} />}
+      {state.gameWon && <ShortConfettiAnimation gameWon={state.gameWon} />}
       <div className={styles.modalCont}>
         <ModalHeader
-          title={`You ${text}`}
-          onClose={() => {
-            setModalOpen(false);
-            setGameWon(false);
-          }}
+          title={`You ${state.text}`}
+          onClose={() => {resetGame()}}
         />
         <div className={styles.list}>
           <div style={{ textAlign: "center" }}>

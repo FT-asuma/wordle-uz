@@ -28,11 +28,29 @@ interface IPrevList {
 }
 
 export interface IGameOverProps {
-  setText: (text: string) => void;
-  text: string;
-  modalOpen: boolean;
-  setModalOpen: Dispatch<SetStateAction<boolean>>;
-  gameWon: boolean;
-  setGameWon: Dispatch<SetStateAction<boolean>>;
-  setPrevList: React.Dispatch<React.SetStateAction<IPrevList[]>>
+  state: InitialStateProps
+  dispatch: React.Dispatch<Action>
 }
+
+
+export interface InitialStateProps {
+  length: string;
+  prevList: IPrevList[];
+  close: number;
+  error: string;
+  checkedLetters: ILetterData[];
+  modalOpen: boolean;
+  text: string;
+  gameWon: boolean;
+}
+
+export type Action =
+  | { type: "SET_LENGTH"; payload: string }
+  | { type: "ADD_PREV_LIST"; payload: IPrevList | any } // Replace `any` with the correct type
+  | { type: "INCREMENT_CLOSE" }
+  | { type: "SET_ERROR"; payload: string }
+  | { type: "SET_CHECKED_LETTERS"; payload: ILetterData[] } // Replace `any` with the correct type
+  | { type: "TOGGLE_MODAL"; payload: boolean }
+  | { type: "SET_TEXT"; payload: string }
+  | { type: "SET_GAME_WON"; payload: boolean }
+  | { type: "RESET_STATE" }; // For resetting the state entirely

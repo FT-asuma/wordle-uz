@@ -1,11 +1,11 @@
+import { Action, InitialStateProps } from "./IGame";
+
 // RenderAttemptRow properties
 export interface IKeyboardProps {
   textareaRef: any;
-  length: string;
-  setLength: React.Dispatch<React.SetStateAction<string>>;
   setIsEnterPressed: React.Dispatch<React.SetStateAction<boolean>>;
-  text: string;
-  checkedLetters: ILetterData[];
+  state: InitialStateProps;
+  dispatch: React.Dispatch<Action>;
 }
 
 export interface IRenderAttemptRowsProps {
@@ -41,11 +41,7 @@ export interface ILetterProps {
 // Key properties
 export interface IKeyProps {
   per_key: string;
-  letter: KeyboardEvent | null;
   setIsClick: React.Dispatch<React.SetStateAction<string>>;
-  isClick: string;
-  setLength: React.Dispatch<React.SetStateAction<string>>;
-  length: string;
-  text: string;
-  checkedLetters: ILetterData[];
+  dispatch: React.Dispatch<Action>;
+  state: InitialStateProps;
 }

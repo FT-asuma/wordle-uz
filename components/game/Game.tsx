@@ -17,35 +17,18 @@ import { RenderAttemptRow } from "./util";
 
 // context & interface & constant
 import { useAppContext } from "@/context/AppContext";
-import { IGameOverProps, IKeyboardProps, ILetterData } from "@/interface";
+import {
+  Action,
+  IKeyboardProps,
+  ILetterData,
+  InitialStateProps,
+} from "@/interface";
 import { ALPHABET } from "@/constants";
+import renderGameStatus from "./util/renderGameStatus";
 
 interface IPrevList {
   prev: [ILetterData];
 }
-
-interface InitialStateProps {
-  length: string;
-  prevList: IPrevList[];
-  close: number;
-  error: string;
-  checkedLetters: ILetterData[];
-  modalOpen: boolean;
-  text: string;
-  gameWon: boolean;
-}
-
-type Action =
-  | { type: "SET_LENGTH"; payload: string }
-  | { type: "ADD_PREV_LIST"; payload: IPrevList } // Replace `any` with the correct type
-  | { type: "INCREMENT_CLOSE" }
-  | { type: "SET_ERROR"; payload: string }
-  | { type: "SET_CHECKED_LETTERS"; payload: ILetterData[] } // Replace `any` with the correct type
-  | { type: "TOGGLE_MODAL"; payload: boolean }
-  | { type: "SET_TEXT"; payload: string }
-  | { type: "SET_GAME_WON"; payload: boolean }
-  | { type: "RESET_STATE" }; // For resetting the state entirely
-
 const Game: React.FC = () => {
   const { wordLength, mode, listOfWords, hiddenWord } = useAppContext();
 
@@ -60,16 +43,8 @@ const Game: React.FC = () => {
     gameWon: false,
   };
 
-  const [length, setLength] = useState<string>("");
-  const [prevList, setPrevList] = useState<IPrevList[]>([]);
-  const [close, setClose] = useState(0);
-  const [error, setError] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement | any>(null);
   const [isEnterPressed, setIsEnterPressed] = useState<boolean>(false);
-  const [checkedLetters, setCheckedLetters] = useState<ILetterData[]>([]);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [text, setText] = useState<string>("win");
-  const [gameWon, setGameWon] = useState(false);
   const [dimension, setDimension] = useState<{
     width: number;
     height: number;
@@ -130,38 +105,34 @@ const Game: React.FC = () => {
 
   useEffect(() => {
     if (hiddenWord) {
-      setPrevList([]);
-      setClose(0);
+      dispatch({ type: "RESET_STATE" });
       textareaRef.current.disabled = false;
-      setCheckedLetters([]);
     }
   }, [hiddenWord]);
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.key === "Enter") {
-        checkEachLetter(length);
+        checkEachLetter(state.length);
       }
     };
     if (isEnterPressed === true) {
-      checkEachLetter(length);
+      checkEachLetter(state.length);
     }
 
     document.addEventListener("keypress", handleKeyPress);
     return () => document.removeEventListener("keypress", handleKeyPress);
-  }, [isEnterPressed, length]);
+  }, [isEnterPressed, state.length]);
 
   useEffect(() => {
-    if (prevList.length === 6) {
-      if (modalOpen === false) {
-        setModalOpen(true);
-        setText("lost!");
+    if (state.prevList.length === 6) {
+      if (state.modalOpen === false) {
         dispatch({ type: "SET_TEXT", payload: "lost!" });
         dispatch({ type: "TOGGLE_MODAL", payload: true });
       }
     }
 
-    if (prevList.length > 0) {
+    if (state.prevList.length > 0) {
       const getUniqueLetters = (attempts: any) => {
         const seen = new Set();
         return attempts.flatMap((attempt: any) =>
@@ -174,16 +145,12 @@ const Game: React.FC = () => {
           })
         );
       };
-
-      setCheckedLetters(getUniqueLetters(prevList));
       dispatch({
         type: "SET_CHECKED_LETTERS",
-        payload: getUniqueLetters(prevList),
+        payload: getUniqueLetters(state.prevList),
       });
     }
-  }, [prevList, modalOpen]);
-
-  console.log(state);
+  }, [state.prevList, state.modalOpen]);
 
   // checking the word/letters
   const checkEachLetter = (word: string) => {
@@ -195,32 +162,31 @@ const Game: React.FC = () => {
         if (pend === hiddenWord) {
           checkWord(hiddenWord, pend);
           textareaRef.current.disabled = true;
-          setModalOpen(true);
-          setText("won! 🏆");
-
-          setGameWon(true);
+          dispatch({ type: "SET_TEXT", payload: "won! 🏆" });
+          dispatch({ type: "SET_GAME_WON", payload: true });
+          dispatch({ type: "TOGGLE_MODAL", payload: true });
         } else {
           if (pend) {
             checkWord(hiddenWord as string, pend);
           }
         }
       } else {
-        if (modalOpen !== true) {
-          setError("Word not found");
+        if (state.modalOpen !== true) {
+          dispatch({ type: "SET_ERROR", payload: "Word not found" });
           setTimeout(() => {
-            setError("");
+            dispatch({ type: "SET_ERROR", payload: "" });
           }, 700);
         }
       }
     } else {
       if (
         word?.length < wordLength &&
-        modalOpen !== true &&
-        prevList.length !== 6
+        state.modalOpen !== true &&
+        state.prevList.length !== 6
       ) {
-        setError("Word is short");
+        dispatch({ type: "SET_ERROR", payload: "Word is short" });
         setTimeout(() => {
-          setError("");
+          dispatch({ type: "SET_ERROR", payload: "" });
         }, 700);
       }
     }
@@ -258,12 +224,11 @@ const Game: React.FC = () => {
           letterCount[lowerLetter]--;
         }
       });
-
-      setPrevList((prev) => [...prev, previous]);
-      setClose(close + 1);
-      setLength("");
+      dispatch({ type: "ADD_PREV_LIST", payload: previous });
+      dispatch({ type: "INCREMENT_CLOSE" });
+      dispatch({ type: "SET_LENGTH", payload: "" });
     },
-    [close]
+    [state.close]
   );
 
   const saveUserTextHandler = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -277,27 +242,20 @@ const Game: React.FC = () => {
         res.push(a);
       }
     });
-    setLength(res.join("").trim());
+    dispatch({ type: "SET_LENGTH", payload: res.join("").trim() });
   };
 
   // props~
-  const gameOverProps: IGameOverProps = {
-    setText,
-    text,
-    modalOpen,
-    setModalOpen,
-    gameWon,
-    setGameWon,
-    setPrevList,
+  const gameOverProps = {
+    state,
+    dispatch,
   };
 
   const keyboardProps: IKeyboardProps = {
-    checkedLetters,
-    length,
     setIsEnterPressed,
-    setLength,
-    text,
     textareaRef,
+    state,
+    dispatch,
   };
 
   return (
@@ -309,46 +267,24 @@ const Game: React.FC = () => {
         value={length}
         onChange={saveUserTextHandler}
       />
-      <Alert value={error} />
+      <Alert value={state.error} />
       <GameOver {...gameOverProps} />
       <div className={styles.attempts}>
         {Array.from({ length: 6 }).map((_, attemptIndex) => {
           const attemptProps = {
             attemptIndex,
-            prevList,
-            close,
-            length,
+            prevList: state.prevList,
+            close: state.close,
+            length: state.length,
           };
           return (
             <RenderAttemptRow key={`row-${attemptIndex}`} {...attemptProps} />
           );
         })}
       </div>
-      {renderGameStatus({ prevList, text })}
+      {renderGameStatus(state)}
       <Keyboard {...keyboardProps} />
     </section>
   );
 };
-
-// Sub component
-const renderGameStatus = ({
-  prevList,
-  text,
-}: {
-  prevList: IPrevList[];
-  text: string;
-}) => {
-  if (prevList?.length > 0) {
-    switch (text) {
-      case "won! 🏆":
-        return <p className={styles.reward}>You Won! 🏆</p>;
-      case "lost!":
-        return <p className={styles.reward}>You lost!</p>;
-      default:
-        return <p style={{ height: 28 }} />;
-    }
-  }
-  return <p style={{ height: 28 }}></p>;
-};
-
 export default Game;

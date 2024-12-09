@@ -411,14 +411,10 @@ const Game = ({
       ) : (
         <p style={{ height: 28 }}></p>
       )}
-      <Keyboard
-        length={length}
+      {/* <Keyboard
         setIsEnterPressed={setIsEnterPressed}
-        setLength={setLength}
-        text={text}
         textareaRef={textareaRef}
-        checkedLetters={checkedLetters}
-      />
+      /> */}
     </section>
   );
 };

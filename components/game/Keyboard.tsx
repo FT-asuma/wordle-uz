@@ -13,11 +13,9 @@ import { FOURTH_RAW, SECOND_RAW, THIRD_RAW } from "./list";
 
 const Keyboard: React.FC<IKeyboardProps> = ({
   textareaRef,
-  length,
-  setLength,
   setIsEnterPressed,
-  text,
-  checkedLetters,
+  dispatch,
+  state,
 }) => {
   const [letter, setLetter] = useState<KeyboardEvent>();
   const [isClick, setIsClick] = useState<string>("");
@@ -39,14 +37,9 @@ const Keyboard: React.FC<IKeyboardProps> = ({
     keyList.map((item) => {
       const keyProperties: IKeyProps = {
         per_key: item.key,
-        checkedLetters,
-        isClick,
-        length,
-        // @ts-ignore
-        letter,
         setIsClick,
-        setLength,
-        text,
+        dispatch,
+        state,
       };
       return <Key key={item.key} {...keyProperties} />;
     });
@@ -58,7 +51,7 @@ const Keyboard: React.FC<IKeyboardProps> = ({
       setIsEnterPressed(true);
       setTimeout(() => setIsEnterPressed(false), 100);
     } else if (key === "Backspace") {
-      setLength(length.slice(0, -1));
+      dispatch({ type: "SET_LENGTH", payload: state.length.slice(0, -1) });
     }
   };
 
@@ -68,11 +61,21 @@ const Keyboard: React.FC<IKeyboardProps> = ({
         <div className={styles.rawList}>{renderKeys(SECOND_RAW)}</div>
         <div className={styles.rawList}>{renderKeys(THIRD_RAW)}</div>
         <div className={styles.rawList}>
-          {swap ? renderExcludedKeyButton("Enter",handleExcludedKeyClick,mode)
-            : renderExcludedKeyButton("Backspace",handleExcludedKeyClick,mode)}
+          {swap
+            ? renderExcludedKeyButton("Enter", handleExcludedKeyClick, mode)
+            : renderExcludedKeyButton(
+                "Backspace",
+                handleExcludedKeyClick,
+                mode
+              )}
           {renderKeys(FOURTH_RAW)}
-          {!swap ? renderExcludedKeyButton("Enter", handleExcludedKeyClick, mode)
-            : renderExcludedKeyButton("Backspace",handleExcludedKeyClick,mode)}
+          {!swap
+            ? renderExcludedKeyButton("Enter", handleExcludedKeyClick, mode)
+            : renderExcludedKeyButton(
+                "Backspace",
+                handleExcludedKeyClick,
+                mode
+              )}
         </div>
       </div>
     </div>
