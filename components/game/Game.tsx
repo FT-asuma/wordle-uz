@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 
 import styles from "./games.module.css";
 
@@ -11,19 +17,48 @@ import { RenderAttemptRow } from "./util";
 
 // context & interface & constant
 import { useAppContext } from "@/context/AppContext";
-import {
-  IGameOverProps,
-  IKeyboardProps,
-  ILetterData,
-} from "@/interface";
+import { IGameOverProps, IKeyboardProps, ILetterData } from "@/interface";
 import { ALPHABET } from "@/constants";
 
 interface IPrevList {
   prev: [ILetterData];
 }
 
-const Game = () => {
+interface InitialStateProps {
+  length: string;
+  prevList: IPrevList[];
+  close: number;
+  error: string;
+  checkedLetters: ILetterData[];
+  modalOpen: boolean;
+  text: string;
+  gameWon: boolean;
+}
+
+type Action =
+  | { type: "SET_LENGTH"; payload: string }
+  | { type: "ADD_PREV_LIST"; payload: IPrevList } // Replace `any` with the correct type
+  | { type: "INCREMENT_CLOSE" }
+  | { type: "SET_ERROR"; payload: string }
+  | { type: "SET_CHECKED_LETTERS"; payload: ILetterData[] } // Replace `any` with the correct type
+  | { type: "TOGGLE_MODAL"; payload: boolean }
+  | { type: "SET_TEXT"; payload: string }
+  | { type: "SET_GAME_WON"; payload: boolean }
+  | { type: "RESET_STATE" }; // For resetting the state entirely
+
+const Game: React.FC = () => {
   const { wordLength, mode, listOfWords, hiddenWord } = useAppContext();
+
+  const initialState: InitialStateProps = {
+    length: "",
+    prevList: [],
+    close: 0,
+    error: "",
+    checkedLetters: [],
+    modalOpen: false,
+    text: "win",
+    gameWon: false,
+  };
 
   const [length, setLength] = useState<string>("");
   const [prevList, setPrevList] = useState<IPrevList[]>([]);
@@ -39,6 +74,41 @@ const Game = () => {
     width: number;
     height: number;
   }>();
+  const reducer = (
+    state: InitialStateProps,
+    action: Action
+  ): InitialStateProps => {
+    switch (action.type) {
+      case "SET_LENGTH":
+        return { ...state, length: action.payload };
+
+      case "ADD_PREV_LIST":
+        return { ...state, prevList: [...state.prevList, action.payload] };
+
+      case "INCREMENT_CLOSE":
+        return { ...state, close: state.close + 1 };
+
+      case "SET_ERROR":
+        return { ...state, error: action.payload };
+
+      case "SET_CHECKED_LETTERS":
+        return { ...state, checkedLetters: action.payload };
+
+      case "TOGGLE_MODAL":
+        return { ...state, modalOpen: action.payload };
+
+      case "SET_TEXT":
+        return { ...state, text: action.payload };
+
+      case "SET_GAME_WON":
+        return { ...state, gameWon: action.payload };
+
+      case "RESET_STATE":
+        return initialState;
+    }
+  };
+
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
     if (dimension)
@@ -86,6 +156,8 @@ const Game = () => {
       if (modalOpen === false) {
         setModalOpen(true);
         setText("lost!");
+        dispatch({ type: "SET_TEXT", payload: "lost!" });
+        dispatch({ type: "TOGGLE_MODAL", payload: true });
       }
     }
 
@@ -104,8 +176,14 @@ const Game = () => {
       };
 
       setCheckedLetters(getUniqueLetters(prevList));
+      dispatch({
+        type: "SET_CHECKED_LETTERS",
+        payload: getUniqueLetters(prevList),
+      });
     }
   }, [prevList, modalOpen]);
+
+  console.log(state);
 
   // checking the word/letters
   const checkEachLetter = (word: string) => {
@@ -119,6 +197,7 @@ const Game = () => {
           textareaRef.current.disabled = true;
           setModalOpen(true);
           setText("won! 🏆");
+
           setGameWon(true);
         } else {
           if (pend) {
@@ -147,55 +226,45 @@ const Game = () => {
     }
     setIsEnterPressed(false);
   };
-  const checkWord = (hiddenWord: string, enteredWord: string) => {
-    const entered = [];
-    const previous: any = { prev: [] };
-    const letterCount: any = {};
+  const checkWord = useCallback(
+    (hiddenWord: string, enteredWord: string) => {
+      const letterCount: Record<string, number> = {};
+      // @ts-ignore
+      const previous: IPrevList = { prev: [] };
 
-    // Count letters in the hidden word
-    hiddenWord.split("").forEach((letter) => {
-      letterCount[letter.toLowerCase()] =
-        (letterCount[letter.toLowerCase()] || 0) + 1;
-    });
+      hiddenWord.split("").forEach((letter) => {
+        const lowerLetter = letter.toLowerCase();
+        letterCount[lowerLetter] = (letterCount[lowerLetter] || 0) + 1;
+      });
 
-    // First pass - check for exact matches
-    enteredWord.split("").forEach((letter, i) => {
-      const lowerLetter = letter.toLowerCase();
-      const isCorrect = hiddenWord[i].toLocaleLowerCase() === lowerLetter;
+      enteredWord.split("").forEach((letter, i) => {
+        const lowerLetter = letter.toLowerCase();
+        const isCorrect = hiddenWord[i].toLowerCase() === lowerLetter;
 
-      if (isCorrect) {
-        letterCount[lowerLetter]--;
-        entered.push(letter); // Adding letter without index
         previous.prev.push({
-          isCorrect: true,
+          isCorrect,
           perLetter: letter,
-          countInWord: letterCount[lowerLetter], // Add count of the letter
+          countInWord: isCorrect
+            ? --letterCount[lowerLetter]
+            : letterCount[lowerLetter],
           isOccured: false,
         });
-      } else {
-        entered.push(null);
-        previous.prev.push({
-          isCorrect: false,
-          perLetter: letter,
-          countInWord: letterCount[lowerLetter], // Add count of the letter
-          isOccured: false,
-        });
-      }
-    });
+      });
 
-    // Second pass - check for non-exact matches and update occurrence
-    enteredWord.split("").forEach((letter, i) => {
-      const lowerLetter = letter.toLowerCase();
-      if (!previous.prev[i].isCorrect && letterCount[lowerLetter] > 0) {
-        letterCount[lowerLetter]--;
-        previous.prev[i].isOccured = true;
-      }
-    });
+      enteredWord.split("").forEach((letter, i) => {
+        const lowerLetter = letter.toLowerCase();
+        if (!previous.prev[i].isCorrect && letterCount[lowerLetter] > 0) {
+          previous.prev[i].isOccured = true;
+          letterCount[lowerLetter]--;
+        }
+      });
 
-    setPrevList((prev) => [...prev, previous]);
-    setClose(close + 1);
-    setLength("");
-  };
+      setPrevList((prev) => [...prev, previous]);
+      setClose(close + 1);
+      setLength("");
+    },
+    [close]
+  );
 
   const saveUserTextHandler = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const listOfLetters = e.currentTarget.value.split("");
@@ -250,19 +319,24 @@ const Game = () => {
             close,
             length,
           };
-          return <RenderAttemptRow  key={`row-${attemptIndex}`} {...attemptProps} />;
+          return (
+            <RenderAttemptRow key={`row-${attemptIndex}`} {...attemptProps} />
+          );
         })}
       </div>
-      {renderGameStatus({prevList, text})}
+      {renderGameStatus({ prevList, text })}
       <Keyboard {...keyboardProps} />
     </section>
   );
 };
 
 // Sub component
-const renderGameStatus = ({prevList, text}: {
-  prevList: IPrevList[],
-  text: string
+const renderGameStatus = ({
+  prevList,
+  text,
+}: {
+  prevList: IPrevList[];
+  text: string;
 }) => {
   if (prevList?.length > 0) {
     switch (text) {

@@ -1,7 +1,10 @@
 import React from "react";
+
 import styles from "./gamecard.module.css";
+
 import Link from "next/link";
 import Image from "next/image";
+
 const GameCard = () => {
   return (
     <Link href={"/games/doubletrouble"} className={styles.card}>
@@ -11,6 +14,7 @@ const GameCard = () => {
           alt="double trouble image"
           width={300}
           height={300}
+          priority
         />
       </div>
       <div className={styles.content}>
