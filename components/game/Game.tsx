@@ -22,7 +22,7 @@ interface IPrevList {
   prev: [ILetterData];
 }
 
-const Game: React.FC<IPrevList> = () => {
+const Game = () => {
   const { wordLength, mode, listOfWords, hiddenWord } = useAppContext();
 
   const [length, setLength] = useState<string>("");

@@ -14,12 +14,8 @@ import styles from "./page.module.css";
 export default function Home() {
   const { 
     hiddenWord,
-    lengthOfWord,
-    listOfWords,
-    setHiddenWord,
     setList,
     setWordLength,
-    swap,
     wordLength,
     mode
   } = useAppContext();
