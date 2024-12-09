@@ -1,14 +1,15 @@
 "use client";
 
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import Key from "./keys/Key";
-import { FOURTH_RAW, SECOND_RAW, THIRD_RAW } from "./list";
+import { useEffect, useState } from "react";
+
 import styles from "./games.module.css";
+
+import { Key } from "./keys";
+import { renderExcludedKeyButton } from "./util";
+
 import { useAppContext } from "@/context/AppContext";
-import { IKeyboardProps } from "@/interface";
-import renderExcludedKeyButton from "./util/renderExcludedKeyButton";
-
-
+import { IKeyboardProps, IKeyProps } from "@/interface";
+import { FOURTH_RAW, SECOND_RAW, THIRD_RAW } from "./list";
 
 const Keyboard: React.FC<IKeyboardProps> = ({
   textareaRef,
@@ -20,7 +21,7 @@ const Keyboard: React.FC<IKeyboardProps> = ({
 }) => {
   const [letter, setLetter] = useState<KeyboardEvent>();
   const [isClick, setIsClick] = useState<string>("");
-  const { wordLength, swap, mode } = useAppContext();
+  const { swap, mode } = useAppContext();
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => setLetter(e);
     const handleKeyRelease = () => setLetter(undefined);
@@ -35,21 +36,20 @@ const Keyboard: React.FC<IKeyboardProps> = ({
   }, [textareaRef]);
 
   const renderKeys = (keyList: { key: string }[]) =>
-    keyList.map((item) => (
-      <Key
-        key={item.key}
-        per_key={item.key}
-        text={text}
-        mode={mode}
-        wordLength={wordLength}
-        letter={letter as KeyboardEvent}
-        setLength={setLength}
-        length={length}
-        setIsClick={setIsClick}
-        isClick={isClick}
-        checkedLetters={checkedLetters}
-      />
-    ));
+    keyList.map((item) => {
+      const keyProperties: IKeyProps = {
+        per_key: item.key,
+        checkedLetters,
+        isClick,
+        length,
+        // @ts-ignore
+        letter,
+        setIsClick,
+        setLength,
+        text,
+      };
+      return <Key key={item.key} {...keyProperties} />;
+    });
 
   const handleExcludedKeyClick = (key: string) => {
     setIsClick(key);
@@ -61,20 +61,18 @@ const Keyboard: React.FC<IKeyboardProps> = ({
       setLength(length.slice(0, -1));
     }
   };
-  
+
   return (
     <div tabIndex={-1} className={styles.keyboard}>
       <div className={styles.keyboardCont}>
         <div className={styles.rawList}>{renderKeys(SECOND_RAW)}</div>
         <div className={styles.rawList}>{renderKeys(THIRD_RAW)}</div>
         <div className={styles.rawList}>
-        {swap
-        ? renderExcludedKeyButton("Enter", swap, handleExcludedKeyClick, mode)
-        : renderExcludedKeyButton("Backspace", swap, handleExcludedKeyClick, mode)}
-        {renderKeys(FOURTH_RAW)}
-        {!swap
-        ? renderExcludedKeyButton("Enter", swap, handleExcludedKeyClick, mode)
-        : renderExcludedKeyButton("Backspace", swap, handleExcludedKeyClick, mode)}
+          {swap ? renderExcludedKeyButton("Enter",handleExcludedKeyClick,mode)
+            : renderExcludedKeyButton("Backspace",handleExcludedKeyClick,mode)}
+          {renderKeys(FOURTH_RAW)}
+          {!swap ? renderExcludedKeyButton("Enter", handleExcludedKeyClick, mode)
+            : renderExcludedKeyButton("Backspace",handleExcludedKeyClick,mode)}
         </div>
       </div>
     </div>

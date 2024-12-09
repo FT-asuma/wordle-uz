@@ -112,15 +112,9 @@ export default function Home() {
         <GameContainer>
           <Header
             hiddenWord={hiddenWord}
-            setConfetti={setConfetti}
-            confetti={confetti}
-            setSwap={setSwap}
-            swap={swap}
-            setList={setList}
             setWordLength={setWordLength}
             wordLength={wordLength}
-            setMode={setMode}
-            mode={mode}
+            setList={setList}
           />
           <Game
             wordLength={wordLength}

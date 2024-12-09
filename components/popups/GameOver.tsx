@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
+
 import styles from "./popups.module.css";
-import ShortConfettiAnimation from "../utils/gameOver/GameWon";
+
+import { ShortConfettiAnimation } from "../utils/";
+import renderHiddenWord from "./util/renderHiddenWord";
+
 import { FaCheckCircle } from "react-icons/fa";
 import { AiOutlineClose } from "react-icons/ai";
+
 import { useAppContext } from "@/context/AppContext";
 import { IGameOverProps } from "@/interface";
-import renderHiddenWord from "./util/renderHiddenWord";
 
 const GameOver: React.FC<IGameOverProps> = ({
   text,
@@ -15,21 +19,19 @@ const GameOver: React.FC<IGameOverProps> = ({
   gameWon,
   setGameWon,
   setPrevList,
-}: IGameOverProps) => {
+}) => {
   const [linkCopied, setLinkCopied] = useState(false);
   const { hiddenWord, listOfWords, setHiddenWord, randomWord } =
     useAppContext();
 
-  console.log(modalOpen);
   const resetGame = () => {
     setModalOpen(false);
     setPrevList([]);
     setTimeout(() => {
       const newHiddenWords = Array.isArray(hiddenWord)
-        ? [
-            randomWord(listOfWords, 1, listOfWords.length),
-            randomWord(listOfWords, 1, listOfWords.length),
-          ]
+        ? Array(2)
+            .fill(null)
+            .map(() => randomWord(listOfWords, 1, listOfWords.length))
         : randomWord(listOfWords, 1, listOfWords.length);
       // @ts-ignore
       setHiddenWord(newHiddenWords);
@@ -47,19 +49,21 @@ const GameOver: React.FC<IGameOverProps> = ({
 
   useEffect(() => {
     document.body.style.overflow = gameWon ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [gameWon]);
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
-      if (modalOpen === true && event.key === "Enter") {
+      if (modalOpen && event.key === "Enter") {
         resetGame();
-        setModalOpen(false);
       }
     };
-
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [modalOpen]);
+
   return (
     <div
       className={styles.gameover}
@@ -72,24 +76,21 @@ const GameOver: React.FC<IGameOverProps> = ({
     >
       {gameWon && <ShortConfettiAnimation gameWon={gameWon} />}
       <div className={styles.modalCont}>
-        <div className={styles.title}>
-          <span />
-          <h3>You {text}</h3>
-          <button
-            onClick={() => {
-              setModalOpen(false);
-              setGameWon(false);
-            }}
-          >
-            <AiOutlineClose color="#fff" fontSize={24} />
-          </button>
-        </div>
+        <ModalHeader
+          title={`You ${text}`}
+          onClose={() => {
+            setModalOpen(false);
+            setGameWon(false);
+          }}
+        />
         <div className={styles.list}>
-          <p>
+          <div style={{ textAlign: "center" }}>
             The answer{Array.isArray(hiddenWord) ? "s" : ""}{" "}
-            {Array.isArray(hiddenWord) ? "were" : "was"}:
-          </p>
-          {renderHiddenWord(hiddenWord)}
+            {Array.isArray(hiddenWord) ? "were" : "was"}:{" "}
+            {Array.isArray(hiddenWord)
+              ? hiddenWord.join(", ")
+              : renderHiddenWord(hiddenWord)}
+          </div>
           <button onClick={resetGame}>New game</button>
           <p>
             Or press <code>Enter</code> to play again
@@ -98,17 +99,33 @@ const GameOver: React.FC<IGameOverProps> = ({
           <button className={styles.share} onClick={copyToClipboard}>
             Share with friends
           </button>
-          {linkCopied && (
-            <div className={styles.linkCopiedMessage}>
-              <FaCheckCircle color="#28a745" size={16} />
-              <span>Link copied!</span>
-            </div>
-          )}
+          {linkCopied && <LinkCopiedMessage />}
         </div>
       </div>
       <div onClick={resetGame} className={styles.bg} />
     </div>
   );
 };
+
+// Subcomponents
+const ModalHeader: React.FC<{ title: string; onClose: () => void }> = ({
+  title,
+  onClose,
+}) => (
+  <div className={styles.title}>
+    <span />
+    <h3>{title}</h3>
+    <button onClick={onClose}>
+      <AiOutlineClose color="#fff" fontSize={24} />
+    </button>
+  </div>
+);
+
+const LinkCopiedMessage = () => (
+  <div className={styles.linkCopiedMessage}>
+    <FaCheckCircle color="#28a745" size={16} />
+    <span>Link copied!</span>
+  </div>
+);
 
 export default GameOver;

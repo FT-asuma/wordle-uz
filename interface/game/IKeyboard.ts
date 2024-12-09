@@ -47,7 +47,5 @@ export interface IKeyProps {
   setLength: React.Dispatch<React.SetStateAction<string>>;
   length: string;
   text: string;
-  wordLength: number;
-  mode: boolean;
   checkedLetters: ILetterData[];
 }

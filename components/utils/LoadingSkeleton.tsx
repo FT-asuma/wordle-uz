@@ -1,4 +1,5 @@
 import styles from "./utils.module.css";
+
 const LoadingSkeleton = () => {
   return (
     <div className={styles.loadingContainer}>

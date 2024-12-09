@@ -1,6 +1,6 @@
 import React from "react";
-import { v4 as uuidv4 } from "uuid";
-import styles from "../../popups/popups.module.css"; // Import your styles here
+
+import styles from "../../popups/popups.module.css";
 
 interface WordLettersProps {
   word: string;
@@ -9,13 +9,12 @@ interface WordLettersProps {
 const WordLetters: React.FC<WordLettersProps> = ({ word }) => {
   return (
     <div className={styles.hiddenWord}>
-      {word.split("").map((letter) => (
-        <p key={uuidv4()} className={styles.eachLetter}>
+      {word.split("").map((letter, index) => (
+        <p key={`${letter}-${index}`} className={styles.eachLetter}>
           {letter}
         </p>
       ))}
     </div>
   );
 };
-
 export default WordLetters;

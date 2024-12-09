@@ -1,7 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { FaPlay, FaPause } from "react-icons/fa"; // Import play and pause icons
-import styles from "./utils.module.css"; // Import CSS module
+
+import styles from "./utils.module.css";
+
+import { FaPlay, FaPause } from "react-icons/fa";
 
 interface AudioPlayerProps {
   word: string;
@@ -13,12 +15,12 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ word }) => {
   const [audioInstance, setAudioInstance] = useState<HTMLAudioElement | null>(
     null
   );
-  const [loading, setLoading] = useState(false); // New loading state
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchAudio = async () => {
       if (word) {
-        setLoading(true); // Set loading to true when fetching audio
+        setLoading(true); 
         try {
           const response = await fetch(
             `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`
@@ -30,12 +32,12 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ word }) => {
           if (validPhonetic) {
             setAudioUrl(validPhonetic.audio);
           } else {
-            setAudioUrl(null); // If no valid audio found, set it to null
+            setAudioUrl(null); 
           }
         } catch (error) {
           console.error("Error fetching audio:", error);
         } finally {
-          setLoading(false); // Set loading to false once fetching is done
+          setLoading(false); 
         }
       }
     };
@@ -67,7 +69,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ word }) => {
   return (
     <div className={styles.audioPlayer}>
       {loading ? (
-        <div className={styles.loading}></div> // Show loading spinner
+        <div className={styles.loading}></div>
       ) : audioUrl ? (
         <button onClick={handlePlay} className={styles.playBtn}>
           {isPlaying ? (

@@ -3,10 +3,9 @@ import { useState } from "react";
 
 import styles from "../game/games.module.css";
 
-// framer-motion
 import { motion } from "framer-motion";
 
-import { ILetterProps } from "@/interface";
+import { ILetterData, ILetterProps } from "@/interface";
 import { useAppContext } from "@/context/AppContext";
 
 const LetterComponent: React.FC<ILetterProps> = ({ a, i }) => {
@@ -16,6 +15,13 @@ const LetterComponent: React.FC<ILetterProps> = ({ a, i }) => {
     if (i.isCorrect) return styles.correctLetter;
     if (i.isOccured) return styles.occuredLetter;
     return styles.incorrectLetter;
+  };
+  const getCountInWord = (item: ILetterData) => {
+    return item.countInWord &&
+      ((item.isCorrect && item.countInWord >= 1) ||
+        (!item.isCorrect && item.countInWord > 1))
+      ? item.countInWord
+      : "";
   };
 
   return (
@@ -46,15 +52,10 @@ const LetterComponent: React.FC<ILetterProps> = ({ a, i }) => {
       <span style={{ color: "#e0e1dd" }} className={styles.letter}>
         {i.perLetter.toLocaleUpperCase()}
         <sup>
-          {i.countInWord &&
-          ((i.isCorrect && i.countInWord >= 1) ||
-            (!i.isCorrect && i.countInWord > 1))
-            ? i.countInWord
-            : ""}
+          {getCountInWord(i)}
         </sup>
       </span>
     </motion.div>
   );
 };
-
 export default LetterComponent;

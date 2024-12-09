@@ -1,20 +1,14 @@
 import React, { memo, useEffect, useState } from "react";
+
 import styles from "../games.module.css";
+
 import { IKeyProps, ILetterData } from "@/interface";
+import { useAppContext } from "@/context/AppContext";
 
+const Key: React.FC<IKeyProps> = memo(
+  ({ per_key, setIsClick, setLength, length, text, checkedLetters }) => {
+    const { wordLength, mode } = useAppContext();
 
-const Key = memo(
-  ({
-    per_key,
-    setIsClick,
-    isClick,
-    setLength,
-    length,
-    text,
-    wordLength,
-    checkedLetters,
-    mode,
-  }: IKeyProps) => {
     const [result, setResult] = useState<ILetterData | undefined>(undefined);
 
     useEffect(() => {
@@ -30,18 +24,22 @@ const Key = memo(
       if (result.isOccured) return `${styles.key} ${styles.occuredLetter}`;
       return `${styles.key} ${styles.incorrectLetter}`;
     };
+
+    const handleKeyPress = () => {
+      setIsClick(per_key);
+    
+      if (length.length < wordLength && text !== "won! 🏆") {
+        setLength(length + per_key);
+      }
+    };
+    
     return (
       <button
-        onClick={() => {
-          setIsClick(per_key);
-          if (length.length < wordLength && text !== "won! 🏆") {
-            setLength(length + per_key);
-          }
-        }}
+        onClick={handleKeyPress}
         style={{
           transition: `background-color 0.3s ease ${
             Math.random() * 0.5
-          }s, color 0.3s ease ${Math.random() * 0.5}s`, // Dynamic delay
+          }s, color 0.3s ease ${Math.random() * 0.5}s`,
           backgroundColor: result?.isCorrect
             ? "#6aaa64"
             : result?.isOccured

@@ -15,7 +15,6 @@ import {
   IGameOverProps,
   IKeyboardProps,
   ILetterData,
-  IRenderAttempRowProps,
 } from "@/interface";
 import { ALPHABET } from "@/constants";
 
@@ -24,13 +23,11 @@ interface IPrevList {
 }
 
 const Game: React.FC<IPrevList> = () => {
-  const { wordLength, mode, listOfWords, lengthOfWord, hiddenWord, swap } =
-    useAppContext();
+  const { wordLength, mode, listOfWords, hiddenWord } = useAppContext();
 
   const [length, setLength] = useState<string>("");
   const [prevList, setPrevList] = useState<IPrevList[]>([]);
   const [close, setClose] = useState(0);
-  const [animate, setAnimate] = useState(0);
   const [error, setError] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement | any>(null);
   const [isEnterPressed, setIsEnterPressed] = useState<boolean>(false);
@@ -83,6 +80,7 @@ const Game: React.FC<IPrevList> = () => {
     document.addEventListener("keypress", handleKeyPress);
     return () => document.removeEventListener("keypress", handleKeyPress);
   }, [isEnterPressed, length]);
+
   useEffect(() => {
     if (prevList.length === 6) {
       if (modalOpen === false) {
@@ -110,7 +108,6 @@ const Game: React.FC<IPrevList> = () => {
   }, [prevList, modalOpen]);
 
   // checking the word/letters
-
   const checkEachLetter = (word: string) => {
     if (word?.length === wordLength) {
       const pend = listOfWords.find(
@@ -197,7 +194,6 @@ const Game: React.FC<IPrevList> = () => {
 
     setPrevList((prev) => [...prev, previous]);
     setClose(close + 1);
-    setAnimate(animate + 1);
     setLength("");
   };
 
@@ -215,22 +211,7 @@ const Game: React.FC<IPrevList> = () => {
     setLength(res.join("").trim());
   };
 
-  const renderGameStatus = () => {
-    if (prevList?.length > 0) {
-      switch (text) {
-        case "won! 🏆":
-          return <p className={styles.reward}>You Won! 🏆</p>;
-        case "lost!":
-          return <p className={styles.reward}>You lost!</p>;
-        default:
-          return null;
-      }
-    }
-    return <p style={{ height: 28 }}></p>;
-  };
-
   // props~
-
   const gameOverProps: IGameOverProps = {
     setText,
     text,
@@ -264,19 +245,36 @@ const Game: React.FC<IPrevList> = () => {
       <div className={styles.attempts}>
         {Array.from({ length: 6 }).map((_, attemptIndex) => {
           const attemptProps = {
-            key: `row-${attemptIndex}`,
             attemptIndex,
             prevList,
             close,
             length,
           };
-          return <RenderAttemptRow {...attemptProps} />;
+          return <RenderAttemptRow  key={`row-${attemptIndex}`} {...attemptProps} />;
         })}
       </div>
-      {renderGameStatus()}
+      {renderGameStatus({prevList, text})}
       <Keyboard {...keyboardProps} />
     </section>
   );
+};
+
+// Sub component
+const renderGameStatus = ({prevList, text}: {
+  prevList: IPrevList[],
+  text: string
+}) => {
+  if (prevList?.length > 0) {
+    switch (text) {
+      case "won! 🏆":
+        return <p className={styles.reward}>You Won! 🏆</p>;
+      case "lost!":
+        return <p className={styles.reward}>You lost!</p>;
+      default:
+        return <p style={{ height: 28 }} />;
+    }
+  }
+  return <p style={{ height: 28 }}></p>;
 };
 
 export default Game;

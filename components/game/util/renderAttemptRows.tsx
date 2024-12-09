@@ -1,5 +1,5 @@
 import { IRenderAttemptRowsProps } from "@/interface";
-import RenderAttemptRow from "./RenderAttemptRow";
+import {RenderAttemptRow} from "..";
 
 const renderAttemptRows = ({
   totalAttempts = 6,

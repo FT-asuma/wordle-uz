@@ -11,8 +11,6 @@ import {
   orderBy,
   limit,
   getDocs,
-  doc,
-  getDoc,
 } from "firebase/firestore";
 import { FaUser } from "react-icons/fa";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
@@ -28,7 +26,6 @@ const Header = ({
   setList: Dispatch<SetStateAction<string[]>>;
   hiddenWord: string | string[];
 }) => {
-
   const {
     mode,
     setConfetti,
@@ -85,7 +82,6 @@ const Header = ({
       }
     }
   }, [topPlayers, user]);
-  console.log(topPlayers);
   return (
     <header className={styles.header}>
       <div className={styles.wrapperTabs}>

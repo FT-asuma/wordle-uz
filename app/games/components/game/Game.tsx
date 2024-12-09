@@ -82,8 +82,8 @@ const Game = ({
       setPrevList([]);
       setPrevList2([]);
       setClose(0);
-      setGameDisabled(false)
-      setGameDisabled2(false)
+      setGameDisabled(false);
+      setGameDisabled2(false);
       setCheckedLetters([]);
     }
   }, [hiddenWord]);
@@ -360,8 +360,8 @@ const Game = ({
           id=""
         ></textarea>
       ) : null}
-      <Alert value={error} type="alert" />
-      <GameOver
+      <Alert value={error} />
+      {/* <GameOver
         setText={setText}
         text={text}
         hiddenWord={hiddenWord}
@@ -373,7 +373,7 @@ const Game = ({
         whichLib={whichLib}
         lengthOfWord={lengthOfWord}
         setHiddenWord={setHiddenWord}
-      />
+      /> */}
       <div className={styles.content}>
         <div className={styles.attempts}>
           {Array.from({ length: 7 }).map((_, attemptIndex) => (
@@ -414,14 +414,10 @@ const Game = ({
       <Keyboard
         length={length}
         setIsEnterPressed={setIsEnterPressed}
-        isEnterPressed={isEnterPressed}
         setLength={setLength}
         text={text}
-        wordLength={wordLength}
         textareaRef={textareaRef}
-        swap={swap}
         checkedLetters={checkedLetters}
-        mode={mode}
       />
     </section>
   );

@@ -1,7 +1,10 @@
-import { v4 as uuidv4 } from "uuid";
-import WordLetters from "@/components/utils/gameOver/WordLetters";
 import Link from "next/link";
+
 import styles from "../popups.module.css";
+
+import { v4 as uuidv4 } from "uuid";
+
+import { WordLetters } from "@/components/utils";
 
 const renderHiddenWord = (hiddenWord: string | string[]) =>
   typeof hiddenWord === "string" && hiddenWord ? (

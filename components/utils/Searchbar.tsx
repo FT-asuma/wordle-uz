@@ -5,7 +5,6 @@ import { FiSearch } from "react-icons/fi";
 
 import styles from "./utils.module.css"; 
 
-// push after registrating
 import { useRouter } from "next/navigation";
 
 const SearchBar = ({ mode }: { mode: boolean }) => {
@@ -48,5 +47,4 @@ const SearchBar = ({ mode }: { mode: boolean }) => {
     </div>
   );
 };
-
 export default SearchBar;

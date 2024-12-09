@@ -6,7 +6,6 @@ type KeyType = "Enter" | "Backspace";
 
 const renderExcludedKeyButton = (
   keyType: KeyType,
-  swapCondition: boolean,
   handleClick: (keyType: KeyType) => void,
   mode: boolean
 ): JSX.Element => {
