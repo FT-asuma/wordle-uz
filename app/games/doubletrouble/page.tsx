@@ -11,13 +11,8 @@ import Game from "../components/game/Game";
 import GameList from "@/components/blocks/GameList";
 import GameContainer from "@/components/container/GameContainer";
 
-// provider
-import { useAppContext } from "../context/AppContext";
-
 export default function Home() {
   const en_words = require("@/constants/en_words/words.json");
-  const {value, setValue} = useAppContext()
-  console.log(value)
   const [wordLength, setWordLength] = useState(4);
   const [loading, setLoading] = useState(true);
   const [listOfWords, setListOfWords] = useState<string[]>([]);

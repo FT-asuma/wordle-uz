@@ -1,6 +1,6 @@
 import React from "react";
 
-import styles from "../games.module.css";
+import styles from "../../game.module.css";
 
 import { LetterComponent } from "@/components/utils";
 

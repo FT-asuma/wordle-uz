@@ -25,7 +25,6 @@ import {
 } from "@/interface";
 import { ALPHABET } from "@/constants";
 import renderGameStatus from "./util/renderGameStatus";
-
 interface IPrevList {
   prev: [ILetterData];
 }
@@ -45,6 +44,7 @@ const Game: React.FC = () => {
 
   const textareaRef = useRef<HTMLTextAreaElement | any>(null);
   const [isEnterPressed, setIsEnterPressed] = useState<boolean>(false);
+  const [length, setLength] = useState<string>("");
   const [dimension, setDimension] = useState<{
     width: number;
     height: number;
@@ -86,6 +86,7 @@ const Game: React.FC = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
+    setLength("");
     if (dimension)
       setDimension({ width: window.innerWidth, height: window.innerHeight });
 
@@ -105,30 +106,31 @@ const Game: React.FC = () => {
 
   useEffect(() => {
     if (hiddenWord) {
-      dispatch({ type: "RESET_STATE" });
       textareaRef.current.disabled = false;
+      dispatch({ type: "RESET_STATE" });
     }
   }, [hiddenWord]);
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.key === "Enter") {
-        checkEachLetter(state.length);
+        checkEachLetter(length);
       }
     };
     if (isEnterPressed === true) {
-      checkEachLetter(state.length);
+      checkEachLetter(length);
     }
 
     document.addEventListener("keypress", handleKeyPress);
     return () => document.removeEventListener("keypress", handleKeyPress);
-  }, [isEnterPressed, state.length]);
+  }, [isEnterPressed, length]);
 
   useEffect(() => {
     if (state.prevList.length === 6) {
       if (state.modalOpen === false) {
         dispatch({ type: "SET_TEXT", payload: "lost!" });
         dispatch({ type: "TOGGLE_MODAL", payload: true });
+        setLength("")
       }
     }
 
@@ -165,9 +167,11 @@ const Game: React.FC = () => {
           dispatch({ type: "SET_TEXT", payload: "won! 🏆" });
           dispatch({ type: "SET_GAME_WON", payload: true });
           dispatch({ type: "TOGGLE_MODAL", payload: true });
+          setLength("");
         } else {
           if (pend) {
             checkWord(hiddenWord as string, pend);
+            setLength("");
           }
         }
       } else {
@@ -234,7 +238,8 @@ const Game: React.FC = () => {
   const saveUserTextHandler = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const listOfLetters = e.currentTarget.value.split("");
     const res: string[] = [];
-    listOfLetters.map((l) => {
+
+    listOfLetters.forEach((l) => {
       const a = ALPHABET.find(
         (c) => c.toLocaleLowerCase() === l.toLocaleLowerCase()
       );
@@ -242,9 +247,10 @@ const Game: React.FC = () => {
         res.push(a);
       }
     });
-    dispatch({ type: "SET_LENGTH", payload: res.join("").trim() });
-  };
 
+    setLength(res.join(""));
+  };
+  console.log(hiddenWord);
   // props~
   const gameOverProps = {
     state,
@@ -256,6 +262,8 @@ const Game: React.FC = () => {
     textareaRef,
     state,
     dispatch,
+    length,
+    setLength,
   };
 
   return (
@@ -275,7 +283,7 @@ const Game: React.FC = () => {
             attemptIndex,
             prevList: state.prevList,
             close: state.close,
-            length: state.length,
+            length: length,
           };
           return (
             <RenderAttemptRow key={`row-${attemptIndex}`} {...attemptProps} />

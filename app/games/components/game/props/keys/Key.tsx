@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useState } from "react";
 
-import styles from "../games.module.css";
+import styles from "../../game.module.css";
 
 import { IKeyProps, ILetterData } from "@/interface";
 import { useAppContext } from "@/context/AppContext";

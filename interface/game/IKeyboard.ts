@@ -6,6 +6,8 @@ export interface IKeyboardProps {
   setIsEnterPressed: React.Dispatch<React.SetStateAction<boolean>>;
   state: InitialStateProps;
   dispatch: React.Dispatch<Action>;
+  length: string;
+  setLength: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export interface IRenderAttemptRowsProps {
@@ -44,4 +46,5 @@ export interface IKeyProps {
   setIsClick: React.Dispatch<React.SetStateAction<string>>;
   dispatch: React.Dispatch<Action>;
   state: InitialStateProps;
+  setLength: React.Dispatch<React.SetStateAction<string>>;
 }

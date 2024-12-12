@@ -5,13 +5,22 @@ import React, {
   useEffect,
   useState,
   useRef,
+  useReducer,
 } from "react";
 import styles from "./game.module.css";
-import Keyboard from "@/components/game/Keyboard";
+import Keyboard from "./props/Keyboard";
 import { ALPHABET } from "@/constants";
 import Alert from "@/components/popups/Alert";
 import GameOver from "@/components/popups/GameOver";
 import RenderAttemptRow from "../util/RenderAttemptRow";
+import { useDoubleTroubleContext } from "../../context/AppContext";
+import {
+  Action,
+  IKeyboardProps,
+  IKeyboardProps1,
+  InitialStateProps,
+} from "@/interface";
+import renderGameStatus from "./props/util/renderGameStatus";
 
 interface IPrevList {
   prev: [
@@ -24,23 +33,10 @@ interface IPrevList {
   ];
 }
 
-const Game = ({
-  wordLength,
-  mode,
-  listOfWords,
-  lengthOfWord,
-  hiddenWord,
-  setHiddenWord,
-  swap,
-}: {
-  wordLength: number;
-  listOfWords: string[];
-  lengthOfWord: string[];
-  hiddenWord: string[];
-  mode: boolean;
-  setHiddenWord: Dispatch<SetStateAction<string[]>>;
-  swap: boolean;
-}) => {
+const Game = () => {
+  const { wordLength, hiddenWord, setHiddenWord, swap, listOfWords, mode } =
+    useDoubleTroubleContext();
+
   const [length, setLength] = useState<string>("");
   const [length1, setLength1] = useState<string>("");
   const [prevList, setPrevList] = useState<IPrevList[]>([]);
@@ -62,6 +58,54 @@ const Game = ({
   >([]);
   const [isGameDisabled, setGameDisabled] = useState(false);
   const [isGameDisabled2, setGameDisabled2] = useState(false);
+
+  const initialState: InitialStateProps = {
+    length: "",
+    prevList: [],
+    close: 0,
+    error: "",
+    checkedLetters: [],
+    modalOpen: false,
+    text: "win",
+    gameWon: false,
+  };
+
+  const reducer = (
+    state: InitialStateProps,
+    action: Action
+  ): InitialStateProps => {
+    switch (action.type) {
+      case "SET_LENGTH":
+        return { ...state, length: action.payload };
+
+      case "ADD_PREV_LIST":
+        return { ...state, prevList: [...state.prevList, action.payload] };
+
+      case "INCREMENT_CLOSE":
+        return { ...state, close: state.close + 1 };
+
+      case "SET_ERROR":
+        return { ...state, error: action.payload };
+
+      case "SET_CHECKED_LETTERS":
+        return { ...state, checkedLetters: action.payload };
+
+      case "TOGGLE_MODAL":
+        return { ...state, modalOpen: action.payload };
+
+      case "SET_TEXT":
+        return { ...state, text: action.payload };
+
+      case "SET_GAME_WON":
+        return { ...state, gameWon: action.payload };
+
+      case "RESET_STATE":
+        return initialState;
+    }
+  };
+
+  const [state, dispatch] = useReducer(reducer, initialState);
+
   useEffect(() => {
     const focusTextarea = () => {
       if (textareaRef.current) {
@@ -311,6 +355,32 @@ const Game = ({
     setAnimate(animate + 1);
     setLength("");
   };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const inputLetters = e.currentTarget.value.split("");
+
+    // Filter and map input letters to match the ALPHABET array
+    const validLetters = inputLetters
+      .map((letter) =>
+        ALPHABET.find(
+          (char) => char.toLocaleLowerCase() === letter.toLocaleLowerCase()
+        )
+      )
+      .filter((char): char is string => char !== undefined); // Type guard for strict typing
+
+    const result = validLetters.join("").trim();
+
+    // Update state based on game conditions
+    if (!isGameDisabled && !isGameDisabled2) {
+      setLength(result);
+      setLength1(result);
+    } else if (!isGameDisabled) {
+      setLength1(result);
+    } else if (!isGameDisabled2) {
+      setLength(result);
+    }
+  };
+
   const [dimension, setDimension] = useState<{
     width: number;
     height: number;
@@ -325,39 +395,26 @@ const Game = ({
     return <>Loading...</>;
   }
 
+  const keyboardProps: IKeyboardProps1 = {
+    dispatch,
+    length,
+    length1,
+    setIsEnterPressed,
+    setLength,
+    setLength1,
+    state,
+    textareaRef,
+  };
+
   return (
     <section className={mode === false ? styles.game : styles.lightMode}>
       {isGameDisabled !== true || isGameDisabled2 !== true ? (
         <textarea
-          name=""
-          inputMode="none"
           ref={textareaRef}
           style={{ position: "fixed", zIndex: -1, opacity: 0 }}
-          cols={0}
-          rows={0}
-          maxLength={lengthOfWord.length}
+          maxLength={wordLength}
           value={isGameDisabled2 === true ? length1 : length}
-          onChange={(e) => {
-            const listOfLetters = e.currentTarget.value.split("");
-            const res: string[] = [];
-            listOfLetters.forEach((l) => {
-              const a = ALPHABET.find(
-                (c) => c.toLocaleLowerCase() === l.toLocaleLowerCase()
-              );
-              if (a !== undefined) res.push(a);
-            });
-
-            // Update only the enabled field
-            if (!isGameDisabled && !isGameDisabled2) {
-              setLength(res.join("").trim());
-              setLength1(res.join("").trim());
-            } else if (!isGameDisabled) {
-              setLength1(res.join("").trim());
-            } else if (!isGameDisabled2) {
-              setLength(res.join("").trim());
-            }
-          }}
-          id=""
+          onChange={handleInputChange}
         ></textarea>
       ) : null}
       <Alert value={error} />
@@ -381,7 +438,7 @@ const Game = ({
               key={`row-${attemptIndex}`}
               attemptIndex={attemptIndex}
               prevList={prevList}
-              lengthOfWord={lengthOfWord}
+              lengthOfWord={Array(wordLength).fill("")}
               close={close}
               length={length1}
               mode={mode}
@@ -395,7 +452,7 @@ const Game = ({
               key={`row-${attemptIndex}`}
               attemptIndex={attemptIndex}
               prevList={prevList2}
-              lengthOfWord={lengthOfWord}
+              lengthOfWord={Array(wordLength).fill("")}
               close={close}
               length={length}
               mode={mode}
@@ -404,17 +461,8 @@ const Game = ({
           ))}
         </div>
       </div>
-      {text === "won! 🏆" && prevList?.length > 0 ? (
-        <p className={styles.reward}>You Won! 🏆</p>
-      ) : text === "lost!" && prevList?.length > 0 ? (
-        <p className={styles.reward}>You lost!</p>
-      ) : (
-        <p style={{ height: 28 }}></p>
-      )}
-      {/* <Keyboard
-        setIsEnterPressed={setIsEnterPressed}
-        textareaRef={textareaRef}
-      /> */}
+      {renderGameStatus({ prevList, text })}
+      <Keyboard {...keyboardProps} />
     </section>
   );
 };

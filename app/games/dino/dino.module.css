@@ -1,0 +1,54 @@
+.gameContainer {
+  width: 600px;
+  height: 150px;
+  position: relative;
+  background-color: #fff;
+  border: 1px solid #000;
+}
+
+.ground {
+  width: 100%;
+  height: 20px;
+  background-color: #333;
+  position: absolute;
+  bottom: 0;
+}
+
+.dino {
+  width: 20px;
+  height: 40px;
+  background-color: green;
+  position: absolute;
+  left: 50px;
+}
+
+.obstacle {
+  width: 20px;
+  height: 40px;
+  background-color: red;
+  position: absolute;
+  bottom: 20px;
+}
+
+.gameOver {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+}
+
+.jumpButton {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 20px;
+  background-color: green;
+  color: white;
+  border: none;
+  cursor: pointer;
+}

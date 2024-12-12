@@ -2,22 +2,24 @@
 
 import { useEffect, useState } from "react";
 
-import styles from "./games.module.css";
+import styles from "../game.module.css";
 
-import { Key } from "./keys";
+import Key from "./keys/Key";
 import { renderExcludedKeyButton } from "./util";
 
 import { useAppContext } from "@/context/AppContext";
-import { IKeyboardProps, IKeyProps } from "@/interface";
-import { FOURTH_RAW, SECOND_RAW, THIRD_RAW } from "./list";
+import { IKeyboardProps, IKeyboardProps1, IKeyProps } from "@/interface";
+import { FOURTH_RAW, SECOND_RAW, THIRD_RAW } from "@/components/game/list";
 
-const Keyboard: React.FC<IKeyboardProps> = ({
+const Keyboard: React.FC<IKeyboardProps1> = ({
   textareaRef,
   setIsEnterPressed,
   dispatch,
   state,
   length,
   setLength,
+  length1,
+  setLength1,
 }) => {
   const [letter, setLetter] = useState<KeyboardEvent>();
   const [isClick, setIsClick] = useState<string>("");
@@ -55,7 +57,11 @@ const Keyboard: React.FC<IKeyboardProps> = ({
       setTimeout(() => setIsEnterPressed(false), 100);
     }
     if (key === "Backspace") {
-      setLength(length.slice(0, -1));
+      if (length) {
+        setLength(length.slice(0, -1));
+      } else {
+        setLength1(length1.slice(0, 1));
+      }
     }
   };
 
