@@ -13,7 +13,7 @@ import { useDoubleTroubleContext } from "../context/AppContext";
 import { IHeaderProps } from "@/interface";
 
 export default function Home() {
-  const {mode, hiddenWord,setHiddenWord, wordLength, setWordLength, setList} = useDoubleTroubleContext()
+  const {mode, hiddenWord, wordLength, setWordLength, setList} = useDoubleTroubleContext()
   const headerProps: IHeaderProps = {
     hiddenWord,
     setList,

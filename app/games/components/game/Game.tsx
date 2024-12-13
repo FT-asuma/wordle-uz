@@ -34,7 +34,7 @@ interface IPrevList {
 }
 
 const Game = () => {
-  const { wordLength, hiddenWord, setHiddenWord, swap, listOfWords, mode } =
+  const { wordLength, hiddenWord, listOfWords, mode } =
     useDoubleTroubleContext();
 
   const [length, setLength] = useState<string>("");
@@ -213,13 +213,12 @@ const Game = () => {
     if (isGameDisabled === true && isGameDisabled2 === true) {
       setModalOpen(true);
       setText("won! 🏆");
-      setGameWon(true);
+      dispatch({type: "SET_GAME_WON", payload: true})
     }
   }, [isGameDisabled, isGameDisabled2]);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [text, setText] = useState<string>("win");
-  const [gameWon, setGameWon] = useState(false);
 
   const hiddenWord1 = hiddenWord[0];
   const hiddenWord2 = hiddenWord[1];
@@ -395,6 +394,8 @@ const Game = () => {
     return <>Loading...</>;
   }
 
+  // props~
+
   const keyboardProps: IKeyboardProps1 = {
     dispatch,
     length,
@@ -405,6 +406,13 @@ const Game = () => {
     state,
     textareaRef,
   };
+
+  const gameOverProps = {
+    state,
+    dispatch,
+  };
+
+  console.log(hiddenWord,"weqfwefwef")
 
   return (
     <section className={mode === false ? styles.game : styles.lightMode}>
@@ -418,19 +426,7 @@ const Game = () => {
         ></textarea>
       ) : null}
       <Alert value={error} />
-      {/* <GameOver
-        setText={setText}
-        text={text}
-        hiddenWord={hiddenWord}
-        modalOpen={modalOpen}
-        setModalOpen={setModalOpen}
-        key={"sheesh"}
-        gameWon={gameWon}
-        setGameWon={setGameWon}
-        whichLib={whichLib}
-        lengthOfWord={lengthOfWord}
-        setHiddenWord={setHiddenWord}
-      /> */}
+      <GameOver {...gameOverProps} />
       <div className={styles.content}>
         <div className={styles.attempts}>
           {Array.from({ length: 7 }).map((_, attemptIndex) => (

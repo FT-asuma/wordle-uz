@@ -66,7 +66,9 @@ const GameOver: React.FC<IGameOverProps> = ({ state, dispatch }) => {
       <div className={styles.modalCont}>
         <ModalHeader
           title={`You ${state.text}`}
-          onClose={() => {resetGame()}}
+          onClose={() => {
+            resetGame();
+          }}
         />
         <div className={styles.list}>
           <div style={{ textAlign: "center" }}>
