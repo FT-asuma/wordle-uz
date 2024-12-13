@@ -20,6 +20,7 @@ const defaultValue: IDoubleTrouble = {
   setHiddenWord: () => {},
   confetti: true,
   setConfetti: () => {},
+  setList: () => {},
   swap: false,
   setSwap: () => {},
   mode: false,
@@ -42,7 +43,9 @@ const DoubleTroubleProvider = ({ children }: { children: React.ReactNode }) => {
   const [confetti, setConfetti] = useState<boolean>(true);
   const [swap, setSwap] = useState<boolean>(false);
   const [mode, setMode] = useState<boolean>(false);
-
+  const [lengthOfWord, setList] = useState<string[]>(
+    Array(wordLength).fill("")
+  );
   const [deviceType, setDeviceType] = useState<string>("Desktop");
 
   const randomWords = (list: string[], min: number, max: number) => {
@@ -123,6 +126,7 @@ const DoubleTroubleProvider = ({ children }: { children: React.ReactNode }) => {
         randomWords,
         setConfetti,
         setDeviceType,
+        setList,
         setHiddenWord,
         setListOfWords,
         setLoading,

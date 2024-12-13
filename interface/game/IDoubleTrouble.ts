@@ -14,6 +14,7 @@ export interface IDoubleTrouble {
     | Dispatch<SetStateAction<string[]>>;
   confetti: boolean;
   setConfetti: Dispatch<SetStateAction<boolean>>;
+  setList: Dispatch<SetStateAction<string[]>>;
   swap: boolean;
   setSwap: Dispatch<SetStateAction<boolean>>;
   mode: boolean;
