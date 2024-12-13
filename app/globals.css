@@ -15,7 +15,7 @@ h4,
 button,
 div,
 textarea {
-  font-family: var(--font-lato);
+  font-family: var(--font-mont);
   outline: none;
   color: #e0e1dd;
 }

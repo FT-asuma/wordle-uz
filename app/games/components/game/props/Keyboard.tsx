@@ -8,7 +8,7 @@ import Key from "./keys/Key";
 import { renderExcludedKeyButton } from "./util";
 
 import { useAppContext } from "@/context/AppContext";
-import { IKeyboardProps, IKeyboardProps1, IKeyProps } from "@/interface";
+import { IKeyboardProps1, IKeyProps } from "@/interface";
 import { FOURTH_RAW, SECOND_RAW, THIRD_RAW } from "@/components/game/list";
 
 const Keyboard: React.FC<IKeyboardProps1> = ({
