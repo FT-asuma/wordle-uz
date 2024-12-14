@@ -36,6 +36,7 @@ export interface IGameOverProps {
 export interface InitialStateProps {
   length: string;
   prevList: IPrevList[];
+  prevList1: IPrevList[];
   close: number;
   error: string;
   checkedLetters: ILetterData[];
@@ -47,6 +48,7 @@ export interface InitialStateProps {
 export type Action =
   | { type: "SET_LENGTH"; payload: string }
   | { type: "ADD_PREV_LIST"; payload: IPrevList | any } // Replace `any` with the correct type
+  | { type: "ADD_SECOND_PREV_LIST"; payload: IPrevList | any } // Replace `any` with the correct type
   | { type: "INCREMENT_CLOSE" }
   | { type: "SET_ERROR"; payload: string }
   | { type: "SET_CHECKED_LETTERS"; payload: ILetterData[] } // Replace `any` with the correct type

@@ -37,31 +37,20 @@ const Game = () => {
   const { wordLength, hiddenWord, listOfWords, mode } =
     useDoubleTroubleContext();
 
+  // State management
   const [length, setLength] = useState<string>("");
   const [length1, setLength1] = useState<string>("");
-  const [prevList, setPrevList] = useState<IPrevList[]>([]);
-  const [prevList2, setPrevList2] = useState<IPrevList[]>([]);
-  const [close, setClose] = useState(0);
-  const [animate, setAnimate] = useState(0);
-  const [check, setCheck] = useState(false);
-  const [key, setKey] = useState<KeyboardEvent>();
-  const [error, setError] = useState("");
-  const textareaRef = useRef<HTMLTextAreaElement | any>(null);
+  const [key, setKey] = useState<KeyboardEvent | undefined>();
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [whichLib, setWhichLib] = useState<string[]>(listOfWords);
   const [isEnterPressed, setIsEnterPressed] = useState<boolean>(false);
-  const [checkedLetters, setCheckedLetters] = useState<
-    {
-      perLetter: string;
-      isCorrect: boolean;
-      isOccured: boolean;
-    }[]
-  >([]);
   const [isGameDisabled, setGameDisabled] = useState(false);
   const [isGameDisabled2, setGameDisabled2] = useState(false);
 
   const initialState: InitialStateProps = {
     length: "",
     prevList: [],
+    prevList1: [],
     close: 0,
     error: "",
     checkedLetters: [],
@@ -70,6 +59,7 @@ const Game = () => {
     gameWon: false,
   };
 
+  // Reducer for game state management
   const reducer = (
     state: InitialStateProps,
     action: Action
@@ -77,41 +67,34 @@ const Game = () => {
     switch (action.type) {
       case "SET_LENGTH":
         return { ...state, length: action.payload };
-
       case "ADD_PREV_LIST":
+      case "ADD_SECOND_PREV_LIST":
         return { ...state, prevList: [...state.prevList, action.payload] };
-
       case "INCREMENT_CLOSE":
         return { ...state, close: state.close + 1 };
-
       case "SET_ERROR":
         return { ...state, error: action.payload };
-
       case "SET_CHECKED_LETTERS":
         return { ...state, checkedLetters: action.payload };
-
       case "TOGGLE_MODAL":
         return { ...state, modalOpen: action.payload };
-
       case "SET_TEXT":
         return { ...state, text: action.payload };
-
       case "SET_GAME_WON":
         return { ...state, gameWon: action.payload };
-
       case "RESET_STATE":
         return initialState;
+      default:
+        return state;
     }
   };
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  // Focus the textarea when the user clicks or presses keys
   useEffect(() => {
     const focusTextarea = () => {
-      if (textareaRef.current) {
-        // @ts-ignore
-        textareaRef.current.focus();
-      }
+      if (textareaRef.current) textareaRef.current.focus();
     };
     document.addEventListener("click", focusTextarea);
     document.addEventListener("keydown", focusTextarea);
@@ -120,164 +103,123 @@ const Game = () => {
       document.removeEventListener("keydown", focusTextarea);
     };
   }, []);
+
+  // Reset game when the hidden word changes
   useEffect(() => {
     if (hiddenWord) {
       setWhichLib(listOfWords);
-      setPrevList([]);
-      setPrevList2([]);
-      setClose(0);
+      dispatch({ type: "RESET_STATE" });
       setGameDisabled(false);
       setGameDisabled2(false);
-      setCheckedLetters([]);
     }
   }, [hiddenWord]);
+
+  // Handle key press for Enter key
   useEffect(() => {
-    document.addEventListener("keypress", (e) => {
+    const handleKeyPress = (e: KeyboardEvent) => {
       setKey(e);
-    });
-  }, [textareaRef]);
-  useEffect(() => {
-    if (length?.length || length1.length) {
-      setCheck(false);
-    }
-  }, [length, length1]);
+    };
+    document.addEventListener("keypress", handleKeyPress);
+    return () => {
+      document.removeEventListener("keypress", handleKeyPress);
+    };
+  }, []);
 
   useEffect(() => {
-    if (key) {
-      if (key.key === "Enter") {
-        setCheck(!check);
-        if (isGameDisabled === false) {
-          checkEachLetter(length1!);
-        } else {
-          checkEachLetter(length!);
-        }
+    if (key && key.key === "Enter") {
+      if (!isGameDisabled) {
+        checkEachLetter(length1);
+      } else {
+        checkEachLetter(length);
       }
     }
-  }, [key]);
-  useEffect(() => {
-    if (isEnterPressed === true) {
-      setCheck(!check);
-      checkEachLetter(length!);
-    }
-  }, [isEnterPressed]);
-  useEffect(() => {
-    if (prevList.length === 7 || prevList2.length === 7) {
-      if (modalOpen === false) {
-        setModalOpen(true);
-        setText("lost!");
-      }
-    }
-    if (prevList && prevList.length > 0) {
-      const getUniqueLetters = (attempts: any) => {
-        const seen = new Set(); // To track already seen letters
-        const uniqueLetters: any = [];
+  }, [key, length, length1, isGameDisabled]);
 
-        attempts.forEach((attempt: any) => {
-          attempt.prev.forEach((letterObj: any) => {
-            if (!seen.has(letterObj.perLetter)) {
-              seen.add(letterObj.perLetter); // Add to the set if it's not seen yet
-              uniqueLetters.push(letterObj); // Add the letter object to the final array
-            }
-          });
+  // Handle checking of letters for each word
+  useEffect(() => {
+    const getUniqueLetters = (attempts: any) => {
+      const seen = new Set();
+      const uniqueLetters: any[] = [];
+      attempts.forEach((attempt: any) => {
+        attempt.prev.forEach((letterObj: any) => {
+          if (!seen.has(letterObj.perLetter)) {
+            seen.add(letterObj.perLetter);
+            uniqueLetters.push(letterObj);
+          }
         });
+      });
+      return uniqueLetters;
+    };
 
-        return uniqueLetters;
-      };
-
-      const uniqueLetters = getUniqueLetters(prevList);
-      setCheckedLetters(uniqueLetters);
+    if (state.prevList.length > 0) {
+      dispatch({
+        type: "SET_CHECKED_LETTERS",
+        payload: getUniqueLetters(state.prevList),
+      });
     }
-    if (prevList2 && prevList2.length > 0) {
-      const getUniqueLetters = (attempts: any) => {
-        const seen = new Set(); // To track already seen letters
-        const uniqueLetters: any = [];
-
-        attempts.forEach((attempt: any) => {
-          attempt.prev.forEach((letterObj: any) => {
-            if (!seen.has(letterObj.perLetter)) {
-              seen.add(letterObj.perLetter); // Add to the set if it's not seen yet
-              uniqueLetters.push(letterObj); // Add the letter object to the final array
-            }
-          });
-        });
-
-        return uniqueLetters;
-      };
-
-      const uniqueLetters = getUniqueLetters(prevList);
-      setCheckedLetters(uniqueLetters);
+    if (state.prevList1.length > 0) {
+      dispatch({
+        type: "SET_CHECKED_LETTERS",
+        payload: getUniqueLetters(state.prevList1),
+      });
     }
-  }, [prevList, prevList2]);
+  }, [state.prevList, state.prevList1]);
 
+  // Handle game over and game win conditions
   useEffect(() => {
-    if (isGameDisabled === true && isGameDisabled2 === true) {
-      setModalOpen(true);
-      setText("won! 🏆");
-      dispatch({type: "SET_GAME_WON", payload: true})
+    if (isGameDisabled && isGameDisabled2) {
+      dispatch({ type: "TOGGLE_MODAL", payload: true });
+      dispatch({ type: "SET_TEXT", payload: "won! 🏆" });
+      dispatch({ type: "SET_GAME_WON", payload: true });
     }
   }, [isGameDisabled, isGameDisabled2]);
 
-  const [modalOpen, setModalOpen] = useState(false);
-  const [text, setText] = useState<string>("win");
-
-  const hiddenWord1 = hiddenWord[0];
-  const hiddenWord2 = hiddenWord[1];
-
   const checkEachLetter = (word: string) => {
-    if (word.length === hiddenWord1.length) {
-      const pend = whichLib.find(
-        (c) => c.toLocaleLowerCase() === word.toLocaleLowerCase()
+    if (word.length === hiddenWord[0].length) {
+      const wordInLib = whichLib.find(
+        (c) => c.toLowerCase() === word.toLowerCase()
       );
-      if (pend !== undefined) {
-        if (word.toLocaleLowerCase() === hiddenWord1.toLocaleLowerCase()) {
-          checkWord(hiddenWord1, word);
-          setGameDisabled(true);
-        } else {
-          checkWord(hiddenWord1, word);
-        }
-        if (word.toLocaleLowerCase() === hiddenWord2.toLocaleLowerCase()) {
-          checkWord2(hiddenWord2, word);
-          setGameDisabled2(true);
-        } else {
-          checkWord2(hiddenWord2, word);
+      if (wordInLib) {
+        checkWord(hiddenWord[0], word);
+        if (word.toLowerCase() === hiddenWord[1].toLowerCase()) {
+          checkWord2(hiddenWord[1], word);
         }
       } else {
-        setError("The word is not found");
+        dispatch({ type: "SET_ERROR", payload: "The word is not found" });
         setTimeout(() => {
-          setError("");
+          dispatch({ type: "SET_ERROR", payload: "" });
         }, 1000);
       }
     } else {
-      setError("Your word is short");
+      dispatch({ type: "SET_ERROR", payload: "Your word is short" });
       setTimeout(() => {
-        setError("");
+        dispatch({ type: "SET_ERROR", payload: "" });
       }, 1000);
     }
   };
 
   const checkWord = (hiddenWord2: string, enteredWord: string) => {
-    if (isGameDisabled === true) return;
+    if (isGameDisabled) return;
     const entered = [];
     const previous: any = { prev: [] };
-    const letterCount: any = {};
-    // Count letters in the hidden word
+    const letterCount: { [key: string]: number } = {};
+
     hiddenWord2.split("").forEach((letter) => {
       letterCount[letter.toLowerCase()] =
         (letterCount[letter.toLowerCase()] || 0) + 1;
     });
 
-    // First pass - check for exact matches
+    // Check for exact matches
     enteredWord.split("").forEach((letter, i) => {
       const lowerLetter = letter.toLowerCase();
-      const isCorrect = hiddenWord2[i].toLocaleLowerCase() === lowerLetter;
-
+      const isCorrect = hiddenWord2[i].toLowerCase() === lowerLetter;
       if (isCorrect) {
         letterCount[lowerLetter]--;
-        entered.push(letter); // Adding letter without index
+        entered.push(letter);
         previous.prev.push({
           isCorrect: true,
           perLetter: letter,
-          countInWord: letterCount[lowerLetter], // Add count of the letter
+          countInWord: letterCount[lowerLetter],
           isOccured: false,
         });
       } else {
@@ -285,13 +227,13 @@ const Game = () => {
         previous.prev.push({
           isCorrect: false,
           perLetter: letter,
-          countInWord: letterCount[lowerLetter], // Add count of the letter
+          countInWord: letterCount[lowerLetter],
           isOccured: false,
         });
       }
     });
 
-    // Second pass - check for non-exact matches and update occurrence
+    // Check for non-exact matches
     enteredWord.split("").forEach((letter, i) => {
       const lowerLetter = letter.toLowerCase();
       if (!previous.prev[i].isCorrect && letterCount[lowerLetter] > 0) {
@@ -299,35 +241,34 @@ const Game = () => {
         previous.prev[i].isOccured = true;
       }
     });
-    setPrevList((prev) => [...prev, previous]);
-    setClose(close + 1);
-    setAnimate(animate + 1);
+
+    dispatch({ type: "ADD_PREV_LIST", payload: previous });
+    dispatch({ type: "INCREMENT_CLOSE" });
     setLength1("");
   };
 
   const checkWord2 = (hiddenWord2: string, enteredWord: string) => {
-    if (isGameDisabled2 === true) return;
+    if (isGameDisabled2) return;
     const entered = [];
     const previous: any = { prev: [] };
-    const letterCount: any = {};
-    // Count letters in the hidden word
+    const letterCount: { [key: string]: number } = {};
+
     hiddenWord2.split("").forEach((letter) => {
       letterCount[letter.toLowerCase()] =
         (letterCount[letter.toLowerCase()] || 0) + 1;
     });
 
-    // First pass - check for exact matches
+    // Check for exact matches
     enteredWord.split("").forEach((letter, i) => {
       const lowerLetter = letter.toLowerCase();
-      const isCorrect = hiddenWord2[i].toLocaleLowerCase() === lowerLetter;
-
+      const isCorrect = hiddenWord2[i].toLowerCase() === lowerLetter;
       if (isCorrect) {
         letterCount[lowerLetter]--;
-        entered.push(letter); // Adding letter without index
+        entered.push(letter);
         previous.prev.push({
           isCorrect: true,
           perLetter: letter,
-          countInWord: letterCount[lowerLetter], // Add count of the letter
+          countInWord: letterCount[lowerLetter],
           isOccured: false,
         });
       } else {
@@ -335,13 +276,13 @@ const Game = () => {
         previous.prev.push({
           isCorrect: false,
           perLetter: letter,
-          countInWord: letterCount[lowerLetter], // Add count of the letter
+          countInWord: letterCount[lowerLetter],
           isOccured: false,
         });
       }
     });
 
-    // Second pass - check for non-exact matches and update occurrence
+    // Check for non-exact matches
     enteredWord.split("").forEach((letter, i) => {
       const lowerLetter = letter.toLowerCase();
       if (!previous.prev[i].isCorrect && letterCount[lowerLetter] > 0) {
@@ -349,27 +290,22 @@ const Game = () => {
         previous.prev[i].isOccured = true;
       }
     });
-    setPrevList2((prev) => [...prev, previous]);
-    setClose(close + 1);
-    setAnimate(animate + 1);
+
+    dispatch({ type: "ADD_SECOND_PREV_LIST", payload: previous });
+    dispatch({ type: "INCREMENT_CLOSE" });
     setLength("");
   };
 
+  // Handle input change for word guessing
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const inputLetters = e.currentTarget.value.split("");
-
-    // Filter and map input letters to match the ALPHABET array
     const validLetters = inputLetters
       .map((letter) =>
-        ALPHABET.find(
-          (char) => char.toLocaleLowerCase() === letter.toLocaleLowerCase()
-        )
+        ALPHABET.find((char) => char.toLowerCase() === letter.toLowerCase())
       )
-      .filter((char): char is string => char !== undefined); // Type guard for strict typing
+      .filter((char): char is string => char !== undefined);
 
     const result = validLetters.join("").trim();
-
-    // Update state based on game conditions
     if (!isGameDisabled && !isGameDisabled2) {
       setLength(result);
       setLength1(result);
@@ -380,6 +316,7 @@ const Game = () => {
     }
   };
 
+  // Handle window dimension changes
   const [dimension, setDimension] = useState<{
     width: number;
     height: number;
@@ -390,11 +327,9 @@ const Game = () => {
     }
   }, []);
 
-  if (!listOfWords && !dimension) {
-    return <>Loading...</>;
-  }
-
   // props~
+
+  console.log(hiddenWord);
 
   const keyboardProps: IKeyboardProps1 = {
     dispatch,
@@ -412,7 +347,9 @@ const Game = () => {
     dispatch,
   };
 
-  console.log(hiddenWord,"weqfwefwef")
+  useEffect(() => {
+    console.log("dfghjkl");
+  }, []);
 
   return (
     <section className={mode === false ? styles.game : styles.lightMode}>
@@ -425,39 +362,39 @@ const Game = () => {
           onChange={handleInputChange}
         ></textarea>
       ) : null}
-      <Alert value={error} />
+      <Alert value={state.error} />
       <GameOver {...gameOverProps} />
       <div className={styles.content}>
         <div className={styles.attempts}>
-          {Array.from({ length: 7 }).map((_, attemptIndex) => (
-            <RenderAttemptRow
-              key={`row-${attemptIndex}`}
-              attemptIndex={attemptIndex}
-              prevList={prevList}
-              lengthOfWord={Array(wordLength).fill("")}
-              close={close}
-              length={length1}
-              mode={mode}
-              hiddenWord={hiddenWord1}
-            />
-          ))}
+          {Array.from({ length: 7 }).map((_, attemptIndex) => {
+            const attemptProps = {
+              attemptIndex,
+              prevList: state.prevList,
+              close: state.close,
+              length: length,
+              hiddenWord: hiddenWord[0],
+            };
+            return (
+              <RenderAttemptRow key={`row-${attemptIndex}`} {...attemptProps} />
+            );
+          })}
         </div>
         <div className={styles.attempts}>
-          {Array.from({ length: 7 }).map((_, attemptIndex) => (
-            <RenderAttemptRow
-              key={`row-${attemptIndex}`}
-              attemptIndex={attemptIndex}
-              prevList={prevList2}
-              lengthOfWord={Array(wordLength).fill("")}
-              close={close}
-              length={length}
-              mode={mode}
-              hiddenWord={hiddenWord1}
-            />
-          ))}
+          {Array.from({ length: 7 }).map((_, attemptIndex) => {
+            const attemptProps = {
+              attemptIndex,
+              prevList: state.prevList,
+              close: state.close,
+              length: length1,
+              hiddenWord: hiddenWord[1],
+            };
+            return (
+              <RenderAttemptRow key={`row-${attemptIndex}`} {...attemptProps} />
+            );
+          })}
         </div>
       </div>
-      {renderGameStatus({ prevList, text })}
+      {renderGameStatus(state)}
       <Keyboard {...keyboardProps} />
     </section>
   );

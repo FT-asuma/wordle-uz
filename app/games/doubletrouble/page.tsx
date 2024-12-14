@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense } from "react";
 
 import styles from "./page.module.css";
 

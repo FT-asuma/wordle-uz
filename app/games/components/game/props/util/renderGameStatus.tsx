@@ -8,8 +8,10 @@ interface IPrevList {
 const renderGameStatus = ({
   prevList,
   text,
+  prevList1
 }: {
   prevList: IPrevList[];
+  prevList1: IPrevList[]
   text: string;
 }) => {
   if (prevList?.length > 0) {
