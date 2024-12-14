@@ -6,6 +6,7 @@ import React, {
   useState,
   useRef,
   useReducer,
+  useCallback,
 } from "react";
 import styles from "./game.module.css";
 import Keyboard from "./props/Keyboard";
@@ -23,14 +24,12 @@ import {
 import renderGameStatus from "./props/util/renderGameStatus";
 
 interface IPrevList {
-  prev: [
-    {
-      perLetter: string;
-      isCorrect: boolean;
-      isOccured: boolean;
-      countInWord: number;
-    }
-  ];
+  prev: {
+    perLetter: string;
+    isCorrect: boolean;
+    isOccured: boolean;
+    countInWord: number;
+  }[];
 }
 
 const Game = () => {
@@ -138,32 +137,40 @@ const Game = () => {
   // Handle checking of letters for each word
   useEffect(() => {
     const getUniqueLetters = (attempts: any) => {
-      const seen = new Set();
-      const uniqueLetters: any[] = [];
+      const seen = new Set<string>(); // Define type for clarity
+      const uniqueLetters: any[] = []; // Store unique letter objects
+
+      if (!Array.isArray(attempts)) {
+        console.error("Invalid input: attempts must be an array.");
+        return uniqueLetters;
+      }
+
       attempts.forEach((attempt: any) => {
-        attempt.prev.forEach((letterObj: any) => {
-          if (!seen.has(letterObj.perLetter)) {
-            seen.add(letterObj.perLetter);
-            uniqueLetters.push(letterObj);
-          }
-        });
+        if (Array.isArray(attempt.prev)) {
+          // Ensure `prev` is an array
+          attempt.prev.forEach((letterObj: any) => {
+            if (letterObj?.perLetter && !seen.has(letterObj.perLetter)) {
+              seen.add(letterObj.perLetter); // Add unique letter to the set
+              uniqueLetters.push(letterObj); // Push the letter object
+            }
+          });
+        } else {
+          console.warn(
+            "Skipping attempt with invalid 'prev' property:",
+            attempt
+          );
+        }
       });
+
       return uniqueLetters;
     };
-
-    if (state.prevList.length > 0) {
-      dispatch({
-        type: "SET_CHECKED_LETTERS",
-        payload: getUniqueLetters(state.prevList),
-      });
-    }
     if (state.prevList1.length > 0) {
       dispatch({
         type: "SET_CHECKED_LETTERS",
         payload: getUniqueLetters(state.prevList1),
       });
     }
-  }, [state.prevList, state.prevList1]);
+  }, [state.prevList]);
 
   // Handle game over and game win conditions
   useEffect(() => {
@@ -174,15 +181,26 @@ const Game = () => {
     }
   }, [isGameDisabled, isGameDisabled2]);
 
+  const hiddenWord1 = hiddenWord[0];
+  const hiddenWord2 = hiddenWord[1];
+
   const checkEachLetter = (word: string) => {
-    if (word.length === hiddenWord[0].length) {
-      const wordInLib = whichLib.find(
-        (c) => c.toLowerCase() === word.toLowerCase()
+    if (word.length === hiddenWord1.length) {
+      const pend = whichLib.find(
+        (c) => c.toLocaleLowerCase() === word.toLocaleLowerCase()
       );
-      if (wordInLib) {
-        checkWord(hiddenWord[0], word);
-        if (word.toLowerCase() === hiddenWord[1].toLowerCase()) {
-          checkWord2(hiddenWord[1], word);
+      if (pend !== undefined) {
+        if (word.toLocaleLowerCase() === hiddenWord1.toLocaleLowerCase()) {
+          checkWord(hiddenWord1, word);
+          setGameDisabled(true);
+        } else {
+          checkWord(hiddenWord1, word);
+        }
+        if (word.toLocaleLowerCase() === hiddenWord2.toLocaleLowerCase()) {
+          checkWord2(hiddenWord2, word);
+          setGameDisabled2(true);
+        } else {
+          checkWord2(hiddenWord2, word);
         }
       } else {
         dispatch({ type: "SET_ERROR", payload: "The word is not found" });
@@ -198,102 +216,88 @@ const Game = () => {
     }
   };
 
-  const checkWord = (hiddenWord2: string, enteredWord: string) => {
-    if (isGameDisabled) return;
-    const entered = [];
-    const previous: any = { prev: [] };
-    const letterCount: { [key: string]: number } = {};
+  const checkWord = useCallback(
+    (hiddenWord: string, enteredWord: string) => {
+      if (isGameDisabled2 === true) return;
+      const letterCount: Record<string, number> = {};
+      // @ts-ignore
+      const previous: IPrevList = { prev: [] };
 
-    hiddenWord2.split("").forEach((letter) => {
-      letterCount[letter.toLowerCase()] =
-        (letterCount[letter.toLowerCase()] || 0) + 1;
-    });
+      hiddenWord.split("").forEach((letter) => {
+        const lowerLetter = letter.toLowerCase();
+        letterCount[lowerLetter] = (letterCount[lowerLetter] || 0) + 1;
+      });
 
-    // Check for exact matches
-    enteredWord.split("").forEach((letter, i) => {
-      const lowerLetter = letter.toLowerCase();
-      const isCorrect = hiddenWord2[i].toLowerCase() === lowerLetter;
-      if (isCorrect) {
-        letterCount[lowerLetter]--;
-        entered.push(letter);
+      enteredWord.split("").forEach((letter, i) => {
+        const lowerLetter = letter.toLowerCase();
+        const isCorrect = hiddenWord[i].toLowerCase() === lowerLetter;
+
         previous.prev.push({
-          isCorrect: true,
+          isCorrect,
           perLetter: letter,
-          countInWord: letterCount[lowerLetter],
+          countInWord: isCorrect
+            ? --letterCount[lowerLetter]
+            : letterCount[lowerLetter],
           isOccured: false,
         });
-      } else {
-        entered.push(null);
-        previous.prev.push({
-          isCorrect: false,
-          perLetter: letter,
-          countInWord: letterCount[lowerLetter],
-          isOccured: false,
-        });
-      }
-    });
+      });
 
-    // Check for non-exact matches
-    enteredWord.split("").forEach((letter, i) => {
-      const lowerLetter = letter.toLowerCase();
-      if (!previous.prev[i].isCorrect && letterCount[lowerLetter] > 0) {
-        letterCount[lowerLetter]--;
-        previous.prev[i].isOccured = true;
-      }
-    });
-
-    dispatch({ type: "ADD_PREV_LIST", payload: previous });
-    dispatch({ type: "INCREMENT_CLOSE" });
-    setLength1("");
-  };
+      enteredWord.split("").forEach((letter, i) => {
+        const lowerLetter = letter.toLowerCase();
+        if (!previous.prev[i].isCorrect && letterCount[lowerLetter] > 0) {
+          previous.prev[i].isOccured = true;
+          letterCount[lowerLetter]--;
+        }
+      });
+      dispatch({ type: "ADD_PREV_LIST", payload: previous });
+      dispatch({ type: "INCREMENT_CLOSE" });
+      dispatch({ type: "SET_LENGTH", payload: "" });
+    },
+    [state.close]
+  );
 
   const checkWord2 = (hiddenWord2: string, enteredWord: string) => {
     if (isGameDisabled2) return;
-    const entered = [];
-    const previous: any = { prev: [] };
-    const letterCount: { [key: string]: number } = {};
 
+    const previous: IPrevList = { prev: [] }; // Initialize with the correct type
+    const letterCount: Record<string, number> = {};
+
+    // Count letters in the hidden word
     hiddenWord2.split("").forEach((letter) => {
-      letterCount[letter.toLowerCase()] =
-        (letterCount[letter.toLowerCase()] || 0) + 1;
+      const lowerLetter = letter.toLowerCase();
+      letterCount[lowerLetter] = (letterCount[lowerLetter] || 0) + 1;
     });
 
-    // Check for exact matches
+    // First pass - check for exact matches
     enteredWord.split("").forEach((letter, i) => {
       const lowerLetter = letter.toLowerCase();
       const isCorrect = hiddenWord2[i].toLowerCase() === lowerLetter;
-      if (isCorrect) {
-        letterCount[lowerLetter]--;
-        entered.push(letter);
-        previous.prev.push({
-          isCorrect: true,
-          perLetter: letter,
-          countInWord: letterCount[lowerLetter],
-          isOccured: false,
-        });
-      } else {
-        entered.push(null);
-        previous.prev.push({
-          isCorrect: false,
-          perLetter: letter,
-          countInWord: letterCount[lowerLetter],
-          isOccured: false,
-        });
-      }
+
+      previous.prev.push({
+        perLetter: letter,
+        isCorrect,
+        isOccured: false,
+        countInWord: isCorrect
+          ? --letterCount[lowerLetter]
+          : letterCount[lowerLetter] || 0, // Handle undefined gracefully
+      });
     });
 
-    // Check for non-exact matches
+    // Second pass - check for non-exact matches
     enteredWord.split("").forEach((letter, i) => {
       const lowerLetter = letter.toLowerCase();
       if (!previous.prev[i].isCorrect && letterCount[lowerLetter] > 0) {
-        letterCount[lowerLetter]--;
         previous.prev[i].isOccured = true;
+        letterCount[lowerLetter]--;
       }
     });
 
-    dispatch({ type: "ADD_SECOND_PREV_LIST", payload: previous });
+    dispatch({
+      type: "ADD_SECOND_PREV_LIST",
+      payload: (prev: IPrevList[]) => [...prev, previous],
+    });
     dispatch({ type: "INCREMENT_CLOSE" });
-    setLength("");
+    dispatch({ type: "SET_LENGTH", payload: "" });
   };
 
   // Handle input change for word guessing
@@ -316,7 +320,7 @@ const Game = () => {
     }
   };
 
-  console.log(state.prevList1)
+  console.log(state.prevList1);
 
   // Handle window dimension changes
   const [dimension, setDimension] = useState<{

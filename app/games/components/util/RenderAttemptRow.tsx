@@ -4,26 +4,6 @@ import styles from "../game/game.module.css";
 import React from "react";
 import { useDoubleTroubleContext } from "../../context/AppContext";
 import { IRenderAttempRowProps } from "@/interface";
-interface LetterData {
-  isCorrect: boolean;
-  isOccured: boolean;
-  perLetter: string;
-  countInWord?: number | undefined;
-}
-
-interface AttemptData {
-  prev: LetterData[]; // Array of letter data for the attempt
-}
-
-interface Props {
-  attemptIndex: number; // Index of the current attempt
-  prevList: AttemptData[]; // Array of previous attempts
-  lengthOfWord: string[]; // Array representing the length of the word (e.g., underscores or letters)
-  close: number | null; // Index of the current attempt being guessed
-  length?: string; // Array of guessed letters
-  mode: boolean; // True for dark mode, false for light mode
-  hiddenWord:string
-}
 
 interface EmptySlotProps {
   attemptIndex: number;

