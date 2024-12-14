@@ -20,6 +20,7 @@ export default function Home() {
     setWordLength,
     wordLength
   }
+  console.log(hiddenWord)
   return (
     <Suspense fallback={<Loading />}>
       <main className={`${styles.main} ${mode ? styles.lightMode : ""}`}>

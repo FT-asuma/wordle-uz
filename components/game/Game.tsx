@@ -32,6 +32,7 @@ const Game: React.FC = () => {
   const { wordLength, mode, listOfWords, hiddenWord } = useAppContext();
 
   const initialState: InitialStateProps = {
+    prevList1: [],
     length: "",
     prevList: [],
     close: 0,
@@ -58,6 +59,9 @@ const Game: React.FC = () => {
         return { ...state, length: action.payload };
 
       case "ADD_PREV_LIST":
+        return { ...state, prevList: [...state.prevList, action.payload] };
+
+      case "ADD_SECOND_PREV_LIST":
         return { ...state, prevList: [...state.prevList, action.payload] };
 
       case "INCREMENT_CLOSE":
@@ -130,7 +134,7 @@ const Game: React.FC = () => {
       if (state.modalOpen === false) {
         dispatch({ type: "SET_TEXT", payload: "lost!" });
         dispatch({ type: "TOGGLE_MODAL", payload: true });
-        setLength("")
+        setLength("");
       }
     }
 

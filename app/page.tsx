@@ -24,11 +24,6 @@ export default function Home() {
   const { hiddenWord, setList, setWordLength, wordLength, mode } =
     useAppContext();
 
-  const originalConsoleLog = console.log;
-  console.log = (...args) => {
-    originalConsoleLog("Custom log:", ...args);
-  };
-
   const headerProps: IHeaderProps = {
     hiddenWord,
     setList,

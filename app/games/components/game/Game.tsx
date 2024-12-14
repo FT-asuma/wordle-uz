@@ -316,6 +316,8 @@ const Game = () => {
     }
   };
 
+  console.log(state.prevList1)
+
   // Handle window dimension changes
   const [dimension, setDimension] = useState<{
     width: number;
