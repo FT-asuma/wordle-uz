@@ -27,7 +27,6 @@ const containsProhibitedWords = (text: string) => {
   return false;
 };
 
-
 const CommentInput: React.FC<CommentInputProps> = ({
   newComment,
   onChange,
