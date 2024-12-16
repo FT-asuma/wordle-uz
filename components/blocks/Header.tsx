@@ -5,27 +5,11 @@ import Switcher from "../utils/Switcher";
 import { useRouter } from "next/navigation";
 import { FaTrophy } from "react-icons/fa";
 import { db } from "@/app/firebase";
-import {
-  collection,
-  query,
-  orderBy,
-  limit,
-  getDocs,
-} from "firebase/firestore";
+import { collection, query, orderBy, limit, getDocs } from "firebase/firestore";
 import { FaUser } from "react-icons/fa";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { useAppContext } from "@/context/AppContext";
-const Header = ({
-  setWordLength,
-  wordLength,
-  setList,
-  hiddenWord,
-}: {
-  setWordLength: Dispatch<SetStateAction<number>>;
-  wordLength: number;
-  setList: Dispatch<SetStateAction<string[]>>;
-  hiddenWord: string | string[];
-}) => {
+const Header = () => {
   const {
     mode,
     setConfetti,
@@ -33,6 +17,10 @@ const Header = ({
     setSwap,
     swap,
     setMode,
+    setWordLength,
+    wordLength,
+    setList,
+    hiddenWord,
   } = useAppContext();
   const [isSettingsOpen, setisSettingsOpen] = useState(false);
   const [isInfoOpen, setisInfoOpen] = useState(false);

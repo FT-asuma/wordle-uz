@@ -1,6 +1,7 @@
 "use client";
 
 import React, {
+  ChangeEvent,
   useCallback,
   useEffect,
   useReducer,
@@ -29,7 +30,14 @@ interface IPrevList {
   prev: [ILetterData];
 }
 const Game: React.FC = () => {
-  const { wordLength, mode, listOfWords, hiddenWord } = useAppContext();
+  const {
+    wordLength,
+    mode,
+    listOfWords,
+    hiddenWord,
+    textareaRef,
+    isCommentSectionVisible,
+  } = useAppContext();
 
   const initialState: InitialStateProps = {
     prevList1: [],
@@ -43,7 +51,6 @@ const Game: React.FC = () => {
     gameWon: false,
   };
 
-  const textareaRef = useRef<HTMLTextAreaElement | any>(null);
   const [isEnterPressed, setIsEnterPressed] = useState<boolean>(false);
   const [length, setLength] = useState<string>("");
   const [dimension, setDimension] = useState<{
@@ -90,26 +97,37 @@ const Game: React.FC = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
-    setLength("");
-    if (dimension)
-      setDimension({ width: window.innerWidth, height: window.innerHeight });
+    setLength(""); // Reset length
 
-    const focusTextarea = () => {
-      if (textareaRef.current) {
+    // Update window dimension
+    if (dimension) {
+      setDimension({ width: window.innerWidth, height: window.innerHeight });
+    }
+
+    const focusTextarea = (event: any) => {
+      // Only focus the textarea if the comment section is visible and the clicked target is not the comment input field
+      if (
+        isCommentSectionVisible === false &&
+        textareaRef.current &&
+        !textareaRef.current.contains(event.target)
+      ) {
         textareaRef.current.focus();
       }
     };
+
+    // Add event listeners for click and keydown
     document.addEventListener("click", focusTextarea);
     document.addEventListener("keydown", focusTextarea);
 
+    // Cleanup event listeners on component unmount
     return () => {
       document.removeEventListener("click", focusTextarea);
       document.removeEventListener("keydown", focusTextarea);
     };
-  }, [dimension]);
+  }, [dimension, isCommentSectionVisible]);
 
   useEffect(() => {
-    if (hiddenWord) {
+    if (hiddenWord && textareaRef.current) {
       textareaRef.current.disabled = false;
       dispatch({ type: "RESET_STATE" });
     }
@@ -167,6 +185,7 @@ const Game: React.FC = () => {
       if (pend !== undefined) {
         if (pend === hiddenWord) {
           checkWord(hiddenWord, pend);
+          // @ts-ignore
           textareaRef.current.disabled = true;
           dispatch({ type: "SET_TEXT", payload: "won! 🏆" });
           dispatch({ type: "SET_GAME_WON", payload: true });

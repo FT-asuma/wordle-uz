@@ -9,7 +9,9 @@ export interface IGame {
   listOfWords: string[];
   setListOfWords: Dispatch<SetStateAction<string[]>>;
   hiddenWord: string | string[];
-  setHiddenWord: Dispatch<SetStateAction<string>> | Dispatch<SetStateAction<string[]>>;
+  setHiddenWord:
+    | Dispatch<SetStateAction<string>>
+    | Dispatch<SetStateAction<string[]>>;
   lengthOfWord: string[];
   setList: Dispatch<SetStateAction<string[]>>;
   confetti: boolean;
@@ -21,6 +23,9 @@ export interface IGame {
   deviceType: string;
   setDeviceType: Dispatch<SetStateAction<string>>;
   randomWord: (list: string[], min: number, max: number) => string;
+  textareaRef: React.RefObject<HTMLTextAreaElement>;
+  setIsCommentSectionVisible: React.Dispatch<React.SetStateAction<boolean>>
+  isCommentSectionVisible: boolean
 }
 
 interface IPrevList {
@@ -28,10 +33,9 @@ interface IPrevList {
 }
 
 export interface IGameOverProps {
-  state: InitialStateProps
-  dispatch: React.Dispatch<Action>
+  state: InitialStateProps;
+  dispatch: React.Dispatch<Action>;
 }
-
 
 export interface InitialStateProps {
   length: string;

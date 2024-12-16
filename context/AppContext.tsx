@@ -6,6 +6,7 @@ import React, {
   Suspense,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 
@@ -29,6 +30,9 @@ export const defaultValue: IGame = {
   deviceType: "Desktop",
   setDeviceType: () => {},
   randomWord: (list: string[], min: number, max: number) => list[0],
+  textareaRef: { current: null },
+  isCommentSectionVisible: false,
+  setIsCommentSectionVisible: () => {}
 };
 
 const AppContext = createContext<IGame>(defaultValue);
@@ -40,7 +44,8 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [listOfWords, setListOfWords] = useState<string[]>([]);
   const [hiddenWord, setHiddenWord] = useState<string>("");
-
+  const [isCommentSectionVisible, setIsCommentSectionVisible] =
+    useState<boolean>(false);
   // States for settings
   const [lengthOfWord, setList] = useState<string[]>(
     Array(wordLength).fill("")
@@ -95,7 +100,7 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
     setListOfWords(response);
     setLoading(false);
   }, [wordLength]);
-
+  const textareaRef = useRef<HTMLTextAreaElement | any>(null);
   // Toggle light/dark mode
   useEffect(() => {
     const body = document.body;
@@ -112,6 +117,7 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
       value={{
         confetti,
         deviceType,
+        textareaRef,
         hiddenWord,
         lengthOfWord,
         listOfWords,
@@ -126,9 +132,11 @@ const AppProvider = ({ children }: { children: React.ReactNode }) => {
         setLoading,
         setMode,
         setSwap,
+        setIsCommentSectionVisible,
         setWordLength,
         swap,
         wordLength,
+        isCommentSectionVisible
       }}
     >
       {children}
