@@ -6,14 +6,13 @@ import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
 
 interface RatingSectionProps {
   averageRating: number;
-  user: any; // You can specify the user type here
+  user: any;
 }
 
 export const RatingSection: React.FC<RatingSectionProps> = ({
   averageRating,
   user,
 }) => {
-  // Function to determine the color for each star
   const getStarColor = (starIndex: number) => {
     if (starIndex <= averageRating) return "yellow";
     return "gray";
@@ -24,14 +23,14 @@ export const RatingSection: React.FC<RatingSectionProps> = ({
       alert("You must be logged in to rate.");
       return;
     }
-  
+
     try {
       const userRatingDocRef = doc(db, "ratings", user.uid);
       const userRatingDoc = await getDoc(userRatingDocRef);
-  
+
       if (userRatingDoc.exists()) {
         alert("You have already rated. Thank you!");
-        return; 
+        return;
       }
 
       await setDoc(userRatingDocRef, {
@@ -40,7 +39,7 @@ export const RatingSection: React.FC<RatingSectionProps> = ({
         rating: star,
         timestamp: new Date().toISOString(),
       });
-  
+
       alert(`Thank you for rating ${star} star${star > 1 ? "s" : ""}!`);
     } catch (error) {
       // @ts-ignore
@@ -55,26 +54,30 @@ export const RatingSection: React.FC<RatingSectionProps> = ({
       animate={{ scale: 1, opacity: 1 }}
       transition={{ delay: 0.4, duration: 0.3 }}
     >
-      <span className={styles.ratingText}>Rate Us (Avg: </span>
-      <span className={styles.averageRating}>{averageRating}</span>
-      <span className={styles.ratingText}>):</span>
-      {[1, 2, 3, 4, 5].map((star) => (
-        <motion.span
-          key={star}
-          whileHover={{ scale: 1.2 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <FaStar
-            className={`${styles.star} ${
-              getStarColor(star) === "yellow"
-                ? styles.activeStar
-                : styles.inactiveStar
-            }`}
-            onClick={() => handleRate(star)}
-            color={getStarColor(star) === "yellow" ? "yellow" : "gray"}
-          />
-        </motion.span>
-      ))}
+      <div className={styles.averageRate}>
+        <span className={styles.ratingText}>Rate Us (Avg: </span>
+        <span className={styles.averageRating}>{averageRating}</span>
+        <span className={styles.ratingText}>):</span>
+      </div>
+      <div className={styles.rate}>
+        {[1, 2, 3, 4, 5].map((star) => (
+          <motion.span
+            key={star}
+            whileHover={{ scale: 1.2 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <FaStar
+              className={`${styles.star} ${
+                getStarColor(star) === "yellow"
+                  ? styles.activeStar
+                  : styles.inactiveStar
+              }`}
+              onClick={() => handleRate(star)}
+              color={getStarColor(star) === "yellow" ? "yellow" : "gray"}
+            />
+          </motion.span>
+        ))}
+      </div>
     </motion.div>
   );
 };

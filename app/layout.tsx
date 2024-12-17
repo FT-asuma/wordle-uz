@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   title: "A fun Puzzle-game",
   description:
     "Hi everyone, please note that this is not a direct copy of wordle.org! I have only been inspired by that website!",
+  icons: "/favicon.ico",
 };
 
 export default function RootLayout({
@@ -29,7 +30,9 @@ export default function RootLayout({
       </head>
       <body className={mont.className}>
         <Analytics />
-        <Suspense fallback={<Loading/>}><AppProvider>{children}</AppProvider></Suspense>
+        <Suspense fallback={<Loading />}>
+          <AppProvider>{children}</AppProvider>
+        </Suspense>
       </body>
     </html>
   );

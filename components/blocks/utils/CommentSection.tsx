@@ -14,6 +14,7 @@ import styles from "../footer.module.css";
 import CommentInput from "./subs/CommentInput";
 import CommentItem from "./subs/CommentItem";
 import LoadMoreButton from "./subs/LoadMoreButton";
+import Loading from "../loading/Loading";
 
 interface CommentSectionProps {
   user: any;
@@ -25,7 +26,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ user }) => {
   const [userImages, setUserImages] = useState<{ [userId: string]: string }>(
     {}
   );
-  const [commentLimit, setCommentLimit] = useState<number>(10);
+  const [commentLimit, setCommentLimit] = useState<number>(5);
   const { isCommentSectionVisible, setIsCommentSectionVisible } =
     useAppContext();
 
@@ -56,7 +57,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ user }) => {
           const userData = userDoc.data();
           setUserImages((prev) => ({
             ...prev,
-            [user.uid]: userData.photoURL || "default-image-url",
+            [user.uid]: userData.photoURL || undefined,
           }));
         }
       };
@@ -93,7 +94,7 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ user }) => {
   };
 
   const loadMoreComments = () => {
-    setCommentLimit((prevLimit) => prevLimit + 10);
+    setCommentLimit((prevLimit) => prevLimit + 5);
   };
 
   const handleUpdateComment = async (updatedComment: any) => {
@@ -135,13 +136,19 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ user }) => {
       )}
 
       <ul className={styles.commentList}>
-        {comments.slice(0, commentLimit).map((comment) => (
-          <CommentItem
-            key={comment.id}
-            comment={comment}
-            onUpdate={handleUpdateComment}
-          />
-        ))}
+        {comments ? (
+          comments
+            .slice(0, commentLimit)
+            .map((comment) => (
+              <CommentItem
+                key={comment.id}
+                comment={comment}
+                onUpdate={handleUpdateComment}
+              />
+            ))
+        ) : (
+          <Loading />
+        )}
       </ul>
 
       {commentLimit < comments.length && (

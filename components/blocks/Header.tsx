@@ -9,6 +9,7 @@ import { collection, query, orderBy, limit, getDocs } from "firebase/firestore";
 import { FaUser } from "react-icons/fa";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { useAppContext } from "@/context/AppContext";
+import Loading from "./loading/Loading";
 const Header = () => {
   const {
     mode,
@@ -35,7 +36,7 @@ const Header = () => {
     const fetchTopPlayers = async () => {
       try {
         const usersCollection = collection(db, "users");
-        const q = query(usersCollection, orderBy("wins", "desc"), limit(10)); // Query to get top 10 players by wins
+        const q = query(usersCollection, orderBy("wins", "desc"), limit(10));
         const querySnapshot = await getDocs(q);
 
         const players = querySnapshot.docs.map((doc) => ({
@@ -62,14 +63,6 @@ const Header = () => {
       }
     });
   }, []);
-  useEffect(() => {
-    if (user && topPlayers && topPlayers.length) {
-      const index = topPlayers.findIndex((u) => u.email === user.email);
-      if (index !== -1) {
-        setIndex(index);
-      }
-    }
-  }, [topPlayers, user]);
   return (
     <header className={styles.header}>
       <div className={styles.wrapperTabs}>
@@ -200,7 +193,6 @@ const Header = () => {
                   <div style={{ marginTop: 16 }} className={styles.information}>
                     Dear {user.displayName}! <br />
                     Thanks for you attendence in our game! <br />
-                    {index! > 1 && `You won ${index} times!!!`} <br />
                     Keep it up <b>Player</b>
                   </div>
                 </div>
@@ -290,9 +282,7 @@ const Header = () => {
             </div>
             <div className={styles.playersList}>
               {pending === true ? (
-                <div className={styles.loadingContainer}>
-                  <div className={styles.spinner}></div>
-                </div>
+                <Loading/>
               ) : (
                 topPlayers
                   .filter((pl) => pl.wins > 0)

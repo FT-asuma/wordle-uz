@@ -41,7 +41,7 @@ input:checked + .slider {
 }
 
 input:checked + .slider:before {
-  transform: translateX(27px); /* Matches the toggle size and slider width */
+  transform: translateX(27px);
 }
 
 /* Loading Container */

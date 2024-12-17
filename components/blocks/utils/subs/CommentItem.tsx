@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "../../footer.module.css";
 import {
   AiOutlineLike,
@@ -9,13 +9,17 @@ import {
 
 interface CommentItemProps {
   comment: any;
-  onUpdate: (updatedComment: any) => void; // Callback to update the comment in the parent
+  onUpdate: (updatedComment: any) => void;
 }
 
 const CommentItem: React.FC<CommentItemProps> = ({ comment, onUpdate }) => {
   const [userReaction, setUserReaction] = useState<"like" | "dislike" | null>(
-    comment.userReaction || null
-  ); // Track user reaction
+    null
+  );
+
+  useEffect(() => {
+    setUserReaction(comment.userReaction || null);
+  }, []);
 
   const truncateUserName = (name: string, maxLength: number) =>
     name.length > maxLength ? name.slice(0, maxLength) + "..." : name;
@@ -68,8 +72,8 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, onUpdate }) => {
     }
   };
 
-  const netLikes = comment.likes - comment.dislikes; // Calculate net likes
-
+  const netLikes = comment.likes - comment.dislikes;
+  console.log(userReaction)
   return (
     <li className={styles.commentItem}>
       <div className={styles.commentHeader}>

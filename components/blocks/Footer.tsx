@@ -2,14 +2,8 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { onAuthStateChanged, User } from "firebase/auth";
-import { db, auth } from "@/app/firebase"; // Firebase configuration
-import {
-  collection,
-  addDoc,
-  onSnapshot,
-  updateDoc,
-  getDoc,
-} from "firebase/firestore";
+import { db, auth } from "@/app/firebase";
+import { collection, onSnapshot } from "firebase/firestore";
 import { useAppContext } from "@/context/AppContext";
 import { RatingSection } from "./utils/RatingSection";
 import { CommentSection } from "./utils/CommentSection";
@@ -17,7 +11,7 @@ import { SocialLinks } from "./utils/SocialLinks";
 import { FooterNote } from "./utils/FooterNote";
 import { motion } from "framer-motion";
 import styles from "./footer.module.css";
-import Loading from "@/app/loading";
+import Loading from "./loading/Loading";
 
 const Footer: React.FC = () => {
   const { isCommentSectionVisible, setIsCommentSectionVisible } =
@@ -25,22 +19,12 @@ const Footer: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [averageRating, setAverageRating] = useState<number>(0);
 
-  // Fetch user authentication state
+  const [isCommentLoading, setCommentLoading] = useState(true);
+
   useEffect(() => {
     onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
     });
-  }, []);
-
-  // Fetch comments and ratings from Firebase
-  useEffect(() => {
-    const unsubscribeComments = onSnapshot(
-      collection(db, "comments"),
-      (snapshot) => {
-        // Handle comment data
-      }
-    );
-
     const unsubscribeRatings = onSnapshot(
       collection(db, "ratings"),
       (snapshot) => {
@@ -54,7 +38,7 @@ const Footer: React.FC = () => {
     );
 
     return () => {
-      unsubscribeComments();
+      setCommentLoading(false);
       unsubscribeRatings();
     };
   }, []);
@@ -78,22 +62,27 @@ const Footer: React.FC = () => {
           the experience for everyone!
         </motion.p>
 
-        <Suspense fallback={<Loading />}>
-          <RatingSection averageRating={averageRating} user={user} />
-        </Suspense>
-        <h3 style={{ marginBottom: 8, marginTop: 16 }}>Comments</h3>
+        {!averageRating ? (
+          <Loading />
+        ) : (
+          <>
+            <RatingSection averageRating={averageRating} user={user} />
+            <h3 style={{ marginBottom: 8, marginTop: 16 }}>Comments</h3>
 
-        <motion.button
-          className={styles.toggleCommentButton}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          onClick={() => setIsCommentSectionVisible(!isCommentSectionVisible)}
-        >
-          {!isCommentSectionVisible ? "Add comment" : "Close"}
-        </motion.button>
-
-        <CommentSection user={user} />
+            <motion.button
+              className={styles.toggleCommentButton}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              onClick={() =>
+                setIsCommentSectionVisible(!isCommentSectionVisible)
+              }
+            >
+              {!isCommentSectionVisible ? "Add comment" : "Close"}
+            </motion.button>
+            <CommentSection user={user} />
+          </>
+        )}
 
         <SocialLinks />
 

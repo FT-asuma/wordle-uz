@@ -16,6 +16,8 @@ const prohibitedWords = [
   "nig ger",
   "ni g ge r",
   "n i g g e r",
+  "kys",
+  "k y s"
 ];
 
 const containsProhibitedWords = (text: string) => {
