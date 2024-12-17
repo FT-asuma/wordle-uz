@@ -15,7 +15,9 @@ export const metadata: Metadata = {
   title: "A fun Puzzle-game",
   description:
     "Hi everyone, please note that this is not a direct copy of wordle.org! I have only been inspired by that website!",
-  icons: "/favicon.ico",
+  icons: {
+    icon: "/favicon.ico"
+  },
 };
 
 export default function RootLayout({
