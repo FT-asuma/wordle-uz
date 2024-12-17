@@ -73,7 +73,6 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, onUpdate }) => {
   };
 
   const netLikes = comment.likes - comment.dislikes;
-  console.log(userReaction)
   return (
     <li className={styles.commentItem}>
       <div className={styles.commentHeader}>

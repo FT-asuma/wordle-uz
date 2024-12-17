@@ -273,7 +273,6 @@ const Game: React.FC = () => {
 
     setLength(res.join(""));
   };
-  console.log(hiddenWord);
   // props~
   const gameOverProps = {
     state,
